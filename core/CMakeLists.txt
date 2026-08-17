@@ -1,0 +1,2 @@
+add_subdirectory(computationalCore)
+add_subdirectory(vtkDisplay)
