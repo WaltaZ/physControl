@@ -1,7 +1,7 @@
 #pragma once
 
 template<typename Derived, GeometryDim dim, int rank>
-class Tensor : public Geometry {
+class Tensor {
 protected:
 	static constexpr int _numOfComp = [] {
 		int result = 1;

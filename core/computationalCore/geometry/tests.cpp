@@ -1,4 +1,10 @@
-#pragma once
+#include "include/geometry/tests.h"
+
+#include "include/geometry/shapes/basic/point.h"
+#include "include/geometry/shapes/basic/surface.h"
+#include "include/geometry/shapes/basic/volume.h"
+#include "include/geometry/shapes/basic/line.h"
+#include "include/geometry/geometryUtils.h"
 
 #include <iostream>
 
@@ -68,15 +74,14 @@ namespace geometryTests {
 	}
 
 	void runLineTest() {
-
 		constexpr GeometryDim dim = GeometryDim::D2;
 
 		using P = Point<dim>;
 		using V = Vector<dim>;
 		using L = Line<dim>;
 
-		P p1({ 1, 1});
-		P p2({ 2, 3});
+		P p1({ 1, 1 });
+		P p2({ 2, 3 });
 
 		L l = L(&p1, &p2);
 
@@ -105,7 +110,7 @@ namespace geometryTests {
 		P3 p3({ 5, 5, 5 });
 		P3 p4({ 2, 1, 3 });
 
-		std::cout << geometryOperations::arePointsColinear<GeometryDim::D3>({ &p1, &p2, &p3}) << std::endl;
+		std::cout << geometryOperations::arePointsColinear<GeometryDim::D3>({ &p1, &p2, &p3 }) << std::endl;
 		// Should be true
 
 		std::cout << geometryOperations::arePointsColinear<GeometryDim::D3>({ &p1, &p2, &p4 }) << std::endl;

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "geometryEnums.h"
+#include "tensor.h"
+
+#include <array>
+
 template<GeometryDim dim>
 class MatrixTensor : public Tensor<MatrixTensor<dim>, dim, 2> {
 public:
@@ -8,6 +13,6 @@ public:
 	using ThisTensor::comp;
 	using ThisTensor::_numOfComp;
 
-	MatrixTensor() : ThisTensor() {};
-	MatrixTensor(std::array<double, _numOfComp> comp) : ThisTensor(comp) {};
+	MatrixTensor();
+	MatrixTensor(std::array<double, _numOfComp> comp);
 };

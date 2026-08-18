@@ -1,5 +1,7 @@
 #pragma once
 
+#include <numeric>
+
 enum class GeometryDim {
 	D2 = 2,
 	D3 = 3
