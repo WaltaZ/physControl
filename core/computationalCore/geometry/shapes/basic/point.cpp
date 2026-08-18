@@ -1,4 +1,4 @@
-#include "../../include/geometry/shapes/basic/point.h"
+#include "../../include/geometry/point.h"
 
 template<GeometryDim dim>
 Point<dim>::Point() {

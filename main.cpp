@@ -1,15 +1,10 @@
 #include <iostream>
-#include <geometry/tests.h>
-#include <mesh.h>
-#include <vtkDisplay.h>
-
-struct Test {
-	int a;
-	Test(const int& a) : a(a) {};
-};
+#include <geometry/geometry.h>
+#include <mesh/mesh.h>
+#include <problem/problem.h>
 
 int main() {
-	/*Cuboid box = Cuboid(2, 4, 5);
+	Cuboid box = Cuboid(2, 4, 5);
 	ProblemGeometry<GeometryDim::D3, Cuboid> problem({box});
 	CartesianMesher<MeshDim::D3> mesher(problem);
 
@@ -18,6 +13,6 @@ int main() {
 
 	//chuj(mesh);*/
 
-	geometryTests::runVolumeTest();
+	//geometryTests::runVolumeTest();
 
 }

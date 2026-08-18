@@ -32,9 +32,10 @@ add_executable(${PROJECT_NAME} "main.cpp")
 target_link_libraries(${PROJECT_NAME} PRIVATE
 	geometry
 	mesh
-	utility
-	field
-	vtkDisplay
+	problem
+	#utility
+	#field
+	#vtkDisplay
 )
 
 include("Dependencies.cmake")

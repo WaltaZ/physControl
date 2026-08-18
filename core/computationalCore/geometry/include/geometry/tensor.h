@@ -1,5 +1,9 @@
 #pragma once
 
+#include "geometryEnums.h"
+
+#include <array>
+
 template<typename Derived, GeometryDim dim, int rank>
 class Tensor {
 protected:

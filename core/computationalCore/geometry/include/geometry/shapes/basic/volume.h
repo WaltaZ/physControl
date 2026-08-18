@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../geometryEnums.h"
-#include "point.h"
+#include "../../point.h"
 #include "../../vector.h"
 #include "../../geometryUtils.h"
 #include "surface.h"

@@ -8,7 +8,7 @@ set(geometryHppFiles
 	"include/geometry/tests.h"
 	"include/geometry/shapes/shapes.h"
 	"include/geometry/shapes/cuboid.h"
-	"include/geometry/shapes/basic/point.h"
+	"include/geometry/point.h"
 	"include/geometry/shapes/basic/line.h"
 	"include/geometry/shapes/basic/surface.h"
 	"include/geometry/shapes/basic/volume.h"

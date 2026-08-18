@@ -1,7 +1,8 @@
 #pragma once
 
+#include "geometryEnums.h"
+
 #include <array>
-#include "../../geometryEnums.h"
 
 template <GeometryDim dim>
 class Point {

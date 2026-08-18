@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector.h"
+#include "point.h"
 
 #include <iostream>
 #include <vector>

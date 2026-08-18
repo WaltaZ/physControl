@@ -1,5 +1,14 @@
+#pragma once
+
+#include "../meshEnums.h"
+#include <geometry/vector.h>
+#include <geometry/point.h>
+
+#include <vector>
+#include <optional>
+
 template<MeshDim dim>
-class Face : public MeshElement {
+class Face {
 protected:
 	using V = Vector<meshDimToGeometryDim(dim)>;
 	using P = Point<meshDimToGeometryDim(dim)>;
@@ -19,17 +28,9 @@ public:
 		const std::vector<int>& nodeIDs,
 		int ownerCellID,
 		std::optional<int> neighbourCellID = std::nullopt
-	)
-		: area(area),
-		normalVector(normalVector),
-		centroid(centroid),
-		nodeIDs(nodeIDs),
-		ownerCellID(ownerCellID),
-		neighbourCellID(neighbourCellID) {};
+	);
 
-	bool isBoundary() const {
-		return !neighbourCellID.has_value();
-	}
+	bool isBoundary() const;
 };
 
 // TODO: Implement Boundary Face recognision.

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "meshDependencies.h"
-
-#include "meshEnums.h"
-#include "meshElements/meshElements.h"
+#include "../meshEnums.h"
+#include "node.h"
+#include "face.h"
+#include "cell.h"
 
 template<MeshDim dim>
 class Mesh {
@@ -12,7 +12,5 @@ public:
 	std::vector<Face<dim>> faces{};
 	std::vector<Cell<dim>> cells{};
 
-	Mesh() {};
+	Mesh();
 };
-
-#include "meshers/mesher.h"

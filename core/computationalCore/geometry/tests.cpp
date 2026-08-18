@@ -1,6 +1,7 @@
 #include "include/geometry/tests.h"
 
-#include "include/geometry/shapes/basic/point.h"
+#include "include/geometry/point.h"
+#include "include/geometry/vector.h"
 #include "include/geometry/shapes/basic/surface.h"
 #include "include/geometry/shapes/basic/volume.h"
 #include "include/geometry/shapes/basic/line.h"

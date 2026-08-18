@@ -1,7 +1,7 @@
 #include "../../include/geometry/shapes/basic/surface.h"
 
 template<GeometryDim dim>
-Surface<dim>::Surface(const std::vector<P*> vertices, const std::optional<int>& id) : vertices(vertices), id(id) {}
+Surface<dim>::Surface(const std::vector<P*> vertices, const std::optional<int>& id) : vertices(vertices), id(id) {};
 
 template<GeometryDim dim>
 Surface<dim>::P Surface<dim>::getCentroid() const

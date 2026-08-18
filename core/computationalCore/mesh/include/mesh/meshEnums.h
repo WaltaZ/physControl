@@ -1,5 +1,8 @@
 #pragma once
 
+#include<geometry/geometryEnums.h>
+#include <stdexcept>
+
 enum class MeshDim {
 	D2 = 2,
 	D3 = 3

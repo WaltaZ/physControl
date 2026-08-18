@@ -1,3 +1,8 @@
+#pragma once
+
+#include <geometry/geometryEnums.h>
+#include <geometry/vector.h>
+
 template<GeometryDim dim>
 struct NeighbourVectors {
 

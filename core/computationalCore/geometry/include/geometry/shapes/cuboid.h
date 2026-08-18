@@ -1,6 +1,6 @@
 #pragma once
 
-#include "basic/point.h"
+#include "../point.h"
 #include "basic/surface.h"
 #include "basic/volume.h"
 

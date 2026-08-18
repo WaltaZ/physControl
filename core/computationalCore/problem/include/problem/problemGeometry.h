@@ -1,4 +1,6 @@
-#include "problemDependencies.h"
+#pragma once
+
+#include <geometry/geometry.h>
 
 template<GeometryDim dim, typename Space>
 struct ProblemGeometry {
