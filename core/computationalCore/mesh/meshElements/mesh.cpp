@@ -1,4 +1,4 @@
-#include "include/mesh/meshElements/mesh.h"
+#include "../include/mesh/meshElements/mesh.h"
 
 template<MeshDim dim>
 Mesh<dim>::Mesh() {};

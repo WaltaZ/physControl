@@ -15,8 +15,16 @@ if (NOT VTK_FOUND)
 endif()
 
 # Add source to this project's executable.
-add_library(vtkDisplay "vtkDisplay.h" "vtkDisplay.cpp" "vtkDisplayDependencies.h")
-target_include_directories(vtkDisplay PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set(vtkDisplayHppFiles
+	"include/vtkDisplay/vtkDisplay.h"
+)
+
+set(vtkDisplayCppFiles
+	"vtkDisplay.cpp"
+)
+
+add_library(vtkDisplay ${vtkDisplayHppFiles} ${vtkDisplayCppFiles})
+target_include_directories(vtkDisplay PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(vtkDisplay PRIVATE
 ${VTK_LIBRARIES}
 mesh

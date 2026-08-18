@@ -27,11 +27,7 @@ public:
 		const ProblemGeometry<Gdim, Cuboid>& problemGeometry,
 		const std::array<int, geometryDimSize(Gdim)>& refinments = { 10, 10, 10 });
 
-	void setDivisionPattern(const std::vector<std::vector<double>>& divisionPattern, int index) {
-		for (int i = 0; i < divisionPattern.size(); i++) {
-			divisionPatterns[index][i] = divisionPattern[i];
-		}
-	}
+	void setDivisionPattern(const std::vector<std::vector<double>>& divisionPattern, int index);
 
 	Mesh<MeshDim::D3> createMesh();
 };

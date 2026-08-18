@@ -1,4 +1,4 @@
-#include "include/mesh/meshElements/node.h"
+#include "../include/mesh/meshElements/node.h"
 
 template<MeshDim dim>
 Node<dim>::Node(const std::array<double, meshDimSize(dim)>& pos) : pos(pos) {};
