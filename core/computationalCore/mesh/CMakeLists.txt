@@ -10,16 +10,17 @@ set(meshHppFiles
 	"include/mesh/meshElements/node.h"
 	"include/mesh/meshers/meshers.h"
 	"include/mesh/meshers/cartesianMesher/cartesianMesher.h"
-	
+	"include/mesh/meshers/mesherElements.h"
 )
 
 set(meshCppFiles
 	"meshers/cartesianMesher/cartesianMesher.cpp"
-	"meshElements/cell.cpp"
 	"meshElements/face.cpp"
 	"meshElements/mesh.cpp"
 	"meshElements/node.cpp"
 	"meshElements/tests.cpp"
+	"meshers/mesherElements.cpp"
+	"meshElements/cell.cpp"
 )
 
 add_library(mesh 

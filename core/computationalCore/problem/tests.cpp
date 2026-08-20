@@ -1,10 +1,20 @@
+#include "include/problem/tests.h"
+
+#include "include/problem/field.h"
+
+#include <geometry/geometryEnums.h>
+#include <geometry/geometryUtils.h>
+#include <geometry/vector.h>
+#include <mesh/meshElements/cell.h>
+#include <iostream>
+
 namespace fieldTests {
 	void runFieldBasicTest() {
 		// Example usage of Field class
 		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3> > field(10); // Field of Vectors associated with 10 points in 3D
 		// Set some values
 		for (int i = 0; i < field.numberOfElements; i++) {
-			field.data[i] = field.data[i] + (Vector<GeometryDim::D3>({1, 1, 1}) * i*1.5); // Assigning some values
+			field.data[i] = field.data[i] + (Vector<GeometryDim::D3>({ 1, 1, 1 }) * i * 1.5); // Assigning some values
 		}
 		// Print the values
 		std::cout << "Vector Values: " << std::endl;

@@ -2,18 +2,21 @@
 
 #include <geometry/geometry.h>
 
-template<GeometryDim dim, typename Space>
-struct ProblemGeometry {
+// --------------------------- PROBLEM GEOMETRY -------------------------------
 
-	std::vector<Space> operationalSpace;
+struct ProblemGeometryD3 {
 
-	ProblemGeometry(
-		const std::vector<Space>& operationalSpace,
-		const std::optional<std::vector<std::vector<int>>>& neighbouringBoundaries
-	) : operationalSpace(operationalSpace)
-	{};
+	const Volume& operationalGeometry;
 
-	ProblemGeometry(
-		const Space& operationalSpace
-	) : operationalSpace(std::vector<Space>({ operationalSpace })) {};
+	ProblemGeometryD3(
+		const Volume& operationalGeometry
+	);
+};
+
+// ------------------------ CUBOID PROBLEM GEOMETRY ---------------------------
+
+struct ProblemGeometryCuboid : public ProblemGeometryD3 {
+	ProblemGeometryCuboid(const Cuboid& cuboid);
+
+	const Cuboid& getCuboid() const;
 };

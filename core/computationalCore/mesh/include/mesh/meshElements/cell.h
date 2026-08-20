@@ -9,26 +9,33 @@ template<MeshDim dim>
 class Cell {
 private:
 	using P = Point<meshDimToGeometryDim(dim)>;
-	using V = Vector<meshDimToGeometryDim(dim)>;
+	using V = VectorData<meshDimToGeometryDim(dim)>;
 public:
-	std::vector<int> pointIDs;
-	std::vector<int> faceIDs;
-	std::vector<int> neighbourCellsIDs;
 
-	P centroid;
-	double volume;
+    Cell(
+        int* pointIDs,
+        int pointIDsLength,
 
-	std::vector<NeighbourVectors<meshDimToGeometryDim(dim)>> neighboursVectors;
-	std::vector<NeighbourVectorsMagnitudes> neighboursVectorsMagnitudes;
+        int* faceIDs,
+        int faceIDsLength,
 
-	Cell(
-		std::vector<int> pointIDs,
-		std::vector<int> faceIDs,
-		std::vector<int> neighbourCellsIDs,
-		P centroid,
-		double volume,
-		std::vector<NeighbourVectors<meshDimToGeometryDim(dim)>> neighboursVectors,
-		std::vector<NeighbourVectorsMagnitudes> neighboursVectorsMagnitudes,
-		std::vector<int> faceNormalsOrient
-	);
+        int* neighbourCellsIDs,
+        int neighbourCellsIDsLength,
+
+        const P& centroid,
+        double volume
+    );
+
+    int* pointIDs;
+    int pointIDsLength;
+
+    int* faceIDs;
+    int faceIDsLength;
+
+    int* neighbourCellsIDs;
+    int neighbourCellsIDsLength;
+
+
+    P centroid;
+    double volume;
 };

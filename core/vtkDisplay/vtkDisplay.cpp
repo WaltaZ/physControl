@@ -17,8 +17,8 @@ void displayTest(const Mesh<MeshDim::D3>& mesh) {
 
     vtkNew<vtkPoints> points;
 
-    for(const auto& node : mesh.nodes) {
-        points->InsertNextPoint(node.pos[0], node.pos[1], node.pos[2]);
+    for (int i = 0; i < mesh.nodesLength; i++) {
+        points->InsertNextPoint(mesh.nodes[i].pos[0], mesh.nodes[i].pos[1], mesh.nodes[i].pos[2]);
     }
 
     // -------------------------------------------------------
@@ -53,7 +53,7 @@ void displayTest(const Mesh<MeshDim::D3>& mesh) {
     vtkNew<vtkActor> actor;
     actor->SetMapper(mapper);
 
-    actor->GetProperty()->SetPointSize(3);       // smaller
+    actor->GetProperty()->SetPointSize(6);       // smaller
     actor->GetProperty()->SetColor(1.0, 1.0, 1.0); // white
 
     actor->GetProperty()->RenderPointsAsSpheresOn();

@@ -1,4 +1,4 @@
-#include "../include/mesh/meshers/cartesianMesher/cartesianMesher.h"
+#include "../../include/mesh/meshers/cartesianMesher/cartesianMesher.h"
 
 std::vector<double> CartesianMesher<MeshDim::D3>::_linspace(const int& index) const {
 
@@ -13,7 +13,7 @@ std::vector<double> CartesianMesher<MeshDim::D3>::_linspace(const int& index) co
 };
 
 CartesianMesher<MeshDim::D3>::CartesianMesher(
-	const ProblemGeometry<Gdim, Cuboid>& problemGeometry,
+	const ProblemGeometryCuboid& problemGeometry,
 	const std::array<int, geometryDimSize(Gdim)>& refinments)
 	:
 	problemGeometry(problemGeometry),
@@ -22,48 +22,41 @@ CartesianMesher<MeshDim::D3>::CartesianMesher(
 	// TODO: Fix that \/
 	//constexpr bool isCuboid = std::is_same_v<decltype(problemGeometry.operationalSpace), Cuboid>;
 	//assert(isCuboid);
-	for (int i = 0; i < problemGeometry.operationalSpace.size(); i++) {
-		std::vector<std::vector<double>> currentCuboidDivision;
-		for (int j = 0; j < geometryDimSize(Gdim); j++) {
-			currentCuboidDivision.push_back(_linspace(j));
-		}
-		divisionPatterns.push_back(currentCuboidDivision);
+
+	for (int j = 0; j < geometryDimSize(Gdim); j++) {
+		divisionPattern.push_back(_linspace(j));
 	}
 }
 
 void CartesianMesher<MeshDim::D3>::setDivisionPattern(
-	const std::vector<std::vector<double>>& divisionPattern,
+	const std::vector<double>& divisionPattern,
 	int index)
 {
-	for (int i = 0; i < divisionPattern.size(); i++) {
-		divisionPatterns[index][i] = divisionPattern[i];
-	}
+	this->divisionPattern[index] = divisionPattern;
 }
 
-Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
+const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 {
+	const Cuboid& cuboid = problemGeometry.getCuboid();
 
-	const std::vector<std::vector<double>>& divisionPattern = divisionPatterns[0];
-	const Cuboid& cuboid = problemGeometry.operationalSpace[0];
+	MesherMesh mesh = MesherMesh<MeshDim::D3>();
 
-	Mesh<MeshDim::D3> mesh = Mesh<MeshDim::D3>();
+	// Nodes ------------------------------------------------------------------------
 
-	// Nodes
-	double aStep = cuboid.a / (double)divisionPatterns[0][0].size();
-	double bStep = cuboid.b / (double)divisionPatterns[0][1].size();
-	double cStep = cuboid.c / (double)divisionPatterns[0][2].size();
-
-	for (int z = 0; z < divisionPatterns[0][2].size(); z++) {
-		for (int y = 0; y < divisionPatterns[0][1].size(); y++) {
-			for (int x = 0; x < divisionPatterns[0][0].size(); x++) {
-				Point<Gdim> point({
-					cuboid.points[0]->pos[0] + (cuboid.a * divisionPatterns[0][0][x]),
-					cuboid.points[0]->pos[1] + (cuboid.b * divisionPatterns[0][1][y]),
-					cuboid.points[0]->pos[2] + (cuboid.c * divisionPatterns[0][2][z])
+	for (int z = 0; z < divisionPattern[2].size(); z++) {
+		for (int y = 0; y < divisionPattern[1].size(); y++) {
+			for (int x = 0; x < divisionPattern[0].size(); x++) {
+				Point<GeometryDim::D3> point({
+					cuboid.points[0]->pos[0] + (cuboid.a * divisionPattern[0][x]),
+					cuboid.points[0]->pos[1] + (cuboid.b * divisionPattern[1][y]),
+					cuboid.points[0]->pos[2] + (cuboid.c * divisionPattern[2][z])
 					});
-				mesh.nodes.push_back(Node<MeshDim::D3>(point));
+				 mesh.nodes.push_back(MesherNode<MeshDim::D3>(point));
 			}
 		}
 	}
-	return mesh;
+
+	// Faces ------------------------------------------------------------------------
+	// Set up 
+	return mesh.createMeshInHeap();
 };

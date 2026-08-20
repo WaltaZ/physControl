@@ -1,7 +1,9 @@
 ﻿# CMakeList.txt : Top-level CMake project file, do global configuration
 # and include sub-projects here.
 #
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required (VERSION 4.3)
+
+set(CMAKE_FASTBUILD_CACHE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cache")
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -10,7 +12,14 @@ if (POLICY CMP0141)
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(VCPKG_APPLOCAL_DEPS ON)
+
+# CUDA
+set(CMAKE_CUDA_STANDARD 20)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
 
 # Path to vcpkg
 set(VCPKG_ROOT C:/dev/vcpkg)

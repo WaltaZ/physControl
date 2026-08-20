@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../meshEnums.h"
+#include "../mesherElements.h"
 #include "../../meshElements/mesh.h"
 
 #include <problem/problemGeometry.h>
@@ -15,19 +16,19 @@ template<>
 class CartesianMesher<MeshDim::D3> : _CartesianMesher<MeshDim::D3> {
 private:
 	const static GeometryDim Gdim = GeometryDim::D3;
-	const ProblemGeometry<Gdim, Cuboid>& problemGeometry;
+	const ProblemGeometryCuboid& problemGeometry;
 	std::array<int, geometryDimSize(Gdim)> refinments;
-	std::vector<std::vector<std::vector<double>>> divisionPatterns{};
+	std::vector<std::vector<double>> divisionPattern{};
 
 	std::vector<double> _linspace(const int& index) const;
 
 public:
 
 	CartesianMesher(
-		const ProblemGeometry<Gdim, Cuboid>& problemGeometry,
+		const ProblemGeometryCuboid& problemGeometry,
 		const std::array<int, geometryDimSize(Gdim)>& refinments = { 10, 10, 10 });
 
-	void setDivisionPattern(const std::vector<std::vector<double>>& divisionPattern, int index);
+	void setDivisionPattern(const std::vector<double>& divisionPattern, int index);
 
-	Mesh<MeshDim::D3> createMesh();
+	const Mesh<MeshDim::D3> createMesh();
 };

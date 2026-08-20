@@ -3,31 +3,25 @@
 #include <geometry/geometryEnums.h>
 #include <geometry/vector.h>
 
-template<GeometryDim dim>
-struct NeighbourVectors {
+#include <optional>
 
+template<GeometryDim dim>
+struct VectorData {
+	
 	using V = Vector<dim>;
 
-	V centroidToFace;
-	V centroidToNeighbour;
-
-	V centroidToFaceNormal;
-	V centroidToNeighbourNormal;
-
-	V Ef;
-	V Tf;
-
+	V vector;
+	V normal;
+	double magnitude;
+	
 };
 
-struct NeighbourVectorsMagnitudes {
+template<GeometryDim dim>
+struct CellData {
 
-	double centroidToFace;
-	double centroidToNeighbour;
+	using V = VectorData<dim>;
 
-	double centroidToFaceNormal;
-	double centroidToNeighbourNormal;
-
-	double Ef;
-	double Tf;
-
+	V centroidToFace;
+	std::optional<V> Ef = std::nullopt;
+	std::optional<V> Tf = std::nullopt;
 };

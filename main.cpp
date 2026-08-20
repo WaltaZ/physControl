@@ -5,11 +5,10 @@
 #include <vtkDisplay/vtkDisplay.h>
 
 int main() {
+	constexpr int amount = 300;
 
-	constexpr int amount = 20;
-
-	Cuboid box = Cuboid(2, 4, 5);
-	ProblemGeometry<GeometryDim::D3, Cuboid> problem({box});
+	Cuboid box = Cuboid(3, 4, 5);
+	ProblemGeometryCuboid problem(box);
 	CartesianMesher<MeshDim::D3> mesher(problem, { amount, amount, amount });
 
 	std::vector<double> division(amount + 1);
@@ -18,7 +17,7 @@ int main() {
 		division[i] = pow(((double)i/(double)amount), 5);
 	}
 
-	mesher.setDivisionPattern({ division, division }, 0);
+	//mesher.setDivisionPattern({ division, division }, 0);
 
 	Mesh<MeshDim::D3> mesh = mesher.createMesh();
 	

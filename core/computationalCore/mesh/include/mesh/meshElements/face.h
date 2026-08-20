@@ -3,6 +3,7 @@
 #include "../meshEnums.h"
 #include <geometry/vector.h>
 #include <geometry/point.h>
+#include "supportStructs.h"
 
 #include <vector>
 #include <optional>
@@ -10,25 +11,32 @@
 template<MeshDim dim>
 class Face {
 protected:
-	using V = Vector<meshDimToGeometryDim(dim)>;
+	using V = VectorData<meshDimToGeometryDim(dim)>;
 	using P = Point<meshDimToGeometryDim(dim)>;
 public:
-	std::vector<int> nodeIDs;
-	int ownerCellID;
-	std::optional<int> neighbourCellID;
-
-	double area;
-	V normalVector;
-	P centroid;
 
 	Face(
-		double area,
-		const V& normalVector,
-		const P& centroid,
-		const std::vector<int>& nodeIDs,
+		const V& area,
+		int* nodeIDs,
+		int nodeIDsLength,
 		int ownerCellID,
-		std::optional<int> neighbourCellID = std::nullopt
+		const CellData<meshDimToGeometryDim(dim)>& ownerData,
+		std::optional<int> neighbourCellID = std::nullopt,
+		std::optional<CellData<meshDimToGeometryDim(dim)>> neighbourData = std::nullopt,
+		std::optional<V> ownerToNeighbourCell = std::nullopt
 	);
+
+	V area;
+
+	int* nodeIDs;
+	int nodeIDsLength;
+
+	int ownerCellID;
+	CellData<meshDimToGeometryDim(dim)> ownerData;
+
+	std::optional<int> neighbourCellID = std::nullopt;
+	std::optional<CellData<meshDimToGeometryDim(dim)>> neighbourData = std::nullopt;
+	std::optional<V> ownerToNeighbourCell = std::nullopt;
 
 	bool isBoundary() const;
 };

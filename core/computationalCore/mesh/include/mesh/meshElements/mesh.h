@@ -8,9 +8,29 @@
 template<MeshDim dim>
 class Mesh {
 public:
-	std::vector<Node<dim>> nodes{};
-	std::vector<Face<dim>> faces{};
-	std::vector<Cell<dim>> cells{};
+	const Node<dim>* nodes;
+	const double nodesLength;
 
-	Mesh();
+	const Face<dim>* faces;
+	const double facesLength;
+
+	const Cell<dim>* cells;
+	const double cellsLength;
+
+	Mesh(
+		const std::vector<Node<dim>>* nodes,
+		const std::vector<Face<dim>>* faces,
+		const std::vector<Cell<dim>>* cells);
+	
+	Mesh(
+		const Node<dim>* nodes,
+		const double& nodesLength,
+
+		const Face<dim>* faces,
+		const double& facesLength,
+
+		const Cell<dim>* cells,
+		const double& cellsLength);
+
+	Mesh<dim> getMeshFromNewPointers(const Node<dim>* nodes, const Face<dim>* faces, const Cell<dim>* cells);
 };
