@@ -25,7 +25,16 @@ Face<dim>::Face(
     neighbourCellID(neighbourCellID),
     neighbourData(neighbourData),
     ownerToNeighbourCell(ownerToNeighbourCell)
-{};
+{}
+
+template<MeshDim dim>
+Face<dim>::Face() {};
+
+template<MeshDim dim>
+Face<dim>::~Face()
+{
+    delete[] nodeIDs;
+};
 
 template class Face<MeshDim::D2>;
 template class Face<MeshDim::D3>;

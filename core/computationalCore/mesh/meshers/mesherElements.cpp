@@ -71,19 +71,15 @@ const Mesh<dim> MesherMesh<dim>::createMeshInHeap()
 
 	std::cout << "Allocating in heap" << '\n';
 
-	std::allocator<Node<dim>> nodeAllocator;
-	std::allocator<Face<dim>> faceAllocator;
-	std::allocator<Cell<dim>> cellAllocator;
-
 	const int nodesSize = this->nodes.size();
 	const int facesSize = this->faces.size();
 	const int cellsSize = this->cells.size();
 
 	// TODO: This solution is obviously to be improved \/
 
-	Node<dim>* nodes = nodeAllocator.allocate(nodesSize);
-	Face<dim>* faces = faceAllocator.allocate(facesSize);
-	Cell<dim>* cells = cellAllocator.allocate(cellsSize);
+	Node<dim>* nodes = new Node<dim>[nodesSize];
+	Face<dim>* faces = new Face<dim>[facesSize];
+	Cell<dim>* cells = new Cell<dim>[cellsSize];
 
 	for(int i = 0; i < nodesSize; i++) {
 		nodes[i] = this->nodes[i].getNode();

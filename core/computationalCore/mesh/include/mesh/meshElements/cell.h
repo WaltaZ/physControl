@@ -26,6 +26,10 @@ public:
         double volume
     );
 
+    Cell();
+
+    ~Cell();
+    
     int* pointIDs;
     int pointIDsLength;
 

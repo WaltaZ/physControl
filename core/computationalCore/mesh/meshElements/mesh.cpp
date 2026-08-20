@@ -15,6 +15,14 @@ Mesh<dim>::Mesh(
 {}
 
 template<MeshDim dim>
+Mesh<dim>::~Mesh()
+{
+	delete[] nodes;
+	delete[] faces;
+	delete[] cells;
+}
+
+template<MeshDim dim>
 Mesh<dim>::Mesh(
 		const Node<dim>*nodes,
 		const double& nodesLength,
@@ -34,21 +42,6 @@ Mesh<dim>::Mesh(
 		cells(cells),
 		cellsLength(cellsLength)
 {}
-
-template<MeshDim dim>
-Mesh<dim> Mesh<dim>::getMeshFromNewPointers(const Node<dim>* nodes, const Face<dim>* faces, const Cell<dim>* cells)
-{
-	return Mesh<dim>{
-		nodes,
-		this->nodesLength,
-
-		faces,
-		this->facesLength,
-
-		cells,
-		this->cellsLength
-	};
-};
 
 template class Mesh<MeshDim::D2>;
 template class Mesh<MeshDim::D3>;

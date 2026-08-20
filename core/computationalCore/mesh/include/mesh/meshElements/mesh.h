@@ -21,6 +21,8 @@ public:
 		const std::vector<Node<dim>>* nodes,
 		const std::vector<Face<dim>>* faces,
 		const std::vector<Cell<dim>>* cells);
+
+	~Mesh();
 	
 	Mesh(
 		const Node<dim>* nodes,
@@ -31,6 +33,4 @@ public:
 
 		const Cell<dim>* cells,
 		const double& cellsLength);
-
-	Mesh<dim> getMeshFromNewPointers(const Node<dim>* nodes, const Face<dim>* faces, const Cell<dim>* cells);
 };

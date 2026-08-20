@@ -25,7 +25,18 @@ Cell<dim>::Cell(
 
     centroid(centroid),
     volume(volume)
-{};
+{}
+
+template<MeshDim dim>
+Cell<dim>::Cell() {};
+
+template<MeshDim dim>
+Cell<dim>::~Cell()
+{
+    delete[] pointIDs;
+    delete[] faceIDs;
+    delete[] neighbourCellsIDs;
+};
 
 template class Cell<MeshDim::D2>;
 template class Cell<MeshDim::D3>;

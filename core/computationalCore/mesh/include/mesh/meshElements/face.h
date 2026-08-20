@@ -26,6 +26,10 @@ public:
 		std::optional<V> ownerToNeighbourCell = std::nullopt
 	);
 
+	Face();
+
+	~Face();
+
 	V area;
 
 	int* nodeIDs;

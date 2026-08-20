@@ -5,7 +5,7 @@
 #include <vtkDisplay/vtkDisplay.h>
 
 int main() {
-	constexpr int amount = 300;
+	constexpr int amount = 10;
 
 	Cuboid box = Cuboid(3, 4, 5);
 	ProblemGeometryCuboid problem(box);
