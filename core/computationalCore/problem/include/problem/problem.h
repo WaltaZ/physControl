@@ -1,20 +1,38 @@
 #pragma once
 
 #include "problemGeometry.h"
+#include "field.h"
+#include "boundaryInitialCondition.h"
 
 #include <geometry/geometry.h>
+#include <mesh/meshElements/meshElements.h>
+#include <vector>
 
-namespace problem {
 
-	class Problem {
+class RoomHeatTransferD3 {
+	private:
+		using V = Vector<GeometryDim::D3>;
+		using M = MatrixTensor<GeometryDim::D3>;
+		using C = Cell<geometryDimToMeshDim(GeometryDim::D3)>;
+		using F = Face<geometryDimToMeshDim(GeometryDim::D3)>;
 	public:
-		const GeometryDim problemDimensions;
-	};
+		Field<V, C>* velocity;
+		Field<M, C>* gradVelocity;
+		Field<double,C>* pressure;
+		Field<V, C>* gradPressure;
+		Field<double, C>* temperature;
 
-	class RoomHeatTransfer : public Problem {
-	public:
-		RoomHeatTransfer(
+		ProblemGeometryD3 geometry;
+		std::vector<BoundaryConditionD3<V, Field<V, C>>> velocityBoundaries{};
+		std::vector<BoundaryConditionD3<double, Field<double, C>>> temperatureBoundaries{};
 
+		RoomHeatTransferD3(
+			const ProblemGeometryD3& geometry
 		);
+
+		void addVelocityBoundaryCondition(
+			const BoundaryConditionD3<V, Field<V, C>>& bc);
+
+		void addTemperatureBoundaryCondition(
+			const BoundaryConditionD3<double, Field<double, C>>& bc);
 	};
-}

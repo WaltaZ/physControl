@@ -1,5 +1,7 @@
 add_library(utility STATIC
 	"utility.h"
+	"mathUtils.h"
+	"mathUtils.cpp"
 	"debug/debug.cpp"
 	)
 

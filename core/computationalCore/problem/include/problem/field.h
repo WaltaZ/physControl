@@ -1,20 +1,30 @@
 #pragma once
 
-#include <vector>
 #include <type_traits>
+#include <mesh/meshElements/boundaryPatch.h>
 
 template<typename DataType, typename StoragePlace>
 struct Field {
-    /*static_assert(
-        std::is_base_of_v<MeshElement, StoragePlace>,
-        "Storage place must be an element of Mesh!"
-        );*/
-	const int numberOfElements;
-	std::vector<DataType> data;
 
-	Field(const int numberOfElements, const DataType& initialObject = DataType()) : numberOfElements(numberOfElements), data(numberOfElements) {
-		for (int i = 0; i < numberOfElements; i++) {
-			data[i] = initialObject;
-		}
-	};
+    DataType* data;
+	const int dataLength;
+
+    //BoundaryPatch* boundaryPatches;
+    //const int boundaryPatchesLength;
+
+    Field(
+            const int numberOfElements,
+            const DataType& initObj = DataType()) 
+        : 
+            dataLength(numberOfElements) 
+    {
+        this->data = new DataType[numberOfElements];
+        for (int i = 0; i < numberOfElements; i++) {
+            this->data[i] = initObj;
+        }
+    };
+
+    ~Field() {
+        delete[] data;
+    }
 };

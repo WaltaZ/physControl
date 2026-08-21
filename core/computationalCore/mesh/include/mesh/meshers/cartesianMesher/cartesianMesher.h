@@ -4,7 +4,8 @@
 #include "../mesherElements.h"
 #include "../../meshElements/mesh.h"
 
-#include <problem/problemGeometry.h>
+#include <problem/problem.h>
+#include <utility.h>
 
 template<MeshDim>
 class _CartesianMesher {};
@@ -16,7 +17,10 @@ template<>
 class CartesianMesher<MeshDim::D3> : _CartesianMesher<MeshDim::D3> {
 private:
 	const static GeometryDim Gdim = GeometryDim::D3;
+
 	const ProblemGeometryCuboid& problemGeometry;
+	const RoomHeatTransferD3& problem;
+
 	std::array<int, geometryDimSize(Gdim)> refinments;
 	std::vector<std::vector<double>> divisionPattern{};
 
@@ -25,6 +29,7 @@ private:
 public:
 
 	CartesianMesher(
+		const RoomHeatTransferD3& problem,
 		const ProblemGeometryCuboid& problemGeometry,
 		const std::array<int, geometryDimSize(Gdim)>& refinments = { 10, 10, 10 });
 

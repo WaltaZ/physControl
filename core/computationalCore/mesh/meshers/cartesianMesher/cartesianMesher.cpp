@@ -13,9 +13,11 @@ std::vector<double> CartesianMesher<MeshDim::D3>::_linspace(const int& index) co
 };
 
 CartesianMesher<MeshDim::D3>::CartesianMesher(
+	const RoomHeatTransferD3& problem,
 	const ProblemGeometryCuboid& problemGeometry,
 	const std::array<int, geometryDimSize(Gdim)>& refinments)
 	:
+	problem(problem),
 	problemGeometry(problemGeometry),
 	refinments(refinments)
 {
@@ -41,13 +43,19 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 
 	MesherMesh mesh = MesherMesh<MeshDim::D3>();
 
+	std::vector<double> testY{0, 0.6, 0.8, 0.9, 0.95, 1};
+
+	std::vector<double> points = mathUtils::linearlyInterpolatePointsWithSpacing(testY, 1/(double)refinments[0]);
+
+	//std::cout << spline(0.5);
+
 	// Nodes ------------------------------------------------------------------------
 
 	for (int z = 0; z < divisionPattern[2].size(); z++) {
 		for (int y = 0; y < divisionPattern[1].size(); y++) {
-			for (int x = 0; x < divisionPattern[0].size(); x++) {
+			for (int x = 0; x < points.size(); x++) {
 				Point<GeometryDim::D3> point({
-					cuboid.points[0]->pos[0] + (cuboid.a * divisionPattern[0][x]),
+					cuboid.points[0]->pos[0] + (cuboid.a * points[x]),
 					cuboid.points[0]->pos[1] + (cuboid.b * divisionPattern[1][y]),
 					cuboid.points[0]->pos[2] + (cuboid.c * divisionPattern[2][z])
 					});

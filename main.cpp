@@ -5,11 +5,14 @@
 #include <vtkDisplay/vtkDisplay.h>
 
 int main() {
-	constexpr int amount = 10;
+	constexpr int amount = 20;
 
 	Cuboid box = Cuboid(3, 4, 5);
-	ProblemGeometryCuboid problem(box);
-	CartesianMesher<MeshDim::D3> mesher(problem, { amount, amount, amount });
+	ProblemGeometryCuboid problemGeometry(box);
+
+	RoomHeatTransferD3 problem = RoomHeatTransferD3(problemGeometry);
+
+	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, amount, amount });
 
 	std::vector<double> division(amount + 1);
 

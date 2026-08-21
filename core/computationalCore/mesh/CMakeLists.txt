@@ -11,6 +11,7 @@ set(meshHppFiles
 	"include/mesh/meshers/meshers.h"
 	"include/mesh/meshers/cartesianMesher/cartesianMesher.h"
 	"include/mesh/meshers/mesherElements.h"
+	"include/mesh/meshElements/boundaryPatch.h"
 )
 
 set(meshCppFiles
@@ -21,6 +22,7 @@ set(meshCppFiles
 	"meshElements/tests.cpp"
 	"meshers/mesherElements.cpp"
 	"meshElements/cell.cpp"
+	"meshElements/boundaryPatch.cpp"
 )
 
 add_library(mesh 
@@ -29,4 +31,4 @@ add_library(mesh
 )
 
 target_include_directories(mesh PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(mesh geometry problem)
+target_link_libraries(mesh geometry problem utility)
