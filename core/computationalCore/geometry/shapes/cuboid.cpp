@@ -26,11 +26,31 @@ Cuboid::Cuboid(
 	}
 
 	surfaces = std::vector<S*>({
+		new S({points[1], points[2], points[6], points[5]}), // YZ Front
+		new S({points[3], points[0], points[4], points[7]}), // YZ Back
+		new S({points[2], points[3], points[7], points[6]}), // XZ Right
+		new S({points[0], points[1], points[5], points[4]}), // XZ Left
 		new S({points[0], points[1], points[2], points[3]}), // XY Bottom
-		new S({points[4], points[5], points[6], points[7]}), // XY Top
-		new S({points[2], points[3], points[7], points[6]}), // XZ Front
-		new S({points[0], points[1], points[5], points[4]}), // XZ Back 
-		new S({points[1], points[2], points[6], points[5]}), // YZ Right
-		new S({points[3], points[0], points[4], points[7]}) // YZ Left
+		new S({points[4], points[5], points[6], points[7]})  // XY Top 
 		});
+}
+
+const Cuboid::FaceType Cuboid::faceOrder[6] = {
+		FaceType::Front,
+		FaceType::Back,
+		FaceType::Right,
+		FaceType::Left,
+		FaceType::Bottom,
+		FaceType::Top
+};
+
+Cuboid::~Cuboid()
+{
+	for (auto& point : points) {
+		delete point;
+	}
+
+	for (auto& surface : surfaces) {
+		delete surface;
+	}
 }

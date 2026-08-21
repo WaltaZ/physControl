@@ -23,16 +23,16 @@ class RoomHeatTransferD3 {
 		Field<double, C>* temperature;
 
 		ProblemGeometryD3 geometry;
-		std::vector<BoundaryConditionD3<V, Field<V, C>>> velocityBoundaries{};
-		std::vector<BoundaryConditionD3<double, Field<double, C>>> temperatureBoundaries{};
+		std::vector<BoundaryConditionD3<Field<V, C>>> velocityBoundaries{};
+		std::vector<BoundaryConditionD3<Field<double, C>>> temperatureBoundaries{};
 
 		RoomHeatTransferD3(
 			const ProblemGeometryD3& geometry
 		);
 
 		void addVelocityBoundaryCondition(
-			const BoundaryConditionD3<V, Field<V, C>>& bc);
+			const BoundaryConditionD3<Field<V, C>>& bc);
 
 		void addTemperatureBoundaryCondition(
-			const BoundaryConditionD3<double, Field<double, C>>& bc);
+			const BoundaryConditionD3<Field<double, C>>& bc);
 	};

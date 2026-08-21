@@ -11,7 +11,7 @@ enum class BoundaryConditionType {
 	Wall
 };
 
-template<typename VariableType, typename FieldType>
+template<typename FieldType>
 struct BoundaryConditionD3 {
 	FieldType** field;
 

@@ -12,6 +12,7 @@ set(geometryHppFiles
 	"include/geometry/shapes/basic/line.h"
 	"include/geometry/shapes/basic/surface.h"
 	"include/geometry/shapes/basic/volume.h"
+	"include/geometry/shapes/rectangle.h"
 )
 
 set(geometryCppFiles
@@ -24,6 +25,7 @@ set(geometryCppFiles
 	"shapes/basic/line.cpp"
 	"shapes/basic/surface.cpp"
 	"shapes/basic/volume.cpp"
+	"shapes/rectangle.cpp"
 )
 
 add_library(geometry 
