@@ -7,6 +7,7 @@
 #include <problem/problem.h>
 #include <utility.h>
 #include <geometry/shapes/cuboid.h>
+#include <algorithm>
 
 template<MeshDim>
 class _CartesianMesher {};
@@ -25,7 +26,7 @@ private:
 
 	// Problem
 
-	const Cuboid& problemGeometry;
+	const Cuboid& cuboid;
 	const RoomHeatTransferD3& problem;
 
 	// Mesh

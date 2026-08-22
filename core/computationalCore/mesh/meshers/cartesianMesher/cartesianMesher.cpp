@@ -1,6 +1,5 @@
 #include "../../include/mesh/meshers/cartesianMesher/cartesianMesher.h"
 
-
 std::vector<double> CartesianMesher<MeshDim::D3>::_linspace(const int& index) const {
 
 	const int& refinment = refinments[index];
@@ -49,30 +48,30 @@ CartesianMesher<MeshDim::D3>::MesherBCData CartesianMesher<MeshDim::D3>::_getMes
 	if ((axis12 == 1 && axis23 == 2) || (axis12 == 2 && axis23 == 1)) {
 		// YZ
 		
-		if (surface.vertices[0]->pos[0] == problemGeometry.points[0]->pos[0]) {
+		if (surface.vertices[0]->pos[0] == cuboid.points[0]->pos[0]) {
 			faceType = Cuboid::FaceType::Back;
 		}
-		else if (surface.vertices[0]->pos[0] == problemGeometry.points[1]->pos[0]) {
+		else if (surface.vertices[0]->pos[0] == cuboid.points[1]->pos[0]) {
 			faceType = Cuboid::FaceType::Front;
 		};
 	}
 	else if ((axis12 == 0 && axis23 == 2) || (axis12 == 2 && axis23 == 0)) {
 		// XZ
 
-		if (surface.vertices[0]->pos[1] == problemGeometry.points[0]->pos[1]) {
+		if (surface.vertices[0]->pos[1] == cuboid.points[0]->pos[1]) {
 			faceType = Cuboid::FaceType::Left;
 		}
-		else if (surface.vertices[0]->pos[1] == problemGeometry.points[3]->pos[1]) {
+		else if (surface.vertices[0]->pos[1] == cuboid.points[3]->pos[1]) {
 			faceType = Cuboid::FaceType::Right;
 		};
 	}
 	else if ((axis12 == 0 && axis23 == 1) || (axis12 == 1 && axis23 == 0)) {
 		// XY
 
-		if (surface.vertices[0]->pos[2] == problemGeometry.points[0]->pos[2]) {
+		if (surface.vertices[0]->pos[2] == cuboid.points[0]->pos[2]) {
 			faceType = Cuboid::FaceType::Bottom;
 		}
-		else if (surface.vertices[0]->pos[2] == problemGeometry.points[4]->pos[2]) {
+		else if (surface.vertices[0]->pos[2] == cuboid.points[4]->pos[2]) {
 			faceType = Cuboid::FaceType::Top;
 		};
 	}
@@ -97,10 +96,10 @@ CartesianMesher<MeshDim::D3>::MesherBCData CartesianMesher<MeshDim::D3>::_getMes
 	std::array<std::array<double, 2>, 2> range;
 	std::array<int, 2> indices = { (axis12 > axis23), (axis23 > axis12) };
 
-	range[indices[0]][0] = (surface.vertices[0]->pos[axis12] - problemGeometry.points[0]->pos[axis12]) / getCuboidDimension(axis12, problemGeometry);
-	range[indices[0]][1] = (surface.vertices[1]->pos[axis12] - problemGeometry.points[0]->pos[axis12]) / getCuboidDimension(axis12, problemGeometry);
-	range[indices[1]][0] = (surface.vertices[1]->pos[axis23] - problemGeometry.points[0]->pos[axis23]) / getCuboidDimension(axis23, problemGeometry);
-	range[indices[1]][1] = (surface.vertices[2]->pos[axis23] - problemGeometry.points[0]->pos[axis23]) / getCuboidDimension(axis23, problemGeometry);
+	range[indices[0]][0] = (surface.vertices[0]->pos[axis12] - cuboid.points[0]->pos[axis12]) / getCuboidDimension(axis12, cuboid);
+	range[indices[0]][1] = (surface.vertices[1]->pos[axis12] - cuboid.points[0]->pos[axis12]) / getCuboidDimension(axis12, cuboid);
+	range[indices[1]][0] = (surface.vertices[1]->pos[axis23] - cuboid.points[0]->pos[axis23]) / getCuboidDimension(axis23, cuboid);
+	range[indices[1]][1] = (surface.vertices[2]->pos[axis23] - cuboid.points[0]->pos[axis23]) / getCuboidDimension(axis23, cuboid);
 
 	for (int i = 0; i < 2; i++) {
 		if (range[i][0] > range[i][1]) {
@@ -122,7 +121,7 @@ CartesianMesher<MeshDim::D3>::CartesianMesher(
 	const std::array<int, geometryDimSize(Gdim)>& refinments)
 	:
 	problem(problem),
-	problemGeometry(problemGeometry.getCuboid()),
+	cuboid(problemGeometry.getCuboid()),
 	refinments(refinments)
 {
 	// TODO: Fix that \/
@@ -146,8 +145,9 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 	MesherMesh mesh = MesherMesh<MeshDim::D3>();
 
 	// Set up boundary conditions for the mesher
-	std::vector<MesherBC<BoundaryConditionD3<Field<V, C>>>> bcDataVelocity;
-	std::vector<MesherBC<BoundaryConditionD3<Field<double, C>>>> bcDataTemperature;
+
+	std::vector<MesherBC<BoundaryConditionD3<Field<V, C>>>> mesherBcVelocity;
+	std::vector<MesherBC<BoundaryConditionD3<Field<double, C>>>> mesherBcTemperature;
 
 	for (const auto& bc : problem.velocityBoundaries) {
 		MesherBCData data = _getMesherBCDataFromSurface(bc.geometry);
@@ -155,7 +155,7 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 			bc,
 			data
 		};
-		bcDataVelocity.push_back(mesherBC);
+		mesherBcVelocity.push_back(mesherBC);
 	}
 
 	for (const auto& bc : problem.temperatureBoundaries) {
@@ -164,9 +164,87 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 			bc,
 			data
 		};
-		bcDataTemperature.push_back(mesherBC);
+		mesherBcTemperature.push_back(mesherBC);
 	}
 
+	// Patch the divisions for the boundaries to stick to the nodes:
+
+	if (!mesherBcVelocity.empty() || !mesherBcTemperature.empty()) {
+		std::array<std::vector<double>, 3> divisionPatches;
+
+		for (int i = 0; i < 3; i++) {
+
+			std::vector<int> indices = { 0, 1, 2 };
+			indices.erase(indices.begin() + i);
+
+			if (!mesherBcVelocity.empty()) {
+				for (const auto& bc : mesherBcVelocity) {
+					if (bc.data.face == Cuboid::faceOrder[2 * i] || bc.data.face == Cuboid::faceOrder[2 * i + 1]) {
+						for (int i = 0; i < 2; i++) {
+							for (int j = 0; j < 2; j++) {
+								divisionPatches[indices[i]].push_back(bc.data.range[indices[i]][j]);
+							}
+						}
+					}
+				};
+			}
+
+			if (!mesherBcTemperature.empty()) {
+				for (const auto& bc : mesherBcTemperature) {
+					if (bc.data.face == Cuboid::faceOrder[2 * i] || bc.data.face == Cuboid::faceOrder[2 * i + 1]) {
+						for (int i = 0; i < 2; i++) {
+							for (int j = 0; j < 2; j++) {
+								divisionPatches[indices[i]].push_back(bc.data.range[indices[i]][j]);
+							}
+						}
+					}
+				};
+			}
+		}
+
+		for (int i = 0; i < 3; i++) {
+			if (!divisionPatches[i].empty()) {
+				std::sort(divisionPatches[i].begin(), divisionPatches[i].end());
+
+				if (divisionPatches[i][divisionPatches[i].size() - 1] != 1.0) {
+					divisionPatches[i].push_back(1.0);
+				}
+				if (divisionPatches[i][0] != 0) {
+					divisionPatches[i].insert(divisionPatches[i].begin(), 0);
+				}
+				divisionPattern[i] = mathUtils::linearlyInterpolatePointsWithSpacing(divisionPatches[i], (1 / (double)refinments[i]));
+
+				auto getCuboidDimension = [](int axis, const Cuboid& cuboid) {
+					switch (axis) {
+					case 0:
+						return cuboid.a;
+					case 1:
+						return cuboid.b;
+					case 2:
+						return cuboid.c;
+					}
+
+					};
+
+				for (auto& t : divisionPattern[i]) {
+					std::cout << "[ " << i << " ] " << cuboid.points[0]->pos[i] + (getCuboidDimension(i, cuboid) * t) << std::endl;
+				}
+			}
+		}
+	}
+
+	for (int z = 0; z < divisionPattern[2].size(); z++) {
+		for (int y = 0; y < divisionPattern[1].size(); y++) {
+			for (int x = 0; x < divisionPattern[0].size(); x++) {
+				Point<GeometryDim::D3> point({
+					cuboid.points[0]->pos[0] + (cuboid.a * divisionPattern[0][x]),
+					cuboid.points[0]->pos[1] + (cuboid.b * divisionPattern[1][y]),
+					cuboid.points[0]->pos[2] + (cuboid.c * divisionPattern[2][z])
+					});
+				mesh.nodes.push_back(MesherNode<MeshDim::D3>(point));
+			}
+		}
+	}
 	
 
 	return mesh.createMeshInHeap();

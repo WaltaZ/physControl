@@ -3,7 +3,7 @@
 #include "../geometryEnums.h"
 #include "basic/surface.h"
 
-class RectangleD3 : Surface<GeometryDim::D3> {
+struct RectangleD3 : Surface<GeometryDim::D3> {
 
 	using P = Point<GeometryDim::D3>;
 
