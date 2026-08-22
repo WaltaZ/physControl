@@ -30,18 +30,18 @@ Cuboid::Cuboid(
 		new S({points[3], points[0], points[4], points[7]}), // YZ Back
 		new S({points[2], points[3], points[7], points[6]}), // XZ Right
 		new S({points[0], points[1], points[5], points[4]}), // XZ Left
-		new S({points[0], points[1], points[2], points[3]}), // XY Bottom
-		new S({points[4], points[5], points[6], points[7]})  // XY Top 
+		new S({points[4], points[5], points[6], points[7]}), // XY Top 
+		new S({points[0], points[1], points[2], points[3]})  // XY Bottom
 		});
 }
 
 const Cuboid::FaceType Cuboid::faceOrder[6] = {
-		FaceType::Front,
-		FaceType::Back,
-		FaceType::Right,
-		FaceType::Left,
-		FaceType::Bottom,
-		FaceType::Top
+		FaceType::Front, // 0
+		FaceType::Back, // 1
+		FaceType::Right, // 2
+		FaceType::Left, // 3
+		FaceType::Top, // 4
+		FaceType::Bottom // 5
 };
 
 Cuboid::~Cuboid()

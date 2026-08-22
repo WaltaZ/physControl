@@ -7,6 +7,7 @@
 #include <problem/problem.h>
 #include <utility.h>
 #include <geometry/shapes/cuboid.h>
+#include <geometry/shapes/rectangle.h>
 #include <algorithm>
 
 template<MeshDim>
@@ -49,6 +50,7 @@ private:
 
 	std::vector<double> _linspace(const int& index) const;
 	MesherBCData _getMesherBCDataFromSurface(const Surface<GeometryDim::D3>& surface);
+	double _getCuboidDimension(int axis);
 
 public:
 

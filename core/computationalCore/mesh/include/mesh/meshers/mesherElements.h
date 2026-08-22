@@ -24,6 +24,7 @@
 		using P = Point<meshDimToGeometryDim(dim)>;
 	public:
 		V area;
+		P centroid;
 
 		std::vector<int> nodeIDs;
 
