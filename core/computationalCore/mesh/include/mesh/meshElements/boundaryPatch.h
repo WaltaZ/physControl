@@ -1,13 +1,11 @@
 #pragma once
 
 #include <problem/boundaryInitialCondition.h>
+#include <utility/cudaUtils.h>
 
 class BoundaryPatch {
 	BoundaryConditionType type;
 
-	int* faceIDs;
-	int faceIDsLength;
-
-	double* values;
-	int valuesLength;
+	CudaArray faceIDs;
+	CudaArray values;
 };

@@ -2,13 +2,9 @@
 
 #include "../meshEnums.h"
 #include "../meshElements/supportStructs.h"
-#include "../meshElements/mesh.h"
 
 #include <vector>
 #include <geometry/geometry.h>
-
-#include <cuda_runtime.h>
-#include <device_launch_parameters.h>
 
 	template <MeshDim dim>
 	struct MesherNode {
@@ -16,8 +12,6 @@
 
 		MesherNode(const std::array<double, meshDimSize(dim)>& pos);
 		MesherNode(const Point<meshDimToGeometryDim(dim)>& point);
-
-		const Node<dim> getNode();
 	};
 
 	template<MeshDim dim>
@@ -36,9 +30,8 @@
 
 		std::optional<int> neighbourCellID = std::nullopt;
 		std::optional<CellData<meshDimToGeometryDim(dim)>> neighbourData = std::nullopt;
-		std::optional<V> ownerToNeighbourCell = std::nullopt;
 
-		const Face<dim> getFace();
+		std::optional<V> ownerToNeighbourCell = std::nullopt;
 	};
 
 	template<MeshDim dim>
@@ -46,14 +39,12 @@
 	private:
 		using P = Point<meshDimToGeometryDim(dim)>;
 	public:
-		std::vector<int> pointIDs;
+		std::vector<int> nodeIDs;
 		std::vector<int> faceIDs;
 		std::vector<int> neighbourCellsIDs;
 
 		P centroid;
 		double volume;
-
-		const Cell<dim> getCell();
 	};
 
 	template<MeshDim dim>
@@ -61,6 +52,4 @@
 		std::vector<MesherNode<dim>> nodes{};
 		std::vector<MesherFace<dim>> faces{};
 		std::vector<MesherCell<dim>> cells{};
-
-		const Mesh<dim> allocateMesh();
 	};

@@ -5,13 +5,13 @@
 #include <vtkDisplay/vtkDisplay.h>
 
 int main() {
-	constexpr int amount = 60;
+	constexpr int amount = 10;
 
 	Cuboid box = Cuboid(3, 4, 5);
 	ProblemGeometryCuboid problemGeometry(box);
 
 	RoomHeatTransferD3 problem = RoomHeatTransferD3(problemGeometry);
-	/*
+	
 	BoundaryConditionD3 < Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>> test1{
 		&problem.velocity,
 		BoundaryConditionType::Drichlet,
@@ -37,7 +37,7 @@ int main() {
 	};
 	
 	problem.addVelocityBoundaryCondition(test1);
-	problem.addVelocityBoundaryCondition(test2);*/
+	problem.addVelocityBoundaryCondition(test2);
 
 	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, amount, amount });
 
@@ -51,12 +51,16 @@ int main() {
 
 	Mesh<MeshDim::D3> mesh = mesher.createMesh();
 
+	for (int i = 0; i < mesh.faces[2].faceNodeIDs.length; i++) {
+		std::cout << mesh.elementsIDs.faceNodeIDs[i + mesh.faces[2].faceNodeIDs.offset] << ", ";
+	}
+
 	std::cout << '\n';
 
-	size_t size = mesh.getMeshSize();
+	//size_t size = mesh.getMeshSize();
 
-	std::cout << size << " B" << "\n";
-	std::cout << (double)size/ 1048576.0 << " MB" << "\n";
+	//std::cout << size << " B" << "\n";
+	//std::cout << (double)size/ 1048576.0 << " MB" << "\n";
 
 	displayTest(mesh);
 

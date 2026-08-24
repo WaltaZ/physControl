@@ -7,10 +7,10 @@ template<MeshDim dim>
 Node<dim>::Node(const Point<meshDimToGeometryDim(dim)>& point) : pos(point.pos) {}
 
 template<MeshDim dim>
-Node<dim>::Node(){}
+Node<dim>::Node(const MesherNode<dim>& mesherNode) : pos(mesherNode.pos) {};
 
 template<MeshDim dim>
-Node<dim>::~Node() {};
+Node<dim>::Node() {};
 
 template class Node<MeshDim::D2>;
 template class Node<MeshDim::D3>;

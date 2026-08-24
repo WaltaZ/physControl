@@ -1,7 +1,7 @@
 set(utilityHppFiles 
 	"include/utility/utility.h"
 	"include/utility/mathUtils.h"
-	"include/utility/cudaConfig.h"
+	"include/utility/cudaUtils.h"
 )
 
 set(utilityCppFiles

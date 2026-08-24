@@ -413,22 +413,22 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 						cell.faceIDs.push_back(mesh.faces.size() - 1);
 						
 					}
-					cell.pointIDs.insert(cell.pointIDs.end(), std::begin(pointIDs), std::end(pointIDs));
+					cell.nodeIDs.insert(cell.nodeIDs.end(), std::begin(pointIDs), std::end(pointIDs));
 
 				}
 				// Sort the vector
-				std::sort(cell.pointIDs.begin(), cell.pointIDs.end());
+				std::sort(cell.nodeIDs.begin(), cell.nodeIDs.end());
 
 				// Move all duplicates to last of vector
-				auto it = std::unique(cell.pointIDs.begin(), cell.pointIDs.end());
+				auto it = std::unique(cell.nodeIDs.begin(), cell.nodeIDs.end());
 
 				// Remove all duplicates
-				cell.pointIDs.erase(it, cell.pointIDs.end());
+				cell.nodeIDs.erase(it, cell.nodeIDs.end());
 
 				Cuboid cellCuboid(
-					mesh.nodes[cell.pointIDs[1]].pos[0] - mesh.nodes[cell.pointIDs[0]].pos[0],
-					mesh.nodes[cell.pointIDs[2]].pos[1] - mesh.nodes[cell.pointIDs[0]].pos[1],
-					mesh.nodes[cell.pointIDs[4]].pos[2] - mesh.nodes[cell.pointIDs[0]].pos[2]
+					mesh.nodes[cell.nodeIDs[1]].pos[0] - mesh.nodes[cell.nodeIDs[0]].pos[0],
+					mesh.nodes[cell.nodeIDs[2]].pos[1] - mesh.nodes[cell.nodeIDs[0]].pos[1],
+					mesh.nodes[cell.nodeIDs[4]].pos[2] - mesh.nodes[cell.nodeIDs[0]].pos[2]
 				);
 
 				cell.centroid = cellCuboid.getCentroid();
@@ -473,5 +473,5 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 		}
 	}
 
-	return mesh.allocateMesh();
+	return Mesh<MeshDim::D3>(mesh);
 };

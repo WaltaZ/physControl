@@ -5,29 +5,36 @@
 #include "face.h"
 #include "cell.h"
 
+#include "../meshers/mesherElements.h"
+#include <algorithm>
+
+struct MeshElementsIDs {
+	uint32_t* faceNodeIDs = nullptr;
+
+	uint32_t* cellNodeIDs = nullptr;
+	uint32_t* cellFaceIDs = nullptr;
+	uint32_t* cellNeighbourCells = nullptr;
+
+	~MeshElementsIDs();
+};
+
 template<MeshDim dim>
 class Mesh {
 public:
-	Node<dim>* nodes;
-	double nodesLength;
+	Node<dim>* nodes = nullptr;
+	uint32_t nodesLength = 0;
 
-	Face<dim>* faces;
-	double facesLength;
+	Face<dim>* faces = nullptr;
+	uint32_t facesLength = 0;
 
-	Cell<dim>* cells;
-	double cellsLength;
+	Cell<dim>* cells = nullptr;
+	uint32_t cellsLength = 0;
+
+	MeshElementsIDs elementsIDs;
 
 	~Mesh();
 	
-	Mesh(
-		Node<dim>* nodes,
-		const double& nodesLength,
+	Mesh(const MesherMesh<dim>& mesherMesh);
 
-		Face<dim>* faces,
-		const double& facesLength,
-
-		Cell<dim>* cells,
-		const double& cellsLength);
-
-	size_t getMeshSize();
+	//size_t getMeshSize();
 };

@@ -1,13 +1,11 @@
 #pragma once
 
 #include "../meshEnums.h"
-#include <geometry/vector.h>
-#include <geometry/point.h>
 #include "supportStructs.h"
+#include "../meshers/mesherElements.h"
 
-#include <vector>
 #include <optional>
-#include <utility>
+#include <utility/cudaUtils.h>
 
 template<MeshDim dim>
 class Face {
@@ -17,38 +15,22 @@ protected:
 public:
 
 	Face(
-		const V& area,
-		int nodeIDsLength,
-		const int* nodeIDs,
-		int ownerCellID,
-		const CellData<meshDimToGeometryDim(dim)>& ownerData,
-		std::optional<int> neighbourCellID = std::nullopt,
-		std::optional<CellData<meshDimToGeometryDim(dim)>> neighbourData = std::nullopt,
-		std::optional<V> ownerToNeighbourCell = std::nullopt
+		const MesherFace<dim>& mesherFace,
+		const CudaArray& faceNodeIDs
 	);
 
 	Face();
 
-	// Rule of 5
-
-	Face(const Face<dim>& other);
-	Face(Face<dim>&& other) noexcept;
-
-	Face<dim>& operator=(const Face<dim>& other);
-	Face<dim>& operator=(Face<dim>&& other) noexcept;
-
-	~Face();
-
 	V area;
 
-	int* nodeIDs = nullptr;
-	int nodeIDsLength = 0;
+	CudaArray faceNodeIDs;
 
-	int ownerCellID;
+	uint32_t ownerCellID;
 	CellData<meshDimToGeometryDim(dim)> ownerData;
 
 	std::optional<int> neighbourCellID = std::nullopt;
 	std::optional<CellData<meshDimToGeometryDim(dim)>> neighbourData = std::nullopt;
+
 	std::optional<V> ownerToNeighbourCell = std::nullopt;
 
 	bool isBoundary() const;

@@ -14,3 +14,8 @@ namespace cudaConfig {
 		cudaCpuDeviceId
 	};
 }
+
+struct CudaArray {
+	uint32_t offset = 0;
+	uint32_t length = 0;
+};
