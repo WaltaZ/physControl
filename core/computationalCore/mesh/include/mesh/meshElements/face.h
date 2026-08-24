@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <optional>
+#include <utility>
 
 template<MeshDim dim>
 class Face {
@@ -17,8 +18,8 @@ public:
 
 	Face(
 		const V& area,
-		int* nodeIDs,
 		int nodeIDsLength,
+		const int* nodeIDs,
 		int ownerCellID,
 		const CellData<meshDimToGeometryDim(dim)>& ownerData,
 		std::optional<int> neighbourCellID = std::nullopt,
@@ -28,12 +29,20 @@ public:
 
 	Face();
 
+	// Rule of 5
+
+	Face(const Face<dim>& other);
+	Face(Face<dim>&& other) noexcept;
+
+	Face<dim>& operator=(const Face<dim>& other);
+	Face<dim>& operator=(Face<dim>&& other) noexcept;
+
 	~Face();
 
 	V area;
 
-	int* nodeIDs;
-	int nodeIDsLength;
+	int* nodeIDs = nullptr;
+	int nodeIDsLength = 0;
 
 	int ownerCellID;
 	CellData<meshDimToGeometryDim(dim)> ownerData;

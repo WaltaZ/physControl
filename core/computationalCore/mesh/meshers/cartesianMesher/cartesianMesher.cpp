@@ -232,12 +232,11 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 	for (int z = 0; z < sizes[2]; z++) {
 		for (int y = 0; y < sizes[1]; y++) {
 			for (int x = 0; x < sizes[0]; x++) {
-				Point<GeometryDim::D3> point({
+				mesh.nodes.emplace_back(std::array<double, 3>{
 					cuboid.points[0]->pos[0] + (cuboid.a * divisionPattern[0][x]),
-					cuboid.points[0]->pos[1] + (cuboid.b * divisionPattern[1][y]),
-					cuboid.points[0]->pos[2] + (cuboid.c * divisionPattern[2][z])
-					});
-				mesh.nodes.push_back(MesherNode<MeshDim::D3>(point));
+						cuboid.points[0]->pos[1] + (cuboid.b * divisionPattern[1][y]),
+						cuboid.points[0]->pos[2] + (cuboid.c * divisionPattern[2][z])}
+				);
 			}
 		}
 	}
@@ -382,6 +381,7 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 						// Cell
 						cell.faceIDs.push_back(neighbourFaceId);
 						cell.neighbourCellsIDs.push_back(neighbourCellId);
+						mesh.cells[neighbourCellId].neighbourCellsIDs.emplace_back(mesh.cells.size());
 
 					}
 					else {
@@ -472,7 +472,6 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 			};
 		}
 	}
-	
 
-	return mesh.createMeshInHeap();
+	return mesh.allocateMesh();
 };

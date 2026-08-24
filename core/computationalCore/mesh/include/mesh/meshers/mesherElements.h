@@ -7,6 +7,9 @@
 #include <vector>
 #include <geometry/geometry.h>
 
+#include <cuda_runtime.h>
+#include <device_launch_parameters.h>
+
 	template <MeshDim dim>
 	struct MesherNode {
 		std::array<double, meshDimSize(dim)> pos;
@@ -59,5 +62,5 @@
 		std::vector<MesherFace<dim>> faces{};
 		std::vector<MesherCell<dim>> cells{};
 
-		const Mesh<dim> createMeshInHeap();
+		const Mesh<dim> allocateMesh();
 	};

@@ -5,13 +5,13 @@
 #include <vtkDisplay/vtkDisplay.h>
 
 int main() {
-	constexpr int amount = 10;
+	constexpr int amount = 60;
 
 	Cuboid box = Cuboid(3, 4, 5);
 	ProblemGeometryCuboid problemGeometry(box);
 
 	RoomHeatTransferD3 problem = RoomHeatTransferD3(problemGeometry);
-
+	/*
 	BoundaryConditionD3 < Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>> test1{
 		&problem.velocity,
 		BoundaryConditionType::Drichlet,
@@ -35,9 +35,9 @@ int main() {
 			new Point<GeometryDim::D3>({0.2, 4, 4.2})
 		)
 	};
-
+	
 	problem.addVelocityBoundaryCondition(test1);
-	problem.addVelocityBoundaryCondition(test2);
+	problem.addVelocityBoundaryCondition(test2);*/
 
 	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, amount, amount });
 
@@ -50,7 +50,14 @@ int main() {
 	//mesher.setDivisionPattern({ division, division }, 0);
 
 	Mesh<MeshDim::D3> mesh = mesher.createMesh();
-	
+
+	std::cout << '\n';
+
+	size_t size = mesh.getMeshSize();
+
+	std::cout << size << " B" << "\n";
+	std::cout << (double)size/ 1048576.0 << " MB" << "\n";
+
 	displayTest(mesh);
 
 }

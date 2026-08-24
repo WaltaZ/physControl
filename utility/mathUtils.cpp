@@ -1,4 +1,4 @@
-#include "mathUtils.h"
+#include "include/utility/mathUtils.h"
 
 namespace mathUtils {
     std::vector<double> linearlyInterpolatePointsWithSpacing(const std::vector<double>& points, double spacing) {

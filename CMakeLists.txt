@@ -28,7 +28,9 @@ set(VCPKG_ROOT C:/dev/vcpkg)
 include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 
 set(PROJECT_NAME "physControl")
-project (${PROJECT_NAME})
+project (${PROJECT_NAME} LANGUAGES CXX CUDA)
+
+find_Package(CUDAToolkit REQUIRED)
 
 #physControl
 add_subdirectory(core)
@@ -47,4 +49,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	vtkDisplay
 )
 
-include("Dependencies.cmake")
+set_target_properties(
+	${PROJECT_NAME}
+	PROPERTIES
+	CUDA_SEPARABLE_COMPILATION ON
+)
+
+find_package(VTK REQUIRED)
+vtk_module_autoinit( TARGETS ${PROJECT_NAME} MODULES ${VTK_LIBRARIES} )

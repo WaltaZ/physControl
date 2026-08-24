@@ -1,36 +1,35 @@
 #include "../include/mesh/meshElements/mesh.h"
 
-template<MeshDim dim>
-Mesh<dim>::Mesh(
-		const std::vector<Node<dim>>* nodes,
-		const std::vector<Face<dim>>* faces,
-		const std::vector<Cell<dim>>* cells)
-	:
-		nodes((*nodes).data()),
-		nodesLength((*nodes).size()),
-		faces((*faces).data()),
-		facesLength((*faces).size()),
-		cells((*cells).data()),
-		cellsLength((*cells).size())
-{}
+#include <cuda_runtime.h>
 
 template<MeshDim dim>
 Mesh<dim>::~Mesh()
 {
-	delete[] nodes;
-	delete[] faces;
-	delete[] cells;
+	for (int i = 0; i < cellsLength; i++) {
+		cells[i].~Cell();
+	}
+
+	for (int i = 0; i < facesLength; i++) {
+		faces[i].~Face();
+	}
+	for (int i = 0; i < nodesLength; i++) {
+		nodes[i].~Node();
+	}
+
+	cudaFree(nodes);
+	cudaFree(faces);
+	cudaFree(cells);
 }
 
 template<MeshDim dim>
 Mesh<dim>::Mesh(
-		const Node<dim>*nodes,
+		Node<dim>* nodes,
 		const double& nodesLength,
 
-		const Face<dim>*faces,
+		Face<dim>* faces,
 		const double& facesLength,
 
-		const Cell<dim>*cells,
+		Cell<dim>* cells,
 		const double& cellsLength)
 	:
 		nodes(nodes),
@@ -42,6 +41,29 @@ Mesh<dim>::Mesh(
 		cells(cells),
 		cellsLength(cellsLength)
 {}
+
+template<MeshDim dim>
+size_t Mesh<dim>::getMeshSize()
+{
+	size_t size = 0;
+	for (int i = 0; i < nodesLength; i++) {
+		size = size + sizeof(Node<dim>);
+	}
+
+	for (int i = 0; i < facesLength; i++) {
+		size = size + sizeof(Face<dim>);
+		//size = size + (faces[i].nodeIDsLength * sizeof(int));
+	}
+
+	for (int i = 0; i < cellsLength; i++) {
+		size = size + sizeof(Cell<dim>);
+		size = size + (cells[i].nodeIDsLength * sizeof(int));
+		size = size + (cells[i].faceIDsLength * sizeof(int));
+		size = size + (cells[i].neighbourCellsIDsLength * sizeof(int));
+	}
+
+	return size;
+}
 
 template class Mesh<MeshDim::D2>;
 template class Mesh<MeshDim::D3>;

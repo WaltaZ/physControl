@@ -13,13 +13,13 @@ private:
 public:
 
     Cell(
-        int* pointIDs,
-        int pointIDsLength,
+        const int* nodeIDs,
+        int nodeIDsLength,
 
-        int* faceIDs,
+        const int* faceIDs,
         int faceIDsLength,
 
-        int* neighbourCellsIDs,
+        const int* neighbourCellsIDs,
         int neighbourCellsIDsLength,
 
         const P& centroid,
@@ -29,15 +29,19 @@ public:
     Cell();
 
     ~Cell();
+    Cell(const Cell<dim>& other);
+    Cell(Cell<dim>&& other) noexcept;
+    Cell<dim>* operator=(const Cell<dim>& other);
+    Cell<dim>* operator=(Cell<dim>&& other) noexcept;
     
-    int* pointIDs;
-    int pointIDsLength;
+    int* nodeIDs = nullptr;
+    int nodeIDsLength = 0;
 
-    int* faceIDs;
-    int faceIDsLength;
+    int* faceIDs = nullptr;
+    int faceIDsLength = 0;
 
-    int* neighbourCellsIDs;
-    int neighbourCellsIDsLength;
+    int* neighbourCellsIDs = nullptr;
+    int neighbourCellsIDsLength = 0;
 
 
     P centroid;

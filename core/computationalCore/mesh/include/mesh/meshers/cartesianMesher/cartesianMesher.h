@@ -5,7 +5,7 @@
 #include "../../meshElements/mesh.h"
 
 #include <problem/problem.h>
-#include <utility.h>
+#include <utility/mathUtils.h>
 #include <geometry/shapes/cuboid.h>
 #include <geometry/shapes/rectangle.h>
 #include <algorithm>
