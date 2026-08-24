@@ -17,7 +17,9 @@ struct BoundaryConditionD3 {
 
 	BoundaryConditionType type;
 	const std::vector<double> values;
+
 	Surface<GeometryDim::D3> geometry;
+	std::vector<uint32_t> faceIDs = {};
 };
 
 template<typename VariableType, typename FieldType>

@@ -17,8 +17,8 @@ void displayTest(const Mesh<MeshDim::D3>& mesh) {
 
     vtkNew<vtkPoints> points;
 
-    for (int i = 0; i < mesh.nodesLength; i++) {
-        points->InsertNextPoint(mesh.nodes[i].pos[0], mesh.nodes[i].pos[1], mesh.nodes[i].pos[2]);
+    for (int i = 0; i < mesh.nodes.length; i++) {
+        points->InsertNextPoint(mesh.nodes.data[i].pos[0], mesh.nodes.data[i].pos[1], mesh.nodes.data[i].pos[2]);
     }
 
     // -------------------------------------------------------

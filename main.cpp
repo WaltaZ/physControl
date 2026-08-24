@@ -51,8 +51,8 @@ int main() {
 
 	Mesh<MeshDim::D3> mesh = mesher.createMesh();
 
-	for (int i = 0; i < mesh.faces[2].faceNodeIDs.length; i++) {
-		std::cout << mesh.elementsIDs.faceNodeIDs[i + mesh.faces[2].faceNodeIDs.offset] << ", ";
+	for (int i = 0; i < mesh.faces.data[2].faceNodeIDs.length; i++) {
+		std::cout << mesh.elementsIDs.faceNodeIDs.data[i + mesh.faces.data[2].faceNodeIDs.offset] << ", ";
 	}
 
 	std::cout << '\n';

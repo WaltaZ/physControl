@@ -9,11 +9,11 @@
 #include <algorithm>
 
 struct MeshElementsIDs {
-	uint32_t* faceNodeIDs = nullptr;
+	CudaAllocatedObj<uint32_t> faceNodeIDs;
 
-	uint32_t* cellNodeIDs = nullptr;
-	uint32_t* cellFaceIDs = nullptr;
-	uint32_t* cellNeighbourCells = nullptr;
+	CudaAllocatedObj<uint32_t> cellNodeIDs;
+	CudaAllocatedObj<uint32_t> cellFaceIDs;
+	CudaAllocatedObj<uint32_t> cellNeighbourCells;
 
 	~MeshElementsIDs();
 };
@@ -21,14 +21,9 @@ struct MeshElementsIDs {
 template<MeshDim dim>
 class Mesh {
 public:
-	Node<dim>* nodes = nullptr;
-	uint32_t nodesLength = 0;
-
-	Face<dim>* faces = nullptr;
-	uint32_t facesLength = 0;
-
-	Cell<dim>* cells = nullptr;
-	uint32_t cellsLength = 0;
+	CudaAllocatedObj<Node<dim>> nodes;
+	CudaAllocatedObj<Face<dim>> faces;
+	CudaAllocatedObj<Cell<dim>> cells;
 
 	MeshElementsIDs elementsIDs;
 
