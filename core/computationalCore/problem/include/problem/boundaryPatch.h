@@ -1,9 +1,9 @@
 #pragma once
 
-#include <problem/boundaryInitialCondition.h>
+#include "boundaryCondition.h"
 #include <utility/cudaUtils.h>
 
-class BoundaryPatch {
+struct BoundaryPatch {
 	BoundaryConditionType type;
 
 	CudaArray faceIDs;

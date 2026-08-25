@@ -3,7 +3,8 @@ set(problemHppFiles
 	"include/problem/problemGeometry.h"
 	"include/problem/field.h"
 	"include/problem/tests.h"
-	"include/problem/boundaryInitialCondition.h"
+	"include/problem/boundaryCondition.h"
+	"include/problem/boundaryPatch.h"
 )
 
 set(problemCppFiles
@@ -11,7 +12,7 @@ set(problemCppFiles
 	"tests.cpp"
 	"problem.cpp"
 	"problemGeometry.cpp"
-	"boundaryInitialCondition.cpp"
+	"boundaryCondition.cpp"
 )
 
 add_library(problem ${problemHppFiles} ${problemCppFiles})

@@ -10,3 +10,11 @@ MesherNode<dim>::MesherNode(const Point<meshDimToGeometryDim(dim)>& point) : pos
 
 template class MesherNode<MeshDim::D2>;
 template class MesherNode<MeshDim::D3>;
+
+MesherBoundaryCondition::MesherBoundaryCondition(
+	const Cuboid::FaceType face,
+	const std::array<std::array<double, 2>, 2> range
+):
+	face(face),
+	range(range)
+{};

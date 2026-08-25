@@ -21,31 +21,19 @@ class CartesianMesher<MeshDim::D3> : _CartesianMesher<MeshDim::D3> {
 private:
 
 	using V = Vector<GeometryDim::D3>;
-	using C = Cell<geometryDimToMeshDim(GeometryDim::D3)>;
+
+	using N = MesherNode<MeshDim::D3>;
+	using F = MesherFace<MeshDim::D3>;
+	using C = MesherCell<MeshDim::D3>;
 
 	const static GeometryDim Gdim = GeometryDim::D3;
 
 	// Problem
 
 	const Cuboid& cuboid;
-	RoomHeatTransferD3& problem;
+	ProblemD3& problem;
 
 	// Mesh
-
-	struct MesherBCData {
-		Cuboid::FaceType face;
-		std::array<std::array<double, 2>, 2> range;
-	};
-
-	struct MesherBC {
-		BoundaryConditionD3& boundaryCondition;
-		MesherBCData data;
-
-		MesherBC(
-			BoundaryConditionD3& boundaryCondition, 
-			const MesherBCData data
-		);
-	};
 
 	std::array<int, geometryDimSize(Gdim)> refinments;
 	std::vector<std::vector<double>> divisionPattern{};
@@ -53,17 +41,17 @@ private:
 	// Functions
 
 	std::vector<double> _linspace(const int& index) const;
-	MesherBCData _getMesherBCDataFromSurface(const Surface<GeometryDim::D3>& surface);
+	MesherBoundaryCondition _getMesherBCFromSurface(const Surface<GeometryDim::D3>& surface);
 	double _getCuboidDimension(int axis);
 
 public:
 
 	CartesianMesher(
-		RoomHeatTransferD3& problem,
+		ProblemD3& problem,
 		const ProblemGeometryCuboid& problemGeometry,
 		const std::array<int, geometryDimSize(Gdim)>& refinments = { 10, 10, 10 });
 
 	void setDivisionPattern(const std::vector<double>& divisionPattern, int index);
 
-	const Mesh<MeshDim::D3> createMesh();
+	const Mesh<MeshDim::D3> generateMesh();
 };

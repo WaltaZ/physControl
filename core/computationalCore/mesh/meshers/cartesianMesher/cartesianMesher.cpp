@@ -1,26 +1,18 @@
 #include "../../include/mesh/meshers/cartesianMesher/cartesianMesher.h"
 
-CartesianMesher<MeshDim::D3>::MesherBC::MesherBC(
-		BoundaryConditionD3& boundaryCondition, 
-		const MesherBCData data)
-	:
-		boundaryCondition(boundaryCondition),
-		data(data)
-{}
-
 std::vector<double> CartesianMesher<MeshDim::D3>::_linspace(const int& index) const {
 
 	const int& refinment = refinments[index];
 
 	double interval = 1.0 / (double)refinment;
-	std::vector<double> result(refinment);
-	for (int i = 0; i < refinment; i++) {
-		result[i] = (i + 1) * interval;
+	std::vector<double> result(refinment+1);
+	for (int i = 0; i <= refinment; i++) {
+		result[i] = i * interval;
 	}
 	return result;
 }
 
-CartesianMesher<MeshDim::D3>::MesherBCData CartesianMesher<MeshDim::D3>::_getMesherBCDataFromSurface(const Surface<GeometryDim::D3>& surface)
+MesherBoundaryCondition CartesianMesher<MeshDim::D3>::_getMesherBCFromSurface(const Surface<GeometryDim::D3>& surface)
 {
 	using P = Point<GeometryDim::D3>;
 	using V = Vector<GeometryDim::D3>;
@@ -92,10 +84,10 @@ CartesianMesher<MeshDim::D3>::MesherBCData CartesianMesher<MeshDim::D3>::_getMes
 	std::array<std::array<double, 2>, 2> range;
 	std::array<int, 2> indices = { (axis12 > axis23), (axis23 > axis12) };
 
-	range[indices[0]][0] = (surface.vertices[0]->pos[axis12] - cuboid.points[0]->pos[axis12]) / _getCuboidDimension(axis12);
-	range[indices[0]][1] = (surface.vertices[1]->pos[axis12] - cuboid.points[0]->pos[axis12]) / _getCuboidDimension(axis12);
-	range[indices[1]][0] = (surface.vertices[1]->pos[axis23] - cuboid.points[0]->pos[axis23]) / _getCuboidDimension(axis23);
-	range[indices[1]][1] = (surface.vertices[2]->pos[axis23] - cuboid.points[0]->pos[axis23]) / _getCuboidDimension(axis23);
+	range[indices[0]][0] = (surface.vertices[0]->pos[axis12] - cuboid.points[0]->pos[axis12]); // _getCuboidDimension(axis12);
+	range[indices[0]][1] = (surface.vertices[1]->pos[axis12] - cuboid.points[0]->pos[axis12]); // _getCuboidDimension(axis12);
+	range[indices[1]][0] = (surface.vertices[1]->pos[axis23] - cuboid.points[0]->pos[axis23]); // _getCuboidDimension(axis23);
+	range[indices[1]][1] = (surface.vertices[2]->pos[axis23] - cuboid.points[0]->pos[axis23]); // _getCuboidDimension(axis23);
 
 	for (int i = 0; i < 2; i++) {
 		if (range[i][0] > range[i][1]) {
@@ -105,10 +97,10 @@ CartesianMesher<MeshDim::D3>::MesherBCData CartesianMesher<MeshDim::D3>::_getMes
 		}
 	}
 
-	return MesherBCData{
+	return MesherBoundaryCondition(
 		faceType,
 		range
-	};
+	);
 };
 
 double CartesianMesher<MeshDim::D3>::_getCuboidDimension(int axis) {
@@ -124,7 +116,7 @@ double CartesianMesher<MeshDim::D3>::_getCuboidDimension(int axis) {
 	};
 
 CartesianMesher<MeshDim::D3>::CartesianMesher(
-	RoomHeatTransferD3& problem,
+	ProblemD3& problem,
 	const ProblemGeometryCuboid& problemGeometry,
 	const std::array<int, geometryDimSize(Gdim)>& refinments)
 	:
@@ -148,18 +140,18 @@ void CartesianMesher<MeshDim::D3>::setDivisionPattern(
 	this->divisionPattern[index] = divisionPattern;
 }
 
-const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
+const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 {
 	MesherMesh mesh = MesherMesh<MeshDim::D3>();
 
 	// Set up boundary conditions for the mesher
 
-	std::vector<MesherBC> mesherBC{};
-
+	std::vector<MesherBoundaryCondition> mesherBC{};
+	MesherBoundaryConditionRaw mesherBCDefault;
 
 	for(auto& bcVariable : problem.boundaryConditions)
 	for (auto& bc : bcVariable) {
-		mesherBC.emplace_back(bc, _getMesherBCDataFromSurface(bc.geometry));
+		mesherBC.emplace_back(_getMesherBCFromSurface(bc.geometry));
 	}
 
 	// Patch the divisions for the boundaries to stick to the nodes:
@@ -173,10 +165,10 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 			indices.erase(indices.begin() + dim);
 
 				for (const auto& bc : mesherBC) {
-					if (bc.data.face == Cuboid::faceOrder[2 * dim] || bc.data.face == Cuboid::faceOrder[2 * dim + 1]) {
+					if (bc.face == Cuboid::faceOrder[2 * dim] || bc.face == Cuboid::faceOrder[2 * dim + 1]) {
 						for (int i = 0; i < 2; i++) {
 							for (int j = 0; j < 2; j++) {
-								divisionPatches[indices[i]].push_back(bc.data.range[i][j]);
+								divisionPatches[indices[i]].emplace_back(bc.range[i][j]/_getCuboidDimension(indices[i]));
 							}
 						}
 					}
@@ -188,16 +180,16 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 				std::sort(divisionPatches[i].begin(), divisionPatches[i].end());
 
 				if (divisionPatches[i][divisionPatches[i].size() - 1] != 1.0) {
-					divisionPatches[i].push_back(1.0);
+					divisionPatches[i].emplace_back(1.0);
 				}
 				if (divisionPatches[i][0] != 0) {
 					divisionPatches[i].insert(divisionPatches[i].begin(), 0);
 				}
 				divisionPattern[i] = mathUtils::linearlyInterpolatePointsWithSpacing(divisionPatches[i], (1 / (double)refinments[i]));
-
+				/*
 				for (auto& t : divisionPattern[i]) {
 					std::cout << "[ " << i << " ] " << cuboid.points[0]->pos[i] + (_getCuboidDimension(i) * t) << std::endl;
-				}
+				}*/
 			}
 		}
 	}
@@ -215,8 +207,8 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 			for (int x = 0; x < sizes[0]; x++) {
 				mesh.nodes.emplace_back(std::array<double, 3>{
 					cuboid.points[0]->pos[0] + (cuboid.a * divisionPattern[0][x]),
-						cuboid.points[0]->pos[1] + (cuboid.b * divisionPattern[1][y]),
-						cuboid.points[0]->pos[2] + (cuboid.c * divisionPattern[2][z])}
+					cuboid.points[0]->pos[1] + (cuboid.b * divisionPattern[1][y]),
+					cuboid.points[0]->pos[2] + (cuboid.c * divisionPattern[2][z])}
 				);
 			}
 		}
@@ -333,7 +325,7 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 
 		return result;
 	};
-	
+
 	for (int z = 0; z < sizes[2]-1; z++) {
 
 		setBoundariesAndNeighbours(2, z, 5, 4);
@@ -346,8 +338,8 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 				
 				setBoundariesAndNeighbours(0, x, 1, 0);
 
-				MesherCell<MeshDim::D3> cell{};
-				std::vector<MesherFace<MeshDim::D3>> faces{};
+				C cell{};
+				std::vector<F> faces{};
 
 				for (int i = 0; i < 6; i++) {
 
@@ -366,6 +358,9 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 
 					}
 					else {
+
+						const uint32_t newFaceID = mesh.faces.size();
+
 						std::array<int, 4> facePointIDs = nodeIDsFromFace(i, { x, y, z });
 						RectangleD3 surface(
 							new Point<GeometryDim::D3>(mesh.nodes[facePointIDs[0]].pos),
@@ -375,24 +370,60 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 						);
 
 						// FACE
-						MesherFace<MeshDim::D3> face{};
+			
 						// TODO: Check if it's pointing outwards
 						// TODO: Optimize that \/
-						face.area = VectorData<GeometryDim::D3>{
-							surface.getAreaVector(),
-							surface.getAreaVector().getNormal(),
-							surface.getAreaVector().getMagnitude()
+						F face{
+							VectorData<GeometryDim::D3>(surface.getAreaVector()),
+							surface.getCentroid(),
+							std::vector<int>(facePointIDs.begin(), facePointIDs.end()),
+							mesh.cells.size()
 						};
-
-						face.centroid = surface.getCentroid();
-
-						face.nodeIDs = std::vector<int>(facePointIDs.begin(), facePointIDs.end());
-						face.ownerCellID = mesh.cells.size();
 
 						mesh.faces.push_back(face);
 
-						cell.faceIDs.push_back(mesh.faces.size() - 1);
-						
+						cell.faceIDs.push_back(newFaceID);
+
+						if (currentBoundaries[i] == true) {
+							for (auto& bc : mesherBC) {
+								if (Cuboid::faceOrder[i] == bc.face) {
+
+									const std::array<double, 3>& p1 = mesh.nodes[pointIDs[0]].pos;
+									const std::array<double, 3>& p2 = mesh.nodes[pointIDs[2]].pos;
+
+									const std::array<std::array<double, 3>, 2> p = { p1, p2 };
+
+									std::vector<int> indices = { 0, 1, 2 };
+									for (int k = 0; k < 3; k++) {
+										if (p1[k] == p2[k]) {
+											indices.erase(indices.begin() + k);
+											break;
+										}
+									}
+
+									/*std::cout << "New point\n";
+									for (int k = 0; k < 4; k++) {
+										std::cout << "( " << mesh.nodes[pointIDs[k]].pos[0] << ", " << mesh.nodes[pointIDs[k]].pos[1] << ", " << mesh.nodes[pointIDs[k]].pos[2] << " )" << std::endl;
+									}*/
+
+									bool isInside = true;
+
+									for (int k = 0; k < 2; k++) {
+										for (int l = 0; l < 2; l++) {
+											if (!(p[k][indices[l]] >= bc.range[l][0] && p[k][indices[l]] <= bc.range[l][1])) {
+												isInside = false;
+												break;
+											};
+										}
+										if (!isInside) { break; }
+									}
+
+									if (isInside) {
+										bc.faceIDs.emplace_back(newFaceID);
+									}
+								}
+							}
+						}
 					}
 					cell.nodeIDs.insert(cell.nodeIDs.end(), std::begin(pointIDs), std::end(pointIDs));
 
@@ -425,32 +456,22 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 	// Setting up rest of the data inside faces
 
 	for (auto& face : mesh.faces) {
-		MesherCell<MeshDim::D3>& ownerCell = mesh.cells[face.ownerCellID];
-		Vector<GeometryDim::D3> ownerToFace(ownerCell.centroid, face.centroid);
+		C& ownerCell = mesh.cells[face.ownerCellID];
+		V ownerToFace(ownerCell.centroid, face.centroid);
 		face.ownerData = CellData<GeometryDim::D3>{
-			VectorData<GeometryDim::D3>{
-				ownerToFace,
-				ownerToFace.getNormal(),
-				ownerToFace.getMagnitude()
-			}
+			VectorData<GeometryDim::D3>(ownerToFace)
 		};
 		
 		if (face.neighbourCellID.has_value()) {
-			MesherCell<MeshDim::D3>& neighbourCell = mesh.cells[face.neighbourCellID.value()];
-			Vector<GeometryDim::D3> neighbourToFace(ownerCell.centroid, face.centroid);
+			C& neighbourCell = mesh.cells[face.neighbourCellID.value()];
+			V neighbourToFace(ownerCell.centroid, face.centroid);
+
 			face.neighbourData = CellData<GeometryDim::D3>{
-			VectorData<GeometryDim::D3>{
-					neighbourToFace,
-					neighbourToFace.getNormal(),
-					neighbourToFace.getMagnitude()
-				}
+				VectorData<GeometryDim::D3>(neighbourToFace)
 			};
-			Vector<GeometryDim::D3> ownerToNeighbour(ownerCell.centroid, neighbourCell.centroid);
-			face.ownerToNeighbourCell = VectorData<GeometryDim::D3>{
-				ownerToNeighbour,
-				ownerToNeighbour.getNormal(),
-				ownerToNeighbour.getMagnitude()
-			};
+
+			V ownerToNeighbour(ownerCell.centroid, neighbourCell.centroid);
+			face.ownerToNeighbourCell = VectorData<GeometryDim::D3>(ownerToNeighbour);
 		}
 	}
 

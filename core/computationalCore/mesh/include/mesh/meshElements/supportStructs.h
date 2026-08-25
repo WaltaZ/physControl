@@ -14,6 +14,14 @@ struct VectorData {
 	V normal;
 	double magnitude;
 	
+	VectorData();
+	VectorData(
+		const V& vector,
+		const V& normal,
+		const double& magnitude
+	);
+
+	VectorData(Vector<dim> vector);
 };
 
 template<GeometryDim dim>

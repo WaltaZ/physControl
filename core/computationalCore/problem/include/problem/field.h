@@ -1,35 +1,30 @@
 #pragma once
 
+#include "boundaryPatch.h"
+
 #include <type_traits>
-#include <mesh/meshElements/boundaryPatch.h>
 #include <cuda_runtime.h>
 
 template<typename DataType, typename StoragePlace>
-struct SupportField {
-    DataType* data;
+struct Field {
+    CudaAllocatedObj<DataType> values;
+    DataType initialObj;
 
-    SupportField(const uint32_t& length, const DataType& obj = DataType()) {
-        cudaMallocManaged(&data, length);
-        for (int i = 0; i < length; i++) {
-            data[i] = obj;
-        };
-    };
+    bool isInitilized() {
+        if (values.data != nullptr) {
+            return true;
+        }
+        return false;
+    }
 
-    ~SupportField() {
-        cudaFree(data);
-    };
+    Field(const DataType& initialObj = DataType()) : initialObj(initialObj) {};
 };
 
 template<typename DataType, typename StoragePlace>
-struct Field : public SupportField<DataType, StoragePlace> {
+struct MainField : public Field<DataType, StoragePlace> {
 
     CudaAllocatedObj<BoundaryPatch> boundaryPatches;
 
-    Field(
-        const uint32_t& length,
-        const std::vector<BoundaryPatch>& boundaryPatches,
-        const DataType& obj = DataType()) : SupportField<DataType, StoragePlace>(length, obj)
-    {
-
-    };
+    MainField(
+        const DataType& obj = DataType()) : Field<DataType, StoragePlace>(obj) {};
 };

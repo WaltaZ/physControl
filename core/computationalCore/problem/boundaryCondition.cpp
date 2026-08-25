@@ -1,4 +1,4 @@
-#include "include/problem/boundaryInitialCondition.h"
+#include "include/problem/boundaryCondition.h"
 
 BoundaryConditionD3::BoundaryConditionD3(
 	const BoundaryConditionType& type,

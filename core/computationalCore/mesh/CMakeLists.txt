@@ -11,7 +11,6 @@ set(meshHppFiles
 	"include/mesh/meshers/meshers.h"
 	"include/mesh/meshers/cartesianMesher/cartesianMesher.h"
 	"include/mesh/meshers/mesherElements.h"
-	"include/mesh/meshElements/boundaryPatch.h"
 )
 
 set(meshCppFiles
@@ -20,6 +19,7 @@ set(meshCppFiles
 	"meshElements/mesh.cpp"
 	"meshElements/node.cpp"
 	"meshElements/tests.cpp"
+	"meshElements/supportStructs.cpp"
 	"meshers/mesherElements.cpp"
 	"meshElements/cell.cpp"
 	"meshElements/boundaryPatch.cpp"

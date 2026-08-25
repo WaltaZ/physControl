@@ -5,24 +5,23 @@
 #include <vtkDisplay/vtkDisplay.h>
 
 int main() {
-	constexpr int amount = 10;
+	constexpr int amount = 20;
 
-	Cuboid box = Cuboid(3, 4, 5);
+	Cuboid box = Cuboid(3, 3, 3);
 	ProblemGeometryCuboid problemGeometry(box);
 
-	RoomHeatTransferD3 problem = RoomHeatTransferD3(problemGeometry);
-	
+	HeatTransferD3 problem = HeatTransferD3(problemGeometry);
 	BoundaryConditionD3 test1(
 		BoundaryConditionType::Drichlet,
 		{5.0},
 		RectangleD3(
-			new Point<GeometryDim::D3>({0.5, 0, 0}),
-			new Point<GeometryDim::D3>({1.75, 0, 0}),
-			new Point<GeometryDim::D3>({1.75, 0.5, 0}),
-			new Point<GeometryDim::D3>({0, 0.5, 0})
+			new Point<GeometryDim::D3>({1, 0, 0}),
+			new Point<GeometryDim::D3>({2, 0, 0}),
+			new Point<GeometryDim::D3>({2, 1, 0}),
+			new Point<GeometryDim::D3>({1, 1, 0})
 		)
 	);
-
+	
 	BoundaryConditionD3 test2(
 		BoundaryConditionType::Drichlet,
 		{5.0},
@@ -35,7 +34,7 @@ int main() {
 	);
 	
 	problem.addVelocityBoundaryCondition(test1);
-	problem.addVelocityBoundaryCondition(test2);
+	//problem.addVelocityBoundaryCondition(test2);
 
 	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, amount, amount });
 
@@ -52,7 +51,7 @@ int main() {
 
 	//mesher.setDivisionPattern({ division, division }, 0);
 
-	Mesh<MeshDim::D3> mesh = mesher.createMesh();
+	Mesh<MeshDim::D3> mesh = mesher.generateMesh();
 
 	for (int i = 0; i < mesh.faces.data[2].faceNodeIDs.length; i++) {
 		std::cout << mesh.elementsIDs.faceNodeIDs.data[i + mesh.faces.data[2].faceNodeIDs.offset] << ", ";

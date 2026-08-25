@@ -25,9 +25,3 @@ struct BoundaryConditionD3 {
 		const Surface<GeometryDim::D3>& geometry
 	);
 };
-
-template<typename VariableType, typename FieldType>
-struct InitialCondition {
-	FieldType** field;
-	VariableType value;
-};
