@@ -14,11 +14,16 @@ protected:
 	using V = Vector<GeometryDim::D3>;
 	using S = Surface<GeometryDim::D3>;
 public:
-	std::vector<P*> points;
-	std::vector<S*> surfaces;
+	std::vector<P*> points{};
+	std::vector<S*> surfaces{};
 	std::optional<int> id;
 
 	Volume();
+	~Volume();
+	Volume(const Volume& other);
+	Volume(Volume&& other) noexcept;
+	Volume& operator=(const Volume& other);
+	Volume& operator=(Volume&& other) noexcept;
 
 	Volume(
 		const std::vector<P*> points,

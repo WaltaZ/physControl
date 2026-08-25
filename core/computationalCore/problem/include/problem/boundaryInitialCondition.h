@@ -11,15 +11,19 @@ enum class BoundaryConditionType {
 	Wall
 };
 
-template<typename FieldType>
 struct BoundaryConditionD3 {
-	FieldType** field;
 
 	BoundaryConditionType type;
 	const std::vector<double> values;
-
 	Surface<GeometryDim::D3> geometry;
+
 	std::vector<uint32_t> faceIDs = {};
+
+	BoundaryConditionD3(
+		const BoundaryConditionType& type,
+		const std::vector<double>& values,
+		const Surface<GeometryDim::D3>& geometry
+	);
 };
 
 template<typename VariableType, typename FieldType>

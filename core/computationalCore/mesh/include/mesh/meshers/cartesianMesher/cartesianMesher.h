@@ -28,7 +28,7 @@ private:
 	// Problem
 
 	const Cuboid& cuboid;
-	const RoomHeatTransferD3& problem;
+	RoomHeatTransferD3& problem;
 
 	// Mesh
 
@@ -37,10 +37,14 @@ private:
 		std::array<std::array<double, 2>, 2> range;
 	};
 
-	template<typename T>
 	struct MesherBC {
-		const T& boundaryCondition;
+		BoundaryConditionD3& boundaryCondition;
 		MesherBCData data;
+
+		MesherBC(
+			BoundaryConditionD3& boundaryCondition, 
+			const MesherBCData data
+		);
 	};
 
 	std::array<int, geometryDimSize(Gdim)> refinments;
@@ -55,7 +59,7 @@ private:
 public:
 
 	CartesianMesher(
-		const RoomHeatTransferD3& problem,
+		RoomHeatTransferD3& problem,
 		const ProblemGeometryCuboid& problemGeometry,
 		const std::array<int, geometryDimSize(Gdim)>& refinments = { 10, 10, 10 });
 

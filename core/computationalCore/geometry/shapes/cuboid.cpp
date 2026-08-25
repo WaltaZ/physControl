@@ -43,14 +43,3 @@ const Cuboid::FaceType Cuboid::faceOrder[6] = {
 		FaceType::Top, // 4
 		FaceType::Bottom // 5
 };
-
-Cuboid::~Cuboid()
-{
-	for (auto& point : points) {
-		delete point;
-	}
-
-	for (auto& surface : surfaces) {
-		delete surface;
-	}
-}

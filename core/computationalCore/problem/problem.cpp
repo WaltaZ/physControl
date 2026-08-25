@@ -7,13 +7,13 @@
 	};
 
 	void RoomHeatTransferD3::addVelocityBoundaryCondition(
-		const BoundaryConditionD3<Field<V, C>>& bc)
+		const BoundaryConditionD3& bc)
 	{
-		velocityBoundaries.push_back(bc);
+		boundaryConditions[0].push_back(bc);
 	};
 
 	void RoomHeatTransferD3::addTemperatureBoundaryCondition(
-		const BoundaryConditionD3<Field<double, C>>& bc)
+		const BoundaryConditionD3& bc)
 	{
-		temperatureBoundaries.push_back(bc);
+		boundaryConditions[1].push_back(bc);
 	};

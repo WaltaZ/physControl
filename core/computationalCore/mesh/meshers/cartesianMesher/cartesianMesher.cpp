@@ -1,5 +1,13 @@
 #include "../../include/mesh/meshers/cartesianMesher/cartesianMesher.h"
 
+CartesianMesher<MeshDim::D3>::MesherBC::MesherBC(
+		BoundaryConditionD3& boundaryCondition, 
+		const MesherBCData data)
+	:
+		boundaryCondition(boundaryCondition),
+		data(data)
+{}
+
 std::vector<double> CartesianMesher<MeshDim::D3>::_linspace(const int& index) const {
 
 	const int& refinment = refinments[index];
@@ -116,7 +124,7 @@ double CartesianMesher<MeshDim::D3>::_getCuboidDimension(int axis) {
 	};
 
 CartesianMesher<MeshDim::D3>::CartesianMesher(
-	const RoomHeatTransferD3& problem,
+	RoomHeatTransferD3& problem,
 	const ProblemGeometryCuboid& problemGeometry,
 	const std::array<int, geometryDimSize(Gdim)>& refinments)
 	:
@@ -146,30 +154,17 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 
 	// Set up boundary conditions for the mesher
 
-	std::vector<MesherBC<BoundaryConditionD3<Field<V, C>>>> mesherBcVelocity;
-	std::vector<MesherBC<BoundaryConditionD3<Field<double, C>>>> mesherBcTemperature;
+	std::vector<MesherBC> mesherBC{};
 
-	for (const auto& bc : problem.velocityBoundaries) {
-		MesherBCData data = _getMesherBCDataFromSurface(bc.geometry);
-		MesherBC<BoundaryConditionD3<Field<V, C>>> mesherBC{
-			bc,
-			data
-		};
-		mesherBcVelocity.push_back(mesherBC);
-	}
 
-	for (const auto& bc : problem.temperatureBoundaries) {
-		MesherBCData data = _getMesherBCDataFromSurface(bc.geometry);
-		MesherBC<BoundaryConditionD3<Field<double, C>>> mesherBC{
-			bc,
-			data
-		};
-		mesherBcTemperature.push_back(mesherBC);
+	for(auto& bcVariable : problem.boundaryConditions)
+	for (auto& bc : bcVariable) {
+		mesherBC.emplace_back(bc, _getMesherBCDataFromSurface(bc.geometry));
 	}
 
 	// Patch the divisions for the boundaries to stick to the nodes:
 
-	if (!mesherBcVelocity.empty() || !mesherBcTemperature.empty()) {
+	if (!mesherBC.empty()) {
 		std::array<std::vector<double>, 3> divisionPatches;
 
 		for (int dim = 0; dim < 3; dim++) {
@@ -177,8 +172,7 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 			std::vector<int> indices = { 0, 1, 2 };
 			indices.erase(indices.begin() + dim);
 
-			if (!mesherBcVelocity.empty()) {
-				for (const auto& bc : mesherBcVelocity) {
+				for (const auto& bc : mesherBC) {
 					if (bc.data.face == Cuboid::faceOrder[2 * dim] || bc.data.face == Cuboid::faceOrder[2 * dim + 1]) {
 						for (int i = 0; i < 2; i++) {
 							for (int j = 0; j < 2; j++) {
@@ -187,19 +181,6 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::createMesh()
 						}
 					}
 				};
-			}
-
-			if (!mesherBcTemperature.empty()) {
-				for (const auto& bc : mesherBcTemperature) {
-					if (bc.data.face == Cuboid::faceOrder[2 * dim] || bc.data.face == Cuboid::faceOrder[2 * dim + 1]) {
-						for (int i = 0; i < 2; i++) {
-							for (int j = 0; j < 2; j++) {
-								divisionPatches[indices[i]].push_back(bc.data.range[i][j]);
-							}
-						}
-					}
-				};
-			}
 		}
 
 		for (int i = 0; i < 3; i++) {

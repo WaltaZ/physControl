@@ -1,4 +1,5 @@
 #include "../../include/geometry/shapes/basic/volume.h"
+#include <unordered_map>
 
 Volume::Volume() {}
 
@@ -10,6 +11,87 @@ Volume::Volume(
 		surfaces(surfaces), 
 		points(points), 
 		id(id) {}
+
+Volume::~Volume()
+{
+	for (S* surface : surfaces) {
+		delete surface;
+	}
+	for (P* point : points) {
+		delete point;
+	}
+}
+
+Volume::Volume(const Volume& other)
+	: id(other.id)
+{
+	std::unordered_map<P*, P*> otherToThisPoints;
+	points.reserve(other.points.size());
+
+	for (P* point : other.points) {
+		P* newPoint = new P(*point);
+		points.push_back(newPoint);
+		otherToThisPoints.emplace(point, newPoint);
+	};
+
+	surfaces.reserve(other.surfaces.size());
+
+	for (S* surface : other.surfaces) {
+		std::vector<P*> newVertices;
+		newVertices.reserve(surface->vertices.size());
+
+		for (P* vertex : surface->vertices) {
+			newVertices.push_back(otherToThisPoints.at(vertex));
+		}
+
+		surfaces.push_back(new S(newVertices, surface->id));
+	}
+
+}
+
+Volume::Volume(Volume&& other) noexcept
+	: points(std::move(other.points)), surfaces(std::move(other.surfaces)),
+	id(std::move(other.id))
+{
+	other.points.clear();
+	other.surfaces.clear();
+	other.id.reset();
+}
+
+Volume& Volume::operator=(const Volume& other)
+{
+	if (this != &other) {
+		Volume temp(other); 
+
+		std::swap(points, temp.points); 
+		std::swap(surfaces, temp.surfaces); 
+		std::swap(id, temp.id);
+	}
+
+	return *this;
+}
+
+Volume& Volume::operator=(Volume&& other) noexcept
+{
+	if (this != &other) {
+		for (P* point : points) {
+			delete point;
+		}
+		for (S* surface : surfaces) {
+			delete surface;
+		}
+
+		points = std::move(other.points);
+		surfaces = std::move(other.surfaces);
+		id = std::move(other.id);
+
+		other.points.clear();
+		other.surfaces.clear();
+		other.id.reset();
+	}
+
+	return *this;
+}
 
 double Volume::getVolume() const
 {

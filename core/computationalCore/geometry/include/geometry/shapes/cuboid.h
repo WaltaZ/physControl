@@ -24,6 +24,4 @@ struct Cuboid : public Volume {
 		const double& b,
 		const double& c,
 		const Point<GeometryDim::D3>& startingPoint = Point<GeometryDim::D3>());
-
-	~Cuboid();
 };

@@ -18,6 +18,11 @@ public:
 	std::optional<int> id;
 
 	Surface(const std::vector<P*> vertices, const std::optional<int>& id = std::nullopt);
+	~Surface();
+	Surface(const Surface<dim>& other);
+	Surface(Surface<dim>&& other) noexcept;
+	Surface<dim>& operator=(const Surface<dim>& other);
+	Surface<dim>& operator=(Surface<dim>&& other) noexcept;
 
 	P getCentroid() const;
 

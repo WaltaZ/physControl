@@ -16,6 +16,5 @@ struct RectangleD3 : Surface<GeometryDim::D3> {
 	);*/
 
 	RectangleD3(P* p1, P* p2, P* p3, P* p4);
-
 	~RectangleD3();
 };

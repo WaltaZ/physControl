@@ -4,6 +4,69 @@ template<GeometryDim dim>
 Surface<dim>::Surface(const std::vector<P*> vertices, const std::optional<int>& id) : vertices(vertices), id(id) {};
 
 template<GeometryDim dim>
+Surface<dim>::~Surface() = default;
+
+template<GeometryDim dim>
+Surface<dim>::Surface(const Surface& other)
+	: id(other.id)
+{
+	vertices.reserve(other.vertices.size());
+
+	for (const P* vertex : other.vertices) {
+		vertices.push_back(new P(*vertex));
+	}
+}
+
+template<GeometryDim dim>
+Surface<dim>::Surface(Surface&& other) noexcept
+	: vertices(std::move(other.vertices)),
+	id(std::move(other.id))
+{
+	other.vertices.clear();
+	other.id.reset();
+}
+
+template<GeometryDim dim>
+Surface<dim>& Surface<dim>::operator=(const Surface& other)
+{
+	if (this != &other) {
+		for (P* vertex : vertices) {
+			delete vertex;
+		}
+		vertices.clear();
+
+		id = other.id;
+		vertices.reserve(other.vertices.size());
+
+		for (const P* vertex : other.vertices) {
+			vertices.push_back(new P(*vertex));
+		}
+	}
+
+	return *this;
+}
+
+template<GeometryDim dim>
+Surface<dim>& Surface<dim>::operator=(Surface&& other) noexcept
+{
+	if (this != &other) {
+		for (P* vertex : vertices) {
+			delete vertex;
+		}
+
+		vertices = std::move(other.vertices);
+		id = std::move(other.id);
+
+		other.vertices.clear();
+		other.id.reset();
+	}
+
+	return *this;
+}
+
+
+
+template<GeometryDim dim>
 Surface<dim>::P Surface<dim>::getCentroid() const
 {
 	// Calculating geocenter

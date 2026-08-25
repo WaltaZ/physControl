@@ -12,8 +12,7 @@ int main() {
 
 	RoomHeatTransferD3 problem = RoomHeatTransferD3(problemGeometry);
 	
-	BoundaryConditionD3 < Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>> test1{
-		&problem.velocity,
+	BoundaryConditionD3 test1(
 		BoundaryConditionType::Drichlet,
 		{5.0},
 		RectangleD3(
@@ -22,10 +21,9 @@ int main() {
 			new Point<GeometryDim::D3>({1.75, 0.5, 0}),
 			new Point<GeometryDim::D3>({0, 0.5, 0})
 		)
-	};
+	);
 
-	BoundaryConditionD3 < Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>> test2{
-		&problem.velocity,
+	BoundaryConditionD3 test2(
 		BoundaryConditionType::Drichlet,
 		{5.0},
 		RectangleD3(
@@ -34,12 +32,17 @@ int main() {
 			new Point<GeometryDim::D3>({1.5, 4, 4.2}),
 			new Point<GeometryDim::D3>({0.2, 4, 4.2})
 		)
-	};
+	);
 	
 	problem.addVelocityBoundaryCondition(test1);
 	problem.addVelocityBoundaryCondition(test2);
 
 	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, amount, amount });
+
+	std::vector<Point<GeometryDim::D3>*> test{};
+	test.push_back(new Point<GeometryDim::D3>({1, 2, 3}));
+	delete test[0];
+	std::cout << test.size();
 
 	std::vector<double> division(amount + 1);
 
