@@ -147,7 +147,7 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 	// Set up boundary conditions for the mesher
 
 	std::vector<MesherBoundaryCondition> mesherBC{};
-	MesherBoundaryConditionRaw mesherBCDefault;
+	std::vector<MesherBoundaryConditionRaw> mesherBCDefault(problem.boundaryConditions.size());
 
 	for(auto& bcVariable : problem.boundaryConditions)
 	for (auto& bc : bcVariable) {
@@ -341,6 +341,8 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 				C cell{};
 				std::vector<F> faces{};
 
+				// TODO: Clean up this shit and make it readable \/
+
 				for (int i = 0; i < 6; i++) {
 
 					std::array<int, 4> pointIDs = nodeIDsFromFace(i, { x, y, z });
@@ -385,57 +387,69 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 						cell.faceIDs.push_back(newFaceID);
 
 						if (currentBoundaries[i] == true) {
-							for (auto& bc : mesherBC) {
-								if (Cuboid::faceOrder[i] == bc.face) {
 
-									const std::array<double, 3>& p1 = mesh.nodes[pointIDs[0]].pos;
-									const std::array<double, 3>& p2 = mesh.nodes[pointIDs[2]].pos;
+							int mesherBCIndex = 0;
 
-									const std::array<std::array<double, 3>, 2> p = { p1, p2 };
+							for (int j = 0; j < problem.boundaryConditions.size(); j++) {
 
-									std::vector<int> indices = { 0, 1, 2 };
-									for (int k = 0; k < 3; k++) {
-										if (p1[k] == p2[k]) {
-											indices.erase(indices.begin() + k);
-											break;
-										}
-									}
+								bool isDefaultBC = true;
 
-									/*std::cout << "New point\n";
-									for (int k = 0; k < 4; k++) {
-										std::cout << "( " << mesh.nodes[pointIDs[k]].pos[0] << ", " << mesh.nodes[pointIDs[k]].pos[1] << ", " << mesh.nodes[pointIDs[k]].pos[2] << " )" << std::endl;
-									}*/
+								for (int k = 0; k < problem.boundaryConditions[j].size(); k++) {
 
-									bool isInside = true;
+									if (Cuboid::faceOrder[i] == mesherBC[mesherBCIndex].face) {
 
-									for (int k = 0; k < 2; k++) {
-										for (int l = 0; l < 2; l++) {
-											if (!(p[k][indices[l]] >= bc.range[l][0] && p[k][indices[l]] <= bc.range[l][1])) {
-												isInside = false;
+										const std::array<double, 3>& p1 = mesh.nodes[pointIDs[0]].pos;
+										const std::array<double, 3>& p2 = mesh.nodes[pointIDs[2]].pos;
+
+										const std::array<std::array<double, 3>, 2> p = { p1, p2 };
+
+										std::vector<int> indices = { 0, 1, 2 };
+										for (int l = 0; l < 3; l++) {
+											if (p1[l] == p2[l]) {
+												indices.erase(indices.begin() + l);
 												break;
-											};
+											}
 										}
-										if (!isInside) { break; }
+
+										bool isInsideBoundaryGeometry = true;
+
+										for (int l = 0; l < 2; l++) {
+											for (int m = 0; m < 2; m++) {
+												if (!(p[l][indices[m]] >= mesherBC[mesherBCIndex].range[m][0] && 
+													p[l][indices[m]] <= mesherBC[mesherBCIndex].range[m][1])) {
+													isInsideBoundaryGeometry = false;
+													break;
+												};
+											}
+											if (!isInsideBoundaryGeometry) { break; }
+										}
+
+										if (isInsideBoundaryGeometry) {
+											mesherBC[mesherBCIndex].faceIDs.emplace_back(newFaceID);
+											isDefaultBC = false;
+										}
 									}
 
-									if (isInside) {
-										bc.faceIDs.emplace_back(newFaceID);
-									}
+									mesherBCIndex++;
+
 								}
+
+								if (isDefaultBC) {
+									mesherBCDefault[j].faceIDs.emplace_back(newFaceID);
+								}
+
 							}
 						}
 					}
 					cell.nodeIDs.insert(cell.nodeIDs.end(), std::begin(pointIDs), std::end(pointIDs));
-
 				}
-				// Sort the vector
+
 				std::sort(cell.nodeIDs.begin(), cell.nodeIDs.end());
-
-				// Move all duplicates to last of vector
 				auto it = std::unique(cell.nodeIDs.begin(), cell.nodeIDs.end());
-
-				// Remove all duplicates
 				cell.nodeIDs.erase(it, cell.nodeIDs.end());
+
+				std::iter_swap(cell.nodeIDs.begin() + 2, cell.nodeIDs.begin() + 3);
+				std::iter_swap(cell.nodeIDs.begin() + 6, cell.nodeIDs.begin() + 7);
 
 				Cuboid cellCuboid(
 					mesh.nodes[cell.nodeIDs[1]].pos[0] - mesh.nodes[cell.nodeIDs[0]].pos[0],
@@ -447,8 +461,6 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 				cell.volume = cellCuboid.getVolume();
 
 				mesh.cells.push_back(cell);
-
-
 			}
 		}
 	}
@@ -474,6 +486,8 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 			face.ownerToNeighbourCell = VectorData<GeometryDim::D3>(ownerToNeighbour);
 		}
 	}
+
+	problem.initBoundaryPatches(mesherBC, mesherBCDefault);
 
 	return Mesh<MeshDim::D3>(mesh);
 };

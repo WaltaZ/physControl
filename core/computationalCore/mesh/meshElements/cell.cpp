@@ -6,9 +6,9 @@
 template<MeshDim dim>
 Cell<dim>::Cell(
     const MesherCell<dim>& mesherCell,
-    const CudaArray& cellNodeIDs,
-    const CudaArray& cellFaceIDs,
-    const CudaArray& cellNeighbourCells
+    const CudaArray<uint32_t>& cellNodeIDs,
+    const CudaArray<uint32_t>& cellFaceIDs,
+    const CudaArray<uint32_t>& cellNeighbourCells
 )
     :
     cellNodeIDs(cellNodeIDs),
@@ -18,9 +18,6 @@ Cell<dim>::Cell(
     centroid(mesherCell.centroid),
     volume(mesherCell.volume)
 {}
-
-template<MeshDim dim>
-Cell<dim>::Cell() {};
 
 template class Cell<MeshDim::D2>;
 template class Cell<MeshDim::D3>;

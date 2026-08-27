@@ -1,14 +1,4 @@
-find_package(VTK COMPONENTS 
-  CommonColor
-  CommonCore
-  FiltersSources
-  InteractionStyle
-  RenderingContextOpenGL2
-  RenderingCore
-  RenderingFreeType
-  RenderingGL2PSOpenGL2
-  RenderingOpenGL2
-)
+find_package(VTK REQUIRED)
 
 if (NOT VTK_FOUND)
   message(FATAL_ERROR "CylinderExample: Unable to find the VTK build folder.")
@@ -17,15 +7,17 @@ endif()
 # Add source to this project's executable.
 set(vtkDisplayHppFiles
 	"include/vtkDisplay/vtkDisplay.h"
+	"include/vtkDisplay/meshAdapters.h"
 )
 
 set(vtkDisplayCppFiles
 	"vtkDisplay.cpp"
+	"meshAdapters.cpp"
 )
 
 add_library(vtkDisplay ${vtkDisplayHppFiles} ${vtkDisplayCppFiles})
 target_include_directories(vtkDisplay PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(vtkDisplay PRIVATE
+target_link_libraries(vtkDisplay PUBLIC
 ${VTK_LIBRARIES}
 mesh
 )

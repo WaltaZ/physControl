@@ -5,9 +5,9 @@
 #include <vtkDisplay/vtkDisplay.h>
 
 int main() {
-	constexpr int amount = 20;
+	constexpr int amount = 10;
 
-	Cuboid box = Cuboid(3, 3, 3);
+	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);
 
 	HeatTransferD3 problem = HeatTransferD3(problemGeometry);
@@ -15,14 +15,14 @@ int main() {
 		BoundaryConditionType::Drichlet,
 		{5.0},
 		RectangleD3(
-			new Point<GeometryDim::D3>({1, 0, 0}),
-			new Point<GeometryDim::D3>({2, 0, 0}),
-			new Point<GeometryDim::D3>({2, 1, 0}),
-			new Point<GeometryDim::D3>({1, 1, 0})
+			new Point<GeometryDim::D3>({0, 0.2, 0}),
+			new Point<GeometryDim::D3>({0, 1.2, 0}),
+			new Point<GeometryDim::D3>({0, 1.2, 0.8}),
+			new Point<GeometryDim::D3>({0, 0.2, 0.8})
 		)
 	);
 	
-	BoundaryConditionD3 test2(
+	/*BoundaryConditionD3 test2(
 		BoundaryConditionType::Drichlet,
 		{5.0},
 		RectangleD3(
@@ -32,38 +32,45 @@ int main() {
 			new Point<GeometryDim::D3>({0.2, 4, 4.2})
 		)
 	);
-	
+	*/
 	problem.addVelocityBoundaryCondition(test1);
 	//problem.addVelocityBoundaryCondition(test2);
-
-	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, amount, amount });
-
-	std::vector<Point<GeometryDim::D3>*> test{};
-	test.push_back(new Point<GeometryDim::D3>({1, 2, 3}));
-	delete test[0];
-	std::cout << test.size();
 
 	std::vector<double> division(amount + 1);
 
 	for (int i = 0; i < amount + 1; i++) {
-		division[i] = pow(((double)i/(double)amount), 5);
+		division[i] = pow(((double)i/(double)amount), 3);
 	}
+
+	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, (int)(amount*0.8), (int)(amount*0.4)});
+
+	mesher.setDivisionPattern(division, 0);
 
 	//mesher.setDivisionPattern({ division, division }, 0);
 
 	Mesh<MeshDim::D3> mesh = mesher.generateMesh();
+	problem.initFields(mesh);
 
-	for (int i = 0; i < mesh.faces.data[2].faceNodeIDs.length; i++) {
-		std::cout << mesh.elementsIDs.faceNodeIDs.data[i + mesh.faces.data[2].faceNodeIDs.offset] << ", ";
+	const auto& element = mesh.cells.data[mesh.cells.length-1];
+
+	for (size_t i = 0; i < element.cellNodeIDs.length; i++) {
+		std::cout << "( ";
+		for (int j = 0; j < 3; j++) {
+			std::cout << mesh.nodes.data[element.cellNodeIDs[i]].pos[j];
+			if(j!=2) {
+				std::cout << ", ";
+			}
+		}
+		std::cout << " )\n";
 	}
-
-	std::cout << '\n';
 
 	//size_t size = mesh.getMeshSize();
 
 	//std::cout << size << " B" << "\n";
 	//std::cout << (double)size/ 1048576.0 << " MB" << "\n";
 
-	displayTest(mesh);
+
+
+	//displayMesh(mesh, problem.fields.velocity.boundaryPatches.data[0]);
 
 }

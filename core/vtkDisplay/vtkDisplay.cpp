@@ -1,93 +1,73 @@
 #include "include/vtkDisplay/vtkDisplay.h"
 
+#include <vtkDataSetMapper.h>
 #include <vtkActor.h>
-#include <vtkPoints.h>
-#include <vtkPolyData.h>
-#include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
+#include <vtkCellData.h>
+
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkVertexGlyphFilter.h>
 
-void displayTest(const Mesh<MeshDim::D3>& mesh) {
-    // -------------------------------------------------------
-    // 1. Create points
-    // -------------------------------------------------------
+void displayMesh(const Mesh<MeshDim::D3>& mesh, const BoundaryPatch& bp)
+{
+    vtkSmartPointer<vtkUnstructuredGrid> vtkMesh = vtkAdapter::createVtkMeshD3(mesh);
 
-    vtkNew<vtkPoints> points;
+    // Build a per-cell color array
+    vtkNew<vtkUnsignedCharArray> cellColors;
+    cellColors->SetNumberOfComponents(3);
+    cellColors->SetName("Colors");
 
-    for (int i = 0; i < mesh.nodes.length; i++) {
-        points->InsertNextPoint(mesh.nodes.data[i].pos[0], mesh.nodes.data[i].pos[1], mesh.nodes.data[i].pos[2]);
+    vtkIdType numCells = vtkMesh->GetNumberOfCells();
+    cellColors->SetNumberOfTuples(numCells);
+
+    unsigned char defaultColor[3] = { 200, 200, 200 };
+    unsigned char highlightColor[3] = { 255, 0, 0 };
+
+    for (vtkIdType i = 0; i < numCells; ++i)
+    {
+        cellColors->SetTypedTuple(i, defaultColor);
     }
 
-    // -------------------------------------------------------
-    // 2. Put points into vtkPolyData
-    // -------------------------------------------------------
+    std::vector<vtkIdType> facesToHighlight = {};
 
-    vtkNew<vtkPolyData> polyData;
-    polyData->SetPoints(points);
+    // Set of cell IDs you want to highlight
+    for (int i = 0; i < bp.faceIDs.length; i++) {
+        facesToHighlight.push_back(static_cast<vtkIdType>(mesh.faces.data[bp.faceIDs[i]].ownerCellID));
+    };
 
+    for (vtkIdType id : facesToHighlight)
+    {
+        cellColors->SetTypedTuple(id, highlightColor);
+    }
 
-    // -------------------------------------------------------
-    // 3. Convert points into visible vertices
-    // -------------------------------------------------------
+    vtkMesh->GetCellData()->SetScalars(cellColors);
 
-    vtkNew<vtkVertexGlyphFilter> vertexFilter;
-    vertexFilter->SetInputData(polyData);
-    vertexFilter->Update();
-
-
-    // -------------------------------------------------------
-    // 4. Create mapper
-    // -------------------------------------------------------
-
-    vtkNew<vtkPolyDataMapper> mapper;
-    mapper->SetInputConnection(vertexFilter->GetOutputPort());
-
-
-    // -------------------------------------------------------
-    // 5. Create actor
-    // -------------------------------------------------------
+    vtkNew<vtkDataSetMapper> mapper;
+    mapper->SetInputData(vtkMesh);
 
     vtkNew<vtkActor> actor;
     actor->SetMapper(mapper);
 
-    actor->GetProperty()->SetPointSize(6);       // smaller
-    actor->GetProperty()->SetColor(1.0, 1.0, 1.0); // white
+    //actor->GetProperty()->SetRepresentationToWireframe();
+    //actor->GetProperty()->EdgeVisibilityOn();
+    //actor->GetProperty()->SetEdgeColor(1.0, 0.0, 0.0);
+    //actor->GetProperty()->SetLineWidth(2.0);
 
-    actor->GetProperty()->RenderPointsAsSpheresOn();
-
-    // -------------------------------------------------------
-    // 6. Create renderer
-    // -------------------------------------------------------
+    actor->GetProperty()->SetRepresentationToSurface();
+    actor->GetProperty()->EdgeVisibilityOn();
+    actor->GetProperty()->SetLineWidth(1.0);
 
     vtkNew<vtkRenderer> renderer;
     renderer->AddActor(actor);
     renderer->SetBackground(0.1, 0.1, 0.1);
 
-
-    // -------------------------------------------------------
-    // 7. Create render window
-    // -------------------------------------------------------
-
     vtkNew<vtkRenderWindow> renderWindow;
     renderWindow->AddRenderer(renderer);
-    renderWindow->SetSize(800, 600);
 
-
-    // -------------------------------------------------------
-    // 8. Create interactor
-    // -------------------------------------------------------
-
-    vtkNew<vtkRenderWindowInteractor> interactor;
-    interactor->SetRenderWindow(renderWindow);
-
-
-    // -------------------------------------------------------
-    // 9. Display
-    // -------------------------------------------------------
+    vtkNew<vtkRenderWindowInteractor> windowInteractor;
+    windowInteractor->SetRenderWindow(renderWindow);
 
     renderWindow->Render();
-    interactor->Start();
+    windowInteractor->Start();
 }

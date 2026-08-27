@@ -16,16 +16,14 @@ public:
 
     Cell(
         const MesherCell<dim>& mesherCell,
-        const CudaArray& cellNodeIDs,
-        const CudaArray& cellFaceIDs,
-        const CudaArray& cellNeighbourCells
+        const CudaArray<uint32_t>& cellNodeIDs,
+        const CudaArray<uint32_t>& cellFaceIDs,
+        const CudaArray<uint32_t>& cellNeighbourCells
     );
-
-    Cell();
     
-    CudaArray cellNodeIDs;
-    CudaArray cellFaceIDs;
-    CudaArray cellNeighbourCells;
+    CudaArray<uint32_t> cellNodeIDs;
+    CudaArray<uint32_t> cellFaceIDs;
+    CudaArray<uint32_t> cellNeighbourCells;
 
     P centroid;
     double volume;

@@ -16,14 +16,12 @@ public:
 
 	Face(
 		const MesherFace<dim>& mesherFace,
-		const CudaArray& faceNodeIDs
+		const CudaArray<uint32_t>& faceNodeIDs
 	);
-
-	Face();
 
 	V area;
 
-	CudaArray faceNodeIDs;
+	CudaArray<uint32_t> faceNodeIDs;
 
 	uint32_t ownerCellID;
 	CellData<meshDimToGeometryDim(dim)> ownerData;

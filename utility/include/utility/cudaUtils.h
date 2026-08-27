@@ -15,9 +15,29 @@ namespace cudaConfig {
 	};
 }
 
-struct CudaArray {
-	uint32_t offset = 0;
-	uint32_t length = 0;
+template<typename T>
+class CudaArray {
+public:
+	uint32_t offset;
+	uint32_t length;
+
+	CudaArray(T** dataSource, uint32_t offset, uint32_t length) : 
+		dataSource(dataSource), offset(offset), length(length) {};
+
+	T& operator[](size_t index) {
+		return (*dataSource)[index + offset];
+	};
+
+	const T& operator[](size_t index) const {
+		return (*dataSource)[index + offset];
+	};
+
+	T* getData() {
+		return ((*dataSource) + offset);
+	}
+
+private:
+	T** dataSource;
 };
 
 template<typename T>

@@ -6,6 +6,7 @@
 
 #include <geometry/geometry.h>
 #include <mesh/meshElements/meshElements.h>
+#include <mesh/meshers/mesherElements.h>
 #include <vector>
 
 class ProblemD3 {
@@ -13,9 +14,16 @@ public:
 	ProblemGeometryD3 geometry;
 	std::vector<std::vector<BoundaryConditionD3>> boundaryConditions;
 	// TODO: Define this \/
-	std::vector<BoundaryConditionD3> defaultBoundaryConditions;
+	std::vector<BoundaryConditionD3Raw> defaultBoundaryConditions;
 
 	ProblemD3(const ProblemGeometryD3& geometry);
+
+	virtual void initBoundaryPatches(
+		const std::vector<MesherBoundaryCondition>& mesherBC,
+		const std::vector<MesherBoundaryConditionRaw>& mesherBCDefault
+	) = 0;
+
+	virtual void initFields(const Mesh<MeshDim::D3>& mesh) = 0;
 };
 
 class HeatTransferFieldsD3 {
@@ -44,6 +52,12 @@ public:
 	HeatTransferD3(
 		const ProblemGeometryD3& geometry
 	);
+
+	void initBoundaryPatches(
+		const std::vector<MesherBoundaryCondition>& mesherBC,
+		const std::vector<MesherBoundaryConditionRaw>& mesherBCDefault) override;
+
+	void initFields(const Mesh<MeshDim::D3>& mesh) override;
 
 	void addVelocityBoundaryCondition(
 		const BoundaryConditionD3& bc);

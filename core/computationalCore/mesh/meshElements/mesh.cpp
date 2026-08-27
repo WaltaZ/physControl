@@ -23,10 +23,11 @@ Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 	for (int i = 0; i < faces.length; i++) {
 		faces.data[i] = Face<dim>(
 			mesherMesh.faces[i],
-			{
+			CudaArray<uint32_t>(
+				&(elementsIDs.faceNodeIDs.data),
 				static_cast<uint32_t>(faceNodeIDs.size()),
 				static_cast<uint32_t>(mesherMesh.faces[i].nodeIDs.size())
-			}
+			)
 		);
 		faceNodeIDs.insert(faceNodeIDs.end(), mesherMesh.faces[i].nodeIDs.begin(), mesherMesh.faces[i].nodeIDs.end());
 	}
@@ -46,18 +47,21 @@ Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 	for (int i = 0; i < cells.length; i++) {
 		cells.data[i] = Cell<dim>(
 			mesherMesh.cells[i],
-			{
+			CudaArray<uint32_t>(
+				&(elementsIDs.cellNodeIDs.data),
 				static_cast<uint32_t>(cellNodeIDs.size()),
 				static_cast<uint32_t>(mesherMesh.cells[i].nodeIDs.size())
-			},
-			{
+			),
+			CudaArray<uint32_t>(
+				&(elementsIDs.cellFaceIDs.data),
 				static_cast<uint32_t>(cellFaceIDs.size()),
 				static_cast<uint32_t>(mesherMesh.cells[i].faceIDs.size())
-			},
-			{
+			),
+			CudaArray<uint32_t>(
+				&(elementsIDs.cellNeighbourCells.data),
 				static_cast<uint32_t>(cellNeighbourCells.size()),
 				static_cast<uint32_t>(mesherMesh.cells[i].neighbourCellsIDs.size())
-			}
+			)
 		);
 		cellNodeIDs.insert(cellNodeIDs.end(), mesherMesh.cells[i].nodeIDs.begin(), mesherMesh.cells[i].nodeIDs.end());
 		cellFaceIDs.insert(cellFaceIDs.end(), mesherMesh.cells[i].faceIDs.begin(), mesherMesh.cells[i].faceIDs.end());

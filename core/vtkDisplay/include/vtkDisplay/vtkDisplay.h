@@ -1,5 +1,7 @@
 #pragma once
 
+#include "meshAdapters.h"
+
 #include <mesh/mesh.h>
 
-void displayTest(const Mesh<MeshDim::D3>& mesh);
+void displayMesh(const Mesh<MeshDim::D3>& mesh, const BoundaryPatch& bp);

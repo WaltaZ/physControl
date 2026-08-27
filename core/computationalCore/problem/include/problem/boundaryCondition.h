@@ -11,13 +11,22 @@ enum class BoundaryConditionType {
 	Wall
 };
 
-struct BoundaryConditionD3 {
+struct BoundaryConditionD3Raw {
 
 	BoundaryConditionType type;
 	const std::vector<double> values;
-	Surface<GeometryDim::D3> geometry;
 
 	std::vector<uint32_t> faceIDs = {};
+
+	BoundaryConditionD3Raw(
+		const BoundaryConditionType& type,
+		const std::vector<double>& values
+	);
+};
+
+struct BoundaryConditionD3 : public BoundaryConditionD3Raw {
+
+	Surface<GeometryDim::D3> geometry;
 
 	BoundaryConditionD3(
 		const BoundaryConditionType& type,

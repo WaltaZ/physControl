@@ -6,15 +6,12 @@ bool Face<dim>::isBoundary() const
 	return !neighbourCellID.has_value();
 }
 
-template<MeshDim dim>
-Face<dim>::Face() {}
-
 // Rule of 5 ------------------------------------------------------------
 
 template<MeshDim dim>
 Face<dim>::Face(
     const MesherFace<dim>& mesherFace,
-    const CudaArray& faceNodeIDs
+    const CudaArray<uint32_t>& faceNodeIDs
 )
     : area(mesherFace.area),
     faceNodeIDs(faceNodeIDs),
