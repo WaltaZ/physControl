@@ -11,20 +11,20 @@ Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 	cells.length = mesherMesh.cells.size();
 
 	// Nodes --------------------------------------------------------------
-	cudaMallocManaged(&nodes.data, nodes.length * sizeof(Node<dim>));
+	cudaMallocManaged(nodes.getDataPointer(), nodes.length * sizeof(Node<dim>));
 	for (int i = 0; i < nodes.length; i++) {
-		nodes.data[i] = Node<dim>(mesherMesh.nodes[i]);
+		nodes[i] = Node<dim>(mesherMesh.nodes[i]);
 	}
 
 	// Faces --------------------------------------------------------------
 	std::vector<uint32_t> faceNodeIDs;
 
-	cudaMallocManaged(&faces.data, faces.length * sizeof(Face<dim>));
+	cudaMallocManaged(faces.getDataPointer(), faces.length * sizeof(Face<dim>));
 	for (int i = 0; i < faces.length; i++) {
-		faces.data[i] = Face<dim>(
+		faces[i] = Face<dim>(
 			mesherMesh.faces[i],
 			CudaArray<uint32_t>(
-				&(elementsIDs.faceNodeIDs.data),
+				elementsIDs.faceNodeIDs.getDataPointer(),
 				static_cast<uint32_t>(faceNodeIDs.size()),
 				static_cast<uint32_t>(mesherMesh.faces[i].nodeIDs.size())
 			)
@@ -33,9 +33,9 @@ Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 	}
 
 	elementsIDs.faceNodeIDs.length = faceNodeIDs.size();
-	cudaMallocManaged(&(elementsIDs.faceNodeIDs.data), faceNodeIDs.size() * sizeof(uint32_t));
+	cudaMallocManaged(elementsIDs.faceNodeIDs.getDataPointer(), faceNodeIDs.size() * sizeof(uint32_t));
 	for (int i = 0; i < faceNodeIDs.size(); i++) {
-		elementsIDs.faceNodeIDs.data[i] = faceNodeIDs[i];
+		elementsIDs.faceNodeIDs[i] = faceNodeIDs[i];
 	}
 
 	// Cells --------------------------------------------------------------
@@ -43,22 +43,22 @@ Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 	std::vector<uint32_t> cellFaceIDs;
 	std::vector<uint32_t> cellNeighbourCells;
 
-	cudaMallocManaged(&cells.data, cells.length * sizeof(Cell<dim>));
+	cudaMallocManaged(cells.getDataPointer(), cells.length * sizeof(Cell<dim>));
 	for (int i = 0; i < cells.length; i++) {
-		cells.data[i] = Cell<dim>(
+		cells[i] = Cell<dim>(
 			mesherMesh.cells[i],
 			CudaArray<uint32_t>(
-				&(elementsIDs.cellNodeIDs.data),
+				elementsIDs.cellNodeIDs.getDataPointer(),
 				static_cast<uint32_t>(cellNodeIDs.size()),
 				static_cast<uint32_t>(mesherMesh.cells[i].nodeIDs.size())
 			),
 			CudaArray<uint32_t>(
-				&(elementsIDs.cellFaceIDs.data),
+				elementsIDs.cellFaceIDs.getDataPointer(),
 				static_cast<uint32_t>(cellFaceIDs.size()),
 				static_cast<uint32_t>(mesherMesh.cells[i].faceIDs.size())
 			),
 			CudaArray<uint32_t>(
-				&(elementsIDs.cellNeighbourCells.data),
+				elementsIDs.cellNeighbourCells.getDataPointer(),
 				static_cast<uint32_t>(cellNeighbourCells.size()),
 				static_cast<uint32_t>(mesherMesh.cells[i].neighbourCellsIDs.size())
 			)
@@ -69,21 +69,21 @@ Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 	}
 
 	elementsIDs.cellNodeIDs.length = cellNodeIDs.size();
-	cudaMallocManaged(&(elementsIDs.cellNodeIDs.data), cellNodeIDs.size() * sizeof(uint32_t));
+	cudaMallocManaged(elementsIDs.cellNodeIDs.getDataPointer(), cellNodeIDs.size() * sizeof(uint32_t));
 	for (int i = 0; i < cellNodeIDs.size(); i++) {
-		elementsIDs.cellNodeIDs.data[i] = cellNodeIDs[i];
+		elementsIDs.cellNodeIDs[i] = cellNodeIDs[i];
 	}
 
 	elementsIDs.cellFaceIDs.length = cellNodeIDs.size();
-	cudaMallocManaged(&(elementsIDs.cellFaceIDs.data), cellFaceIDs.size() * sizeof(uint32_t));
+	cudaMallocManaged(elementsIDs.cellFaceIDs.getDataPointer(), cellFaceIDs.size() * sizeof(uint32_t));
 	for (int i = 0; i < cellFaceIDs.size(); i++) {
-		elementsIDs.cellFaceIDs.data[i] = cellFaceIDs[i];
+		elementsIDs.cellFaceIDs[i] = cellFaceIDs[i];
 	}
 
 	elementsIDs.cellNeighbourCells.length = cellNeighbourCells.size();
-	cudaMallocManaged(&(elementsIDs.cellNeighbourCells.data), cellNeighbourCells.size() * sizeof(uint32_t));
+	cudaMallocManaged(elementsIDs.cellNeighbourCells.getDataPointer(), cellNeighbourCells.size() * sizeof(uint32_t));
 	for (int i = 0; i < cellNeighbourCells.size(); i++) {
-		elementsIDs.cellNeighbourCells.data[i] = cellNeighbourCells[i];
+		elementsIDs.cellNeighbourCells[i] = cellNeighbourCells[i];
 	}
 }
 

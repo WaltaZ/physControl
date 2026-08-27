@@ -41,13 +41,30 @@ private:
 };
 
 template<typename T>
-struct CudaAllocatedObj {
-	T* data = nullptr;
+class CudaAllocatedObj {
+public:
 	uint32_t length = 0;
+
+	CudaAllocatedObj() {};
+
+	T& operator[](int index) {
+		return data[index];
+	};
+
+	const T& operator[](int index) const {
+		return data[index];
+	};
+
+	T** getDataPointer() {
+		return &data;
+	};
 
 	~CudaAllocatedObj() {
 		if (data != nullptr) {
 			cudaFree(data);
 		}
 	}
+
+private:
+	T* data = nullptr;
 };

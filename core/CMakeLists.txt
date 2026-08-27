@@ -1,2 +1,2 @@
 add_subdirectory(computationalCore)
-add_subdirectory(vtkDisplay)
+add_subdirectory(visuals)

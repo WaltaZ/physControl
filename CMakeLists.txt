@@ -46,7 +46,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	problem
 	#utility
 	#field
-	vtkDisplay
+	visuals
 )
 
 set_target_properties(

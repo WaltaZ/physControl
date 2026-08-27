@@ -1,4 +1,4 @@
-#include "include/vtkDisplay/meshAdapters.h"
+#include <visuals/adapters.h>
 
 #include <vtkPoints.h>
 #include <vtkNew.h>
@@ -12,9 +12,9 @@ namespace vtkAdapter {
 
 		for (int i = 0; i < mesh.nodes.length; i++) {
 			points->InsertNextPoint(
-				mesh.nodes.data[i].pos[0],
-				mesh.nodes.data[i].pos[1],
-				mesh.nodes.data[i].pos[2]
+				mesh.nodes[i].pos[0],
+				mesh.nodes[i].pos[1],
+				mesh.nodes[i].pos[2]
 			);
 		}
 
@@ -26,8 +26,8 @@ namespace vtkAdapter {
 
 			std::vector<vtkIdType> ids;
 
-			for (int j = 0; j < mesh.cells.data[i].cellNodeIDs.length; j++) {
-				ids.push_back(static_cast<vtkIdType>(mesh.cells.data[i].cellNodeIDs[j]));
+			for (int j = 0; j < mesh.cells[i].cellNodeIDs.length; j++) {
+				ids.push_back(static_cast<vtkIdType>(mesh.cells[i].cellNodeIDs[j]));
 			}
 
 			vtkMesh->InsertNextCell(
