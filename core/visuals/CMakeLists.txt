@@ -8,17 +8,22 @@ set(libName "visuals")
 
 set(libHppFiles
 	"include/visuals/displayer/displayer.h"
-	"include/visuals/displayer/keyPressInteractor.h"
-	"include/visuals/displayer/scene.h"
+	"include/visuals/displayer/customInteractorStyle.h"
+	"include/visuals/displayer/scenes/scene.h"
+	"include/visuals/displayer/scenes/vectorFieldscene.h"
+	"include/visuals/displayer/scenes/scalarFieldscene.h"
 	"include/visuals/adapters.h"
 	"include/visuals/visuals.h"
+	"include/visuals/visualsUtility.h"
 )
 
 set(libCppFiles
 	"displayer/displayer.cpp"
-	"displayer/keyPressInteractor.cpp"
-	"displayer/scene.cpp"
+	"displayer/customInteractorStyle.cpp"
+	"displayer/scenes/scalarFieldscene.cpp"
+	"displayer/scenes/vectorFieldscene.cpp"
 	"adapters.cpp"
+	"visualsUtility.cpp"
 )
 
 add_library(${libName} ${libHppFiles} ${libCppFiles})

@@ -10,22 +10,22 @@
 #include <vtkCutter.h>
 #include <vtkLookupTable.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkDataSetMapper.h>
+#include <vtkOutlineFilter.h>
+#include <vtkScalarBarActor.h>
 #include <string>
 
 #include <problem/field.h>
 #include <mesh/meshElements/meshElements.h>
-
-class Scene {
-public:
-	std::vector<vtkSmartPointer<vtkActor>> actors;
-
-	virtual void handleKeyPress(const std::string& key) = 0;
-};
+#include <visuals/displayer/scenes/scene.h>
+#include <visuals/visualsUtility.h>
 
 class ScalarFieldScene : public Scene {
 public:
 	void handleKeyPress(const std::string& key) override;
-	
+
+	void activateScene() override;
+
 	ScalarFieldScene(
 		const std::string& fieldName,
 		vtkSmartPointer<vtkUnstructuredGrid> vtkGrid,
@@ -47,4 +47,7 @@ private:
 	double _stepSize = 0.125;
 
 	void _orientPlane();
+
+	void _updatePlaneData();
+	void _setUpPlaneActor();
 };

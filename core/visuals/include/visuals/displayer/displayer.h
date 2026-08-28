@@ -1,16 +1,16 @@
 #pragma once
 
 #include <visuals/adapters.h>
-#include <visuals/displayer/scene.h>
-#include <visuals/displayer/keyPressInteractor.h>
+#include <visuals/displayer/scenes/scene.h>
+#include <visuals/displayer/customInteractorStyle.h>
 #include <mesh/mesh.h>
 
 #include <vtkActor.h>
+#include <vtkActorCollection.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 
 #include <vtkRenderWindowInteractor.h>
-#include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkCameraOrientationWidget.h>
 #include <vtkAxesActor.h>
 #include <vtkNew.h>
@@ -23,20 +23,20 @@ protected:
 	vtkSmartPointer<vtkRenderer> _renderer;
 	vtkSmartPointer<vtkRenderWindow> _window;
 	vtkSmartPointer<vtkRenderWindowInteractor> _interactor;
-	vtkSmartPointer<vtkUnstructuredGrid> _vtkMesh;
+	vtkSmartPointer<vtkCameraOrientationWidget> _cow;
+	vtkSmartPointer<vtkUnstructuredGrid> _vtkGrid;
 public:
 	Displayer(const Mesh<MeshDim::D3>& mesh);
 	void display();
-
-	//void addMeshActor();
-	//void addBoundaryActor(const std::vector<BoundaryPatch>& patches);
-	//void addScalarFieldActor(const Field<double, Cell<MeshDim::D3>>& field);
 };
 
 class SceneDisplayer : public Displayer {
 protected:
 	std::vector<std::unique_ptr<Scene>> _scenes;
+	std::vector<vtkSmartPointer<vtkActor>> _baseActors;
 	int _sceneIndex = 0;
+
+	void _addBaseActors();
 public:
 	SceneDisplayer(const Mesh<MeshDim::D3>& mesh);
 

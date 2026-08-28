@@ -5,7 +5,7 @@ ProblemD3::ProblemD3(
 }
 
 HeatTransferD3::HeatTransferD3(
-	const ProblemGeometryD3& geometry) : ProblemD3(geometry) 
+	const ProblemGeometryD3& geometry) : ProblemD3(geometry)
 {
 	boundaryConditions = std::vector<std::vector<BoundaryConditionD3>>{ 2 };
 	defaultBoundaryConditions = std::vector<BoundaryConditionD3Raw>{

@@ -44,7 +44,7 @@ int main() {
 
 	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, (int)(amount*0.8), (int)(amount*0.4)});
 
-	mesher.setDivisionPattern(division, 0);
+	//mesher.setDivisionPattern(division, 0);
 
 	//mesher.setDivisionPattern({ division, division }, 0);
 
@@ -53,25 +53,23 @@ int main() {
 
 	const auto& element = mesh.cells[mesh.cells.length-1];
 
-	for (size_t i = 0; i < element.cellNodeIDs.length; i++) {
-		std::cout << "( ";
-		for (int j = 0; j < 3; j++) {
-			std::cout << mesh.nodes[element.cellNodeIDs[i]].pos[j];
-			if(j!=2) {
-				std::cout << ", ";
-			}
-		}
-		std::cout << " )\n";
-	}
-
 	//size_t size = mesh.getMeshSize();
 
 	//std::cout << size << " B" << "\n";
 	//std::cout << (double)size/ 1048576.0 << " MB" << "\n";
 
 	for (int i = 0; i < problem.fields.temperature.values.length; i++) {
-		problem.fields.temperature.values[i] = rand() % 100;
-		std::cout << problem.fields.temperature.values[i] << ", ";
+		problem.fields.temperature.values[i] = pow(i, 1.1);
+	}
+
+	for (int i = 0; i < problem.fields.pressure.values.length; i++) {
+		problem.fields.pressure.values[i] = sqrt(i);
+	}
+
+	for (int i = 0; i < problem.fields.velocity.values.length; i++) {
+		problem.fields.velocity.values[i].comp[0] = pow(i, 1.1);
+		problem.fields.velocity.values[i].comp[1] = pow(i, 1.1);
+		problem.fields.velocity.values[i].comp[2] = pow(i, 1.1);
 	}
 
 	FieldDisplayer displayer(mesh, problem);

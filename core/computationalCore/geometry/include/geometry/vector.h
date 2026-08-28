@@ -19,7 +19,7 @@ public:
 	Vector(Point<dim> point) : ThisTensor(point.pos) {};
 	Vector(const Point<dim>& pointA, const Point<dim>& pointB);
 
-	double getMagnitude();
+	double getMagnitude() const;
 
-	Vector<dim> getNormal();
+	Vector<dim> getNormal() const;
 };

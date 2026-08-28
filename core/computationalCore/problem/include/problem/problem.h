@@ -33,7 +33,7 @@ private:
 	using C = Cell<geometryDimToMeshDim(GeometryDim::D3)>;
 	using F = Face<geometryDimToMeshDim(GeometryDim::D3)>;
 public:
-	MainField<V, C> velocity = MainField<V, C>(V({0, 0, 0}));
+	MainField<V, C> velocity = MainField<V, C>(V({1, 1, 1}));
 	MainField<double, C> temperature = MainField<double, C>(20);
 	Field<double, F> massFlowRate = Field<double, F>(0);
 	Field<M, C> gradVelocity = Field<M, C>(M({

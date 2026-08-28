@@ -16,7 +16,7 @@ Vector<dim>::Vector(const Point<dim>& pointA, const Point<dim>& pointB)
 }
 
 template<GeometryDim dim>
-double Vector<dim>::getMagnitude()
+double Vector<dim>::getMagnitude() const
 {
 	double mag = 0;
 	for (int i = 0; i < _numOfComp; i++) {
@@ -26,7 +26,7 @@ double Vector<dim>::getMagnitude()
 }
 
 template<GeometryDim dim>
-Vector<dim> Vector<dim>::getNormal()
+Vector<dim> Vector<dim>::getNormal() const
 {
 	return Vector<dim>(comp) / getMagnitude();
 }
