@@ -30,10 +30,10 @@ class HeatTransferFieldsD3 {
 private:
 	using V = Vector<GeometryDim::D3>;
 	using M = MatrixTensor<GeometryDim::D3>;
-	using C = Cell<geometryDimToMeshDim(GeometryDim::D3)>;
-	using F = Face<geometryDimToMeshDim(GeometryDim::D3)>;
+	using C = Cell<geom2mesh(GeometryDim::D3)>;
+	using F = Face<geom2mesh(GeometryDim::D3)>;
 public:
-	MainField<V, C> velocity = MainField<V, C>(V({1, 1, 1}));
+	MainField<V, C> velocity = MainField<V, C>(V({0, 0, 0}));
 	MainField<double, C> temperature = MainField<double, C>(20);
 	Field<double, F> massFlowRate = Field<double, F>(0);
 	Field<M, C> gradVelocity = Field<M, C>(M({
@@ -45,11 +45,11 @@ public:
 	Field<V, C> gradPressure = Field<V, C>(V({ 0, 0, 0 }));
 };
 
-class HeatTransferD3 : public ProblemD3 {
+class HeatTransferProblemD3 : public ProblemD3 {
 public:
 	HeatTransferFieldsD3 fields{};
 
-	HeatTransferD3(
+	HeatTransferProblemD3(
 		const ProblemGeometryD3& geometry
 	);
 

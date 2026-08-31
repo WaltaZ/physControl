@@ -13,10 +13,16 @@
 class VectorFieldScene : public Scene {
 protected:
 	std::string _fieldName;
+	vtkSmartPointer<vtkDoubleArray> _vectors;
+	vtkSmartPointer<vtkMaskPoints> _mask;
 	vtkSmartPointer<vtkUnstructuredGrid> _vtkGrid;
+	vtkSmartPointer<vtkLookupTable> _lut;
+	vtkSmartPointer<vtkPolyDataMapper> _mapper;
+
 	const Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& _field;
 
-	const double _spacing = 0.1;
+	int _amountOfVectors = 1000;
+	int _amountStep = 100;
 
 public:
 	VectorFieldScene(
@@ -26,4 +32,5 @@ public:
 
 	void handleKeyPress(const std::string& key) override;
 	void activateScene() override;
+	void updateScene() override;
 };

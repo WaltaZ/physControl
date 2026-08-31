@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <memory>
+#include <simulation/simulation.h>
 
 class Displayer {
 protected:
@@ -37,16 +38,18 @@ protected:
 	int _sceneIndex = 0;
 
 	void _addBaseActors();
+	bool _switchScenesHandler(const std::string& key);
 public:
 	SceneDisplayer(const Mesh<MeshDim::D3>& mesh);
 
-	void handleKeyPress(const std::string& key);
+	virtual void handleKeyPress(const std::string& key) = 0;
 	void displayScene(int index);
 };
 
 class FieldDisplayer : public SceneDisplayer {	
+protected:
+	HeatTransferSimulationD3& _simulation;
 public:
-	FieldDisplayer(
-		const Mesh<MeshDim::D3>& mesh, 
-		const HeatTransferD3& problem);
+	FieldDisplayer(HeatTransferSimulationD3& simulation);
+	void handleKeyPress(const std::string& key) override;
 };

@@ -10,11 +10,11 @@ namespace vtkAdapter {
 
 		vtkNew<vtkPoints> points;
 
-		for (int i = 0; i < mesh.nodes.length; i++) {
+		for (int i = 0; i < mesh.getElements()->nodes.length; i++) {
 			points->InsertNextPoint(
-				mesh.nodes[i].pos[0],
-				mesh.nodes[i].pos[1],
-				mesh.nodes[i].pos[2]
+				mesh.getElements()->nodes[i].pos[0],
+				mesh.getElements()->nodes[i].pos[1],
+				mesh.getElements()->nodes[i].pos[2]
 			);
 		}
 
@@ -22,12 +22,12 @@ namespace vtkAdapter {
 
 		vtkMesh->SetPoints(points);
 
-		for (int i = 0; i < mesh.cells.length; i++) {
+		for (int i = 0; i < mesh.getElements()->cells.length; i++) {
 
 			std::vector<vtkIdType> ids;
 
-			for (int j = 0; j < mesh.cells[i].cellNodeIDs.length; j++) {
-				ids.push_back(static_cast<vtkIdType>(mesh.cells[i].cellNodeIDs[j]));
+			for (int j = 0; j < mesh.getElements()->cells[i].cellNodeIDs.length; j++) {
+				ids.push_back(static_cast<vtkIdType>(mesh.getElements()->cells[i].cellNodeIDs[j]));
 			}
 
 			vtkMesh->InsertNextCell(

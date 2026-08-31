@@ -11,6 +11,7 @@ public:
 
 	virtual void handleKeyPress(const std::string& key) = 0;
 	virtual void activateScene() = 0;
+	virtual void updateScene() = 0;
 };
 
 #include "scalarFieldScene.h"

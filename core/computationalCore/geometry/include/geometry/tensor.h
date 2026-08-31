@@ -3,6 +3,7 @@
 #include "geometryEnums.h"
 
 #include <array>
+#include <cuda_runtime.h>
 
 template<typename Derived, GeometryDim dim, int rank>
 class Tensor {
@@ -16,24 +17,27 @@ protected:
 public:
 	std::array<double, _numOfComp> comp;
 
-	Tensor()
+	__host__ __device__ Tensor()
 	{
 		comp = std::array<double, _numOfComp>{};
 		std::fill(std::begin(comp), std::end(comp), 0);
 	};
 
+	__host__ __device__
 	Tensor(std::array<double, _numOfComp> comp) : comp(comp) {};
 
 	// OPERATIONS ------------------------------------
-
+	__host__ __device__
 	double& operator[](int index) {
 		return comp[index];
 	}
 
+	__host__ __device__
 	const double& operator[](int index) const {
 		return comp[index];
 	}
 
+	__host__ __device__
 	Derived operator+(const Derived& tensor) const
 	{
 		std::array<double, _numOfComp> finalComp{};
@@ -43,6 +47,7 @@ public:
 		return Derived(finalComp);
 	};
 
+	__host__ __device__
 	Derived operator-(const Derived& tensor) const
 	{
 		std::array<double, _numOfComp> finalComp{};
@@ -52,6 +57,7 @@ public:
 		return Derived(finalComp);
 	};
 
+	__host__ __device__
 	Derived operator*(const double& scalar) const
 	{
 		std::array<double, _numOfComp> finalComp{};
@@ -61,6 +67,7 @@ public:
 		return Derived(finalComp);
 	}
 
+	__host__ __device__
 	Derived operator/(const double& scalar) const
 	{
 		std::array<double, _numOfComp> finalComp{};
@@ -70,6 +77,7 @@ public:
 		return Derived(finalComp);
 	}
 
+	__host__ __device__
 	bool operator==(const Derived& tensor) const
 	{
 		bool isTheSame = true;

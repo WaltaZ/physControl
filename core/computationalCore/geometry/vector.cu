@@ -1,12 +1,15 @@
 #include "include/geometry/vector.h"
 
 template<GeometryDim dim>
+__host__ __device__
 Vector<dim>::Vector() : ThisTensor() {}
 
 template<GeometryDim dim>
+__host__ __device__
 Vector<dim>::Vector(std::array<double, _numOfComp> comp): ThisTensor(comp) {}
 
 template<GeometryDim dim>
+__host__ __device__
 Vector<dim>::Vector(const Point<dim>& pointA, const Point<dim>& pointB)
 {
 	comp = std::array<double, _numOfComp>{};
@@ -16,6 +19,7 @@ Vector<dim>::Vector(const Point<dim>& pointA, const Point<dim>& pointB)
 }
 
 template<GeometryDim dim>
+__host__ __device__
 double Vector<dim>::getMagnitude() const
 {
 	double mag = 0;
@@ -26,9 +30,21 @@ double Vector<dim>::getMagnitude() const
 }
 
 template<GeometryDim dim>
+__host__ __device__
 Vector<dim> Vector<dim>::getNormal() const
 {
 	return Vector<dim>(comp) / getMagnitude();
+}
+
+template<GeometryDim dim>
+__host__ __device__
+void Vector<dim>::flip()
+{
+	for (int i = 0; i < _numOfComp; i++) {
+		if (comp[i] != 0) {
+			comp[i] = -comp[i];
+		}
+	}
 }
 
 template class Vector<GeometryDim::D2>;

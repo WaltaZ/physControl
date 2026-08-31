@@ -19,7 +19,7 @@ struct MeshElementsIDs {
 };
 
 template<MeshDim dim>
-class Mesh {
+class CudaMesh {
 public:
 	CudaAllocatedObj<Node<dim>> nodes;
 	CudaAllocatedObj<Face<dim>> faces;
@@ -27,9 +27,21 @@ public:
 
 	MeshElementsIDs elementsIDs;
 
-	~Mesh();
+	~CudaMesh();
 	
-	Mesh(const MesherMesh<dim>& mesherMesh);
+	CudaMesh(const MesherMesh<dim>& mesherMesh);
 
 	//size_t getMeshSize();
+};
+
+template<MeshDim dim>
+class Mesh {
+	CudaMesh<dim>* _mesh;
+
+public:
+	Mesh(const MesherMesh<dim>& mesherMesh);
+
+	CudaMesh<dim>* getElements();
+
+	const CudaMesh<dim>* getElements() const;
 };

@@ -1,41 +1,15 @@
-#include "include/problem/tests.h"
-
-#include "include/problem/field.h"
-
-#include <geometry/geometryEnums.h>
-#include <geometry/geometryUtils.h>
-#include <geometry/vector.h>
-#include <mesh/meshElements/cell.h>
-#include <iostream>
+#include <problem/tests.h>
 
 namespace fieldTests {
-	void runFieldBasicTest() {
-		/*
-		// Example usage of Field class
-		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3> > field(10); // Field of Vectors associated with 10 points in 3D
-		// Set some values
-		for (int i = 0; i < field.dataLength; i++) {
-			field.data[i] = field.data[i] + (Vector<GeometryDim::D3>({ 1, 1, 1 }) * i * 1.5); // Assigning some values
+	void setUpRadialScalarField(
+		Field<double, Cell<MeshDim::D3>>& field,
+		const Mesh<MeshDim::D3>& mesh,
+		Point<GeometryDim::D3> center)
+	{
+		std::cout << "Test\n";
+		for (int i = 0; i < field.values.length; i++) {
+			double r = Vector<GeometryDim::D3>(center, mesh.getElements()->cells[i].centroid).getMagnitude();
+			field.values[i] = 1/pow(r, 2);
 		}
-		// Print the values
-		std::cout << "Vector Values: " << std::endl;
-		for (int i = 0; i < field.dataLength; i++) {
-			std::cout << "V" << i << ": ";
-			geometryPrint::printV(field.data[i]);
-		}
-		std::cout << std::endl;*/
-	}
-
-	void runFieldInitializationTest() {
-		/*
-		// Example usage of Field class with initialization
-		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3> > field(5, Vector<GeometryDim::D3>({ 21, 37, 69 })); // Field of Vectors associated with 5 points in 3D, initialized to some value
-		// Print the values
-		std::cout << "Initialized Vector Values: " << std::endl;
-		for (int i = 0; i < field.dataLength; i++) {
-			std::cout << "V" << i << ": ";
-			geometryPrint::printV(field.data[i]);
-		}
-		std::cout << std::endl;*/
 	}
 }

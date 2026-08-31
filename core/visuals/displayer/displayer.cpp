@@ -18,7 +18,7 @@ Displayer::Displayer(
 	_renderer->SetBackground(0.1, 0.1, 0.1);
 
 	_window->AddRenderer(_renderer);
-	_window->SetSize(800, 600);
+	_window->SetSize(1200, 800);
 
 	_interactor->SetRenderWindow(_window);
 
@@ -65,30 +65,31 @@ void SceneDisplayer::displayScene(int index) {
 	_window->Render();
 }
 
-void SceneDisplayer::handleKeyPress(const std::string& key) {
+bool SceneDisplayer::_switchScenesHandler(const std::string& key)
+{
 	if (key == "Right") {
 		int nextScene = _sceneIndex + 1;
-		if (nextScene >= _scenes.size()) { return; }
+		if (nextScene >= _scenes.size()) { return true; }
 		displayScene(nextScene);
-		return;
+		return true;
 	}
 	else if (key == "Left") {
 		int previousScene = _sceneIndex - 1;
-		if (previousScene < 0) { return; }
+		if (previousScene < 0) { return true; }
 		_sceneIndex = previousScene;
 		displayScene(previousScene);
-		return;
+		return true;
 	}
-	_scenes[_sceneIndex]->handleKeyPress(key);
-	_window->Render();
+	return false;
 }
 
 // ----------------------------- FIELD DISPLAYER -----------------------------
 
 FieldDisplayer::FieldDisplayer(
-	const Mesh<MeshDim::D3>& mesh,
-	const HeatTransferD3& problem) : SceneDisplayer(mesh)
+	HeatTransferSimulationD3& simulation) : SceneDisplayer(simulation.getMesh()), _simulation(simulation)
 {
+	HeatTransferProblemD3& problem = simulation.getProblem();
+
 	_scenes.push_back(std::make_unique<ScalarFieldScene>(
 		"Temperature",
 		_vtkGrid,
@@ -102,9 +103,15 @@ FieldDisplayer::FieldDisplayer(
 	));
 
 	_scenes.push_back(std::make_unique<ScalarFieldScene>(
-		"pressure",
+		"Pressure",
 		_vtkGrid,
 		problem.fields.pressure
+	));
+
+	_scenes.push_back(std::make_unique<VectorFieldScene>(
+		"GradPressure",
+		_vtkGrid,
+		problem.fields.gradPressure
 	));
 
 	for (const auto& bcOfSingleField : problem.boundaryConditions) {
@@ -116,4 +123,20 @@ FieldDisplayer::FieldDisplayer(
 
 	_addBaseActors();
 	displayScene(0);
+}
+
+void FieldDisplayer::handleKeyPress(const std::string& key)
+{
+	if (_switchScenesHandler(key)) {
+	}
+	else if (key == "space") {
+		_simulation.nextStep();
+		for (auto& scene : _scenes) {
+			scene->updateScene();
+		}
+	}
+	else {
+		_scenes[_sceneIndex]->handleKeyPress(key);
+	}
+	_window->Render();
 }

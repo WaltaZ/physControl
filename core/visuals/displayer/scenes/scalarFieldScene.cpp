@@ -7,19 +7,22 @@ ScalarFieldScene::ScalarFieldScene(
 ) :
     _vtkGrid(vtkGrid),
     _field(field),
-    _fieldName(fieldName)
+    _fieldName(fieldName),
+    _vtkFieldValues(vtkNew<vtkDoubleArray>()),
+    _vtkPlane(vtkNew<vtkPlane>()),
+    _lut(vtkNew<vtkLookupTable>()),
+    _mapper(vtkNew<vtkPolyDataMapper>())
 {
     _setUpPlaneActor();
 }
 
 void ScalarFieldScene::_setUpPlaneActor() {
 
-    _vtkFieldValues = vtkNew<vtkDoubleArray>();
     _vtkFieldValues->SetName(_fieldName.data());
     _vtkFieldValues->SetNumberOfComponents(1);
     _vtkFieldValues->SetNumberOfTuples(_vtkGrid->GetNumberOfCells());
 
-    _updatePlaneData();
+    updateScene();
 
     _vtkGrid->GetCellData()->AddArray(_vtkFieldValues);
     _vtkGrid->GetCellData()->SetActiveScalars(_fieldName.data());
@@ -30,7 +33,6 @@ void ScalarFieldScene::_setUpPlaneActor() {
     _currentPlanePos[1] = (_vtkGridBounds[3] + _vtkGridBounds[2]) / 2;
     _currentPlanePos[2] = (_vtkGridBounds[5] + _vtkGridBounds[4]) / 2;
 
-    _vtkPlane = vtkNew<vtkPlane>();
     _vtkPlane->SetOrigin(_currentPlanePos);
 
     _orientPlane();
@@ -39,24 +41,18 @@ void ScalarFieldScene::_setUpPlaneActor() {
     cutter->SetInputData(_vtkGrid);
     cutter->SetCutFunction(_vtkPlane);
 
-    double range[2];
-    _vtkFieldValues->GetRange(range);
 
-    vtkNew<vtkLookupTable> lut;
-    lut->SetHueRange(0.667, 0.0);
-    lut->SetRange(range[0], range[1]);
-    lut->Build();
+    _lut->SetHueRange(0.667, 0.0);
+    _lut->Build();
 
-    vtkNew<vtkPolyDataMapper> mapper;
-    mapper->SetInputConnection(cutter->GetOutputPort());
-    mapper->SetLookupTable(lut);
-    mapper->SetScalarRange(range);
-    mapper->SetScalarModeToUseCellData();
-    mapper->SelectColorArray(_fieldName.data());
-    mapper->ScalarVisibilityOn();
+    _mapper->SetInputConnection(cutter->GetOutputPort());
+    _mapper->SetLookupTable(_lut);
+    _mapper->SetScalarModeToUseCellData();
+    _mapper->SelectColorArray(_fieldName.data());
+    _mapper->ScalarVisibilityOn();
 
     vtkNew<vtkScalarBarActor> scalarBar;
-    scalarBar->SetLookupTable(lut);
+    scalarBar->SetLookupTable(_lut);
     scalarBar->SetTitle(_fieldName.data());
     scalarBar->SetNumberOfLabels(8);
     scalarBar->SetPosition(0.93, 0);
@@ -64,18 +60,10 @@ void ScalarFieldScene::_setUpPlaneActor() {
     scalarBar->SetWidth(0.07);
 
     vtkNew<vtkActor> actor;
-    actor->SetMapper(mapper);
+    actor->SetMapper(_mapper);
 
     actors.push_back(actor);
     viewProps.push_back(scalarBar);
-}
-
-void ScalarFieldScene::_updatePlaneData() {
-    for (vtkIdType i = 0; i < _vtkGrid->GetNumberOfCells(); ++i)
-    {
-        _vtkFieldValues->SetValue(i, _field.values[i]);
-    }
-    _vtkFieldValues->Modified();
 }
 
 // -------------------------- EVENT HANDLER ------------------------------
@@ -139,6 +127,21 @@ void ScalarFieldScene::handleKeyPress(const std::string& key) {
 
 void ScalarFieldScene::activateScene() {
     _vtkGrid->GetCellData()->SetActiveScalars(_fieldName.data());
+}
+
+void ScalarFieldScene::updateScene()
+{
+    for (vtkIdType i = 0; i < _vtkGrid->GetNumberOfCells(); ++i)
+    {
+        _vtkFieldValues->SetValue(i, _field.values[i]);
+    }
+    _vtkFieldValues->Modified();
+    
+    double range[2];
+    _vtkFieldValues->GetRange(range);
+    _lut->SetRange(range);
+    _lut->Build();
+    _mapper->SetScalarRange(range);
 }
 
 void ScalarFieldScene::_orientPlane() {

@@ -31,6 +31,7 @@ target_include_directories(${libName} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/includ
 target_link_libraries(${libName} PUBLIC
 ${VTK_LIBRARIES}
 mesh
+simulation
 )
 
 # vtk_module_autoinit is needed

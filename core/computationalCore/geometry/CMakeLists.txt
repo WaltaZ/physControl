@@ -19,7 +19,7 @@ set(geometryCppFiles
 	"geometryUtils.cpp"
 	"matrixTensor.cpp"
 	"tests.cpp"
-	"vector.cpp"
+	"vector.cu"
 	"shapes/cuboid.cpp"
 	"shapes/basic/point.cpp"
 	"shapes/basic/line.cpp"
@@ -28,10 +28,12 @@ set(geometryCppFiles
 	"shapes/rectangle.cpp"
 )
 
+set_source_files_properties(vector.cu PROPERTIES LANGUAGE CUDA)
+
 add_library(geometry 
 	${geometryHppFiles}
 	${geometryCppFiles}
 )
 
 target_include_directories(geometry PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(geometry PRIVATE utility)
+target_link_libraries(geometry PRIVATE utility CUDA::cudart)

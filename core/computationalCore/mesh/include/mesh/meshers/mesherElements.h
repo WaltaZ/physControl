@@ -11,13 +11,13 @@ struct MesherNode {
 	std::array<double, meshDimSize(dim)> pos;
 
 	MesherNode(const std::array<double, meshDimSize(dim)>& pos);
-	MesherNode(const Point<meshDimToGeometryDim(dim)>& point);
+	MesherNode(const Point<mesh2geom(dim)>& point);
 };
 
 template<MeshDim dim>
 struct MesherFace {
-	using V = VectorData<meshDimToGeometryDim(dim)>;
-	using P = Point<meshDimToGeometryDim(dim)>;
+	using V = VectorData<mesh2geom(dim)>;
+	using P = Point<mesh2geom(dim)>;
 
 	V area;
 	P centroid;
@@ -25,10 +25,11 @@ struct MesherFace {
 	std::vector<int> nodeIDs;
 
 	int ownerCellID;
-	CellData<meshDimToGeometryDim(dim)> ownerData{};
+	CellData<mesh2geom(dim)> ownerData{};
+	std::optional<double> ownerFaceWeightFactor;
 
 	std::optional<int> neighbourCellID = std::nullopt;
-	std::optional<CellData<meshDimToGeometryDim(dim)>> neighbourData = std::nullopt;
+	std::optional<CellData<mesh2geom(dim)>> neighbourData = std::nullopt;
 
 	std::optional<V> ownerToNeighbourCell = std::nullopt;
 };
@@ -36,7 +37,7 @@ struct MesherFace {
 template<MeshDim dim>
 class MesherCell {
 private:
-	using P = Point<meshDimToGeometryDim(dim)>;
+	using P = Point<mesh2geom(dim)>;
 public:
 	std::vector<int> nodeIDs;
 	std::vector<int> faceIDs;

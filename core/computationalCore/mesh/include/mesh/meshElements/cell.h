@@ -10,8 +10,8 @@
 template<MeshDim dim>
 class Cell {
 private:
-	using P = Point<meshDimToGeometryDim(dim)>;
-	using V = VectorData<meshDimToGeometryDim(dim)>;
+	using P = Point<mesh2geom(dim)>;
+	using V = VectorData<mesh2geom(dim)>;
 public:
 
     Cell(

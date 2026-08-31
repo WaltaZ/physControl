@@ -13,6 +13,8 @@ namespace cudaConfig {
 		cudaMemLocationTypeHost,
 		cudaCpuDeviceId
 	};
+
+	constexpr int defaultThreadsPerBlock = 256;
 }
 
 template<typename T>
@@ -24,15 +26,19 @@ public:
 	CudaArray(T** dataSource, uint32_t offset, uint32_t length) : 
 		dataSource(dataSource), offset(offset), length(length) {};
 
-	T& operator[](size_t index) {
+	__host__ __device__ T& operator[](size_t index) {
 		return (*dataSource)[index + offset];
 	};
 
-	const T& operator[](size_t index) const {
+	__host__ __device__ const T& operator[](size_t index) const {
 		return (*dataSource)[index + offset];
 	};
 
-	T* getData() {
+	__host__ __device__ T* getData() {
+		return ((*dataSource) + offset);
+	}
+
+	__host__ __device__ const T* getData() const {
 		return ((*dataSource) + offset);
 	}
 
@@ -47,17 +53,29 @@ public:
 
 	CudaAllocatedObj() {};
 
-	T& operator[](int index) {
+	__host__ __device__ T& operator[](int index) {
 		return data[index];
 	};
 
-	const T& operator[](int index) const {
+	__host__ __device__ const T& operator[](int index) const {
 		return data[index];
 	};
 
-	T** getDataPointer() {
+	__host__ __device__ T** getDataPointer() {
 		return &data;
 	};
+
+	__host__ __device__ const T** getDataPointer() const {
+		return &data;
+	};
+
+	__host__ __device__ T* getData() {
+		return data;
+	}
+
+	__host__ __device__ const T* getData() const {
+		return data;
+	}
 
 	~CudaAllocatedObj() {
 		if (data != nullptr) {

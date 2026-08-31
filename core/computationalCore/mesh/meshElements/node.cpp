@@ -4,7 +4,7 @@ template<MeshDim dim>
 Node<dim>::Node(const std::array<double, meshDimSize(dim)>& pos) : pos(pos) {};
 
 template<MeshDim dim>
-Node<dim>::Node(const Point<meshDimToGeometryDim(dim)>& point) : pos(point.pos) {}
+Node<dim>::Node(const Point<mesh2geom(dim)>& point) : pos(point.pos) {}
 
 template<MeshDim dim>
 Node<dim>::Node(const MesherNode<dim>& mesherNode) : pos(mesherNode.pos) {};

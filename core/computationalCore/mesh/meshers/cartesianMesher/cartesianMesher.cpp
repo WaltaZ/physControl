@@ -142,6 +142,8 @@ void CartesianMesher<MeshDim::D3>::setDivisionPattern(
 
 const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 {
+	// TODO: Something breaks up when there's more than 1 boundary condition.
+
 	MesherMesh mesh = MesherMesh<MeshDim::D3>();
 
 	// Set up boundary conditions for the mesher
@@ -371,9 +373,10 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 							new Point<GeometryDim::D3>(mesh.nodes[facePointIDs[3]].pos)
 						);
 
+						auto test = surface.getAreaVector();
+
 						// FACE
-			
-						// TODO: Check if it's pointing outwards
+		
 						// TODO: Optimize that \/
 						F face{
 							VectorData<GeometryDim::D3>(surface.getAreaVector()),
@@ -454,7 +457,12 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 				Cuboid cellCuboid(
 					mesh.nodes[cell.nodeIDs[1]].pos[0] - mesh.nodes[cell.nodeIDs[0]].pos[0],
 					mesh.nodes[cell.nodeIDs[2]].pos[1] - mesh.nodes[cell.nodeIDs[0]].pos[1],
-					mesh.nodes[cell.nodeIDs[4]].pos[2] - mesh.nodes[cell.nodeIDs[0]].pos[2]
+					mesh.nodes[cell.nodeIDs[4]].pos[2] - mesh.nodes[cell.nodeIDs[0]].pos[2],
+					Point<GeometryDim::D3>({
+						mesh.nodes[cell.nodeIDs[0]].pos[0],
+						mesh.nodes[cell.nodeIDs[0]].pos[1],
+						mesh.nodes[cell.nodeIDs[0]].pos[2]
+					})
 				);
 
 				cell.centroid = cellCuboid.getCentroid();
@@ -470,20 +478,46 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 	for (auto& face : mesh.faces) {
 		C& ownerCell = mesh.cells[face.ownerCellID];
 		V ownerToFace(ownerCell.centroid, face.centroid);
+
+		// d_Cf
 		face.ownerData = CellData<GeometryDim::D3>{
 			VectorData<GeometryDim::D3>(ownerToFace)
 		};
+
+		// Check if the area vector is pointing outwards the owner cell
+
+		double d_Cf_dot_e_f = geometryOperations::vecDotProduct(
+			face.ownerData.centroidToFace.vector,
+			face.area.normal
+		);
+
+		if (d_Cf_dot_e_f < 0) {
+			face.area.vector.flip();
+			face.area.normal.flip();
+			d_Cf_dot_e_f *= -1;
+		}
 		
 		if (face.neighbourCellID.has_value()) {
 			C& neighbourCell = mesh.cells[face.neighbourCellID.value()];
-			V neighbourToFace(ownerCell.centroid, face.centroid);
+			V neighbourToFace(neighbourCell.centroid, face.centroid);
 
+			// d_Ff
 			face.neighbourData = CellData<GeometryDim::D3>{
 				VectorData<GeometryDim::D3>(neighbourToFace)
 			};
 
+			// d_CF
 			V ownerToNeighbour(ownerCell.centroid, neighbourCell.centroid);
 			face.ownerToNeighbourCell = VectorData<GeometryDim::D3>(ownerToNeighbour);
+			
+			// g_C
+
+			double denominator = d_Cf_dot_e_f - geometryOperations::vecDotProduct(
+				face.neighbourData.value().centroidToFace.vector,
+				face.area.normal
+			);
+
+			face.ownerFaceWeightFactor = d_Cf_dot_e_f / denominator;
 		}
 	}
 

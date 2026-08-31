@@ -160,19 +160,19 @@ namespace geometryOperations {
 namespace geometryPrint {
     void printP(const Point<GeometryDim::D2>& point) 
     {
-        std::cout << point.pos[0] << ", " << point.pos[1] << std::endl;
+        std::cout << "( " << point.pos[0] << ", " << point.pos[1] << " )\n";
     }
 
     void printV(const Vector<GeometryDim::D2>& point)
     {
-        std::cout << point.comp[0] << ", " << point.comp[1] << std::endl;
+        std::cout << "[ " << point.comp[0] << ", " << point.comp[1] << " ]\n";
     }
 
     void printP(const Point<GeometryDim::D3>& point) {
-        std::cout << point.pos[0] << ", " << point.pos[1] << ", " << point.pos[2] << std::endl;
+        std::cout << "( " << point.pos[0] << ", " << point.pos[1] << ", " << point.pos[2] << " )\n";
     }
 
     void printV(const Vector<GeometryDim::D3>& vector) {
-        std::cout << vector.comp[0] << ", " << vector.comp[1] << ", " << vector.comp[2] << std::endl;
+        std::cout << "[ " << vector.comp[0] << ", " << vector.comp[1] << ", " << vector.comp[2] << " ]\n";
     }
 }

@@ -2,15 +2,16 @@
 #include <geometry/geometry.h>
 #include <mesh/mesh.h>
 #include <problem/problem.h>
+#include <problem/tests.h>
 #include <visuals/displayer/displayer.h>
 
 int main() {
-	constexpr int amount = 20;
+	constexpr int amount = 10;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);
 
-	HeatTransferD3 problem = HeatTransferD3(problemGeometry);
+	HeatTransferProblemD3 problem = HeatTransferProblemD3(problemGeometry);
 	BoundaryConditionD3 test1(
 		BoundaryConditionType::Drichlet,
 		{5.0},
@@ -22,18 +23,18 @@ int main() {
 		)
 	);
 	
-	/*BoundaryConditionD3 test2(
+	BoundaryConditionD3 test2(
 		BoundaryConditionType::Drichlet,
 		{5.0},
 		RectangleD3(
-			new Point<GeometryDim::D3>({0.2, 4, 5}),
-			new Point<GeometryDim::D3>({1.5, 4, 5}),
-			new Point<GeometryDim::D3>({1.5, 4, 4.2}),
-			new Point<GeometryDim::D3>({0.2, 4, 4.2})
+			new Point<GeometryDim::D3>({ 5, 0.2, 0 }),
+			new Point<GeometryDim::D3>({ 5, 1.2, 0 }),
+			new Point<GeometryDim::D3>({ 5, 1.2, 0.4 }),
+			new Point<GeometryDim::D3>({ 5, 0.2, 0.4 })
 		)
 	);
-	*/
-	problem.addVelocityBoundaryCondition(test1);
+	
+	//problem.addVelocityBoundaryCondition(test1);
 	//problem.addVelocityBoundaryCondition(test2);
 
 	std::vector<double> division(amount + 1);
@@ -51,28 +52,15 @@ int main() {
 	Mesh<MeshDim::D3> mesh = mesher.generateMesh();
 	problem.initFields(mesh);
 
-	const auto& element = mesh.cells[mesh.cells.length-1];
+	fieldTests::setUpRadialScalarField(problem.fields.pressure, mesh, box.getCentroid());
 
-	//size_t size = mesh.getMeshSize();
+	/*for (int i = 0; i < mesh.getElements()->cells.length; i++) {
+		geometryPrint::printP(mesh.getElements()->cells[i].centroid);
+	}*/
 
-	//std::cout << size << " B" << "\n";
-	//std::cout << (double)size/ 1048576.0 << " MB" << "\n";
+	HeatTransferSimulationD3 simulation(problem, mesh);
 
-	for (int i = 0; i < problem.fields.temperature.values.length; i++) {
-		problem.fields.temperature.values[i] = pow(i, 1.1);
-	}
-
-	for (int i = 0; i < problem.fields.pressure.values.length; i++) {
-		problem.fields.pressure.values[i] = sqrt(i);
-	}
-
-	for (int i = 0; i < problem.fields.velocity.values.length; i++) {
-		problem.fields.velocity.values[i].comp[0] = pow(i, 1.1);
-		problem.fields.velocity.values[i].comp[1] = pow(i, 1.1);
-		problem.fields.velocity.values[i].comp[2] = pow(i, 1.1);
-	}
-
-	FieldDisplayer displayer(mesh, problem);
+	FieldDisplayer displayer = FieldDisplayer(simulation);
 
 	displayer.display();
 }

@@ -20,6 +20,7 @@ set(CMAKE_CUDA_STANDARD 20)
 set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
+set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
 # Path to vcpkg
 set(VCPKG_ROOT C:/dev/vcpkg)
@@ -30,29 +31,27 @@ include(${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
 set(PROJECT_NAME "physControl")
 project (${PROJECT_NAME} LANGUAGES CXX CUDA)
 
-find_Package(CUDAToolkit REQUIRED)
-
-#physControl
-add_subdirectory(core)
-add_subdirectory(utility)
-#add_subdirectory(app)
-
 # Executable
 add_executable(${PROJECT_NAME} "main.cpp")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
-	geometry
-	mesh
-	problem
-	#utility
-	#field
-	visuals
-)
+find_Package(CUDAToolkit REQUIRED)
 
 set_target_properties(
 	${PROJECT_NAME}
 	PROPERTIES
 	CUDA_SEPARABLE_COMPILATION ON
+)
+
+#physControl
+add_subdirectory(core)
+add_subdirectory(utility)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+	geometry
+	mesh
+	problem
+	visuals
+	simulation
 )
 
 find_package(VTK REQUIRED)

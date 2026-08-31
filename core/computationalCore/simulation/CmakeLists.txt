@@ -1,0 +1,15 @@
+set(simulationHppFiles
+	"include/simulation/simulation.h"
+	"include/simulation/discretization/gradient/gradient.h"
+	"include/simulation/discretization/gradient/simpleGradient.h"
+)
+
+set(simulationCppFiles
+	"simulation.cpp"
+	"discretization/gradient/simpleGradient.cu"
+)
+
+add_library(simulation ${simulationHppFiles} ${simulationCppFiles})
+
+target_include_directories(simulation PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(simulation PRIVATE mesh problem CUDA::cudart)

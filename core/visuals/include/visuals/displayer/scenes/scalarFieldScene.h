@@ -26,6 +26,8 @@ public:
 
 	void activateScene() override;
 
+	void updateScene() override;
+
 	ScalarFieldScene(
 		const std::string& fieldName,
 		vtkSmartPointer<vtkUnstructuredGrid> vtkGrid,
@@ -38,6 +40,8 @@ private:
 
 	vtkSmartPointer<vtkPlane> _vtkPlane;
 	vtkSmartPointer<vtkDoubleArray> _vtkFieldValues;
+	vtkSmartPointer<vtkLookupTable> _lut;
+	vtkSmartPointer<vtkPolyDataMapper> _mapper;
 
 	std::string _fieldName;
 	const Field<double, Cell<MeshDim::D3>>& _field;
@@ -47,7 +51,5 @@ private:
 	double _stepSize = 0.125;
 
 	void _orientPlane();
-
-	void _updatePlaneData();
 	void _setUpPlaneActor();
 };

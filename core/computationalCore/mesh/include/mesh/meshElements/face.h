@@ -10,8 +10,8 @@
 template<MeshDim dim>
 class Face {
 protected:
-	using V = VectorData<meshDimToGeometryDim(dim)>;
-	using P = Point<meshDimToGeometryDim(dim)>;
+	using V = VectorData<mesh2geom(dim)>;
+	using P = Point<mesh2geom(dim)>;
 public:
 
 	Face(
@@ -20,18 +20,33 @@ public:
 	);
 
 	V area;
+	P centroid;
 
 	CudaArray<uint32_t> faceNodeIDs;
 
 	uint32_t ownerCellID;
-	CellData<meshDimToGeometryDim(dim)> ownerData;
+	CellData<mesh2geom(dim)> ownerData;
+	std::optional<double> ownerFaceWeightFactor;
+
 
 	std::optional<int> neighbourCellID = std::nullopt;
-	std::optional<CellData<meshDimToGeometryDim(dim)>> neighbourData = std::nullopt;
+	std::optional<CellData<mesh2geom(dim)>> neighbourData = std::nullopt;
 
 	std::optional<V> ownerToNeighbourCell = std::nullopt;
 
+	__host__ __device__
 	bool isBoundary() const;
-};
 
-// TODO: Implement Boundary Face recognision.
+	__host__ __device__
+	const CellData<mesh2geom(dim)>& getCellData(uint32_t id) const;
+
+	__host__ __device__
+	double getWeightFactor(uint32_t id) const;
+
+	__host__ __device__
+	uint32_t getNeighbourCellID(uint32_t id) const;
+
+	__host__ __device__
+	VectorData<mesh2geom(dim)> getArea(uint32_t id) const;
+
+};

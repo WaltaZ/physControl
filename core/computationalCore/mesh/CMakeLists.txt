@@ -15,14 +15,13 @@ set(meshHppFiles
 
 set(meshCppFiles
 	"meshers/cartesianMesher/cartesianMesher.cpp"
-	"meshElements/face.cpp"
+	"meshElements/face.cu"
 	"meshElements/mesh.cpp"
 	"meshElements/node.cpp"
 	"meshElements/tests.cpp"
 	"meshElements/supportStructs.cpp"
 	"meshers/mesherElements.cpp"
 	"meshElements/cell.cpp"
-	"meshElements/boundaryPatch.cpp"
 )
 
 add_library(mesh 

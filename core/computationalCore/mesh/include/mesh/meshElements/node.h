@@ -12,7 +12,7 @@ struct Node {
 	std::array<double, meshDimSize(dim)> pos{};
 
 	Node(const std::array<double, meshDimSize(dim)>& pos);
-	Node(const Point<meshDimToGeometryDim(dim)>& point);
+	Node(const Point<mesh2geom(dim)>& point);
 	Node(const MesherNode<dim>& mesherNode);
 	Node();
 };

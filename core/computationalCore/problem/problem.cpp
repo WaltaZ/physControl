@@ -4,7 +4,7 @@ ProblemD3::ProblemD3(
 	const ProblemGeometryD3& geometry) : geometry(geometry) {
 }
 
-HeatTransferD3::HeatTransferD3(
+HeatTransferProblemD3::HeatTransferProblemD3(
 	const ProblemGeometryD3& geometry) : ProblemD3(geometry)
 {
 	boundaryConditions = std::vector<std::vector<BoundaryConditionD3>>{ 2 };
@@ -13,7 +13,7 @@ HeatTransferD3::HeatTransferD3(
 		BoundaryConditionD3Raw(BoundaryConditionType::Wall, {})
 	};
 }
-void HeatTransferD3::initBoundaryPatches(
+void HeatTransferProblemD3::initBoundaryPatches(
 	const std::vector<MesherBoundaryCondition>& mesherBC,
 	const std::vector<MesherBoundaryConditionRaw>& mesherBCDefault)
 {
@@ -45,35 +45,35 @@ void HeatTransferD3::initBoundaryPatches(
 	fields.temperature.initBoundaryPatches(boundaryPatches[1]);
 };
 
-void HeatTransferD3::initFields(const Mesh<MeshDim::D3>& mesh)
+void HeatTransferProblemD3::initFields(const Mesh<MeshDim::D3>& mesh)
 {
-	fields.velocity.initFiled(mesh.cells);
-	fields.temperature.initFiled(mesh.cells);
-	fields.massFlowRate.initFiled(mesh.faces);
-	fields.gradVelocity.initFiled(mesh.cells);
-	fields.pressure.initFiled(mesh.cells);
-	fields.gradPressure.initFiled(mesh.cells);
+	fields.velocity.initFiled(mesh.getElements()->cells);
+	fields.temperature.initFiled(mesh.getElements()->cells);
+	fields.massFlowRate.initFiled(mesh.getElements()->faces);
+	fields.gradVelocity.initFiled(mesh.getElements()->cells);
+	fields.pressure.initFiled(mesh.getElements()->cells);
+	fields.gradPressure.initFiled(mesh.getElements()->cells);
 }
 
-void HeatTransferD3::addVelocityBoundaryCondition(
+void HeatTransferProblemD3::addVelocityBoundaryCondition(
 	const BoundaryConditionD3& bc)
 {
 	boundaryConditions[0].push_back(bc);
 };
 
-void HeatTransferD3::addTemperatureBoundaryCondition(
+void HeatTransferProblemD3::addTemperatureBoundaryCondition(
 	const BoundaryConditionD3& bc)
 {
 	boundaryConditions[1].push_back(bc);
 }
 
-void HeatTransferD3::addVelocityInitialCondition(
+void HeatTransferProblemD3::addVelocityInitialCondition(
 	const Vector<GeometryDim::D3>& ic)
 {
 	fields.velocity.initialObj = ic;
 };
 
-void HeatTransferD3::addTemperatureInitialCondition(
+void HeatTransferProblemD3::addTemperatureInitialCondition(
 	const double& ic)
 {
 	fields.temperature.initialObj = ic;
