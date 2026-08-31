@@ -3,12 +3,26 @@
 #include <simulation/discretization/gradient/gradient.h>
 #include <cuda_runtime.h>
 
-namespace SimpleGradientCuda {
+namespace CUDA_SimpleGradient {
 
-	__global__ void _compute_EC_internalFaces(
+	__global__ void CUDA_compute_EC_internalFaces(
 		double* value,
 		Vector<GeometryDim::D3>* destVector,
-		CudaMesh<MeshDim::D3>* mesh);
+		CudaMesh<MeshDim::D3>* mesh
+	);
+	
+	__global__ void CUDA_compute_EF_noBC(
+		double* value,
+		Vector<GeometryDim::D3>* destVector,
+		CudaMesh<MeshDim::D3>* mesh
+	);
+
+	__global__ void CUDA_compute_EF_BC(
+		double* value,
+		Vector<GeometryDim::D3>* destVector,
+		CudaMesh<MeshDim::D3>* mesh,
+		BoundaryPatch* bp
+	);
 }
 
 class SimpleGradient : public Gradient<MeshDim::D3> {	

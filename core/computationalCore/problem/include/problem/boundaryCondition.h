@@ -6,9 +6,10 @@
 enum class BoundaryConditionType {
 	Drichlet,
 	Neumann,
+	Mixed,
 	Inlet,
 	Outlet,
-	Wall
+	NoSlip
 };
 
 struct BoundaryConditionD3Raw {

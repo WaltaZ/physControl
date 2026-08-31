@@ -71,7 +71,7 @@ Surface<dim>::P Surface<dim>::getCentroid() const
 {
 	// Calculating geocenter
 	int numOfPoints = vertices.size();
-	P geoCenter = geometryOperations::calculateGeoCenter(vertices);
+	P geoCenter = geomOp::calculateGeoCenter(vertices);
 
 	// Centroid
 	P centroid = P();
@@ -84,7 +84,7 @@ Surface<dim>::P Surface<dim>::getCentroid() const
 			index2 = 0;
 		}
 
-		V triangleArea = geometryOperations::calculateTriangleArea(
+		V triangleArea = geomOp::calculateTriangleArea(
 			*vertices[index1],
 			geoCenter,
 			*vertices[index2]
@@ -95,7 +95,7 @@ Surface<dim>::P Surface<dim>::getCentroid() const
 		);
 
 		P triangleGeoCenter =
-			geometryOperations::calculateGeoCenter(std::vector<P*>({
+			geomOp::calculateGeoCenter(std::vector<P*>({
 				vertices[index1],
 				&geoCenter,
 				vertices[index2]
@@ -114,14 +114,14 @@ Surface<dim>::V Surface<dim>::getAreaVector() const
 {
 	int numOfPoints = vertices.size();
 	V areaVector = V();
-	P geoCenter = geometryOperations::calculateGeoCenter(vertices);
+	P geoCenter = geomOp::calculateGeoCenter(vertices);
 	for (int i = 0; i < numOfPoints; i++) {
 		int index1 = i;
 		int index2 = i + 1;
 		if (i == numOfPoints - 1) {
 			index2 = 0;
 		}
-		V triangleArea = geometryOperations::calculateTriangleArea(
+		V triangleArea = geomOp::calculateTriangleArea(
 			*vertices[index1],
 			geoCenter,
 			*vertices[index2]

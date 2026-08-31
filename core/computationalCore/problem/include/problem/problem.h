@@ -34,7 +34,7 @@ private:
 	using F = Face<geom2mesh(GeometryDim::D3)>;
 public:
 	MainField<V, C> velocity = MainField<V, C>(V({0, 0, 0}));
-	MainField<double, C> temperature = MainField<double, C>(20);
+	MainField<double, C> temperature = MainField<double, C>(298);
 	Field<double, F> massFlowRate = Field<double, F>(0);
 	Field<M, C> gradVelocity = Field<M, C>(M({
 		0, 0, 0,

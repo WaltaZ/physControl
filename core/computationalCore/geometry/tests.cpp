@@ -26,11 +26,11 @@ namespace geometryTests {
 		S surface(points);
 
 		std::cout << "Area Vector: ";
-		geometryPrint::printV(surface.getAreaVector());
+		geomPrint::printV(surface.getAreaVector());
 		// Should be 0, 0, +/- 10.68
 
 		std::cout << "Centroid: ";
-		geometryPrint::printP(surface.getCentroid());
+		geomPrint::printP(surface.getCentroid());
 		// Should be 1.75, 2.88, 0
 
 		std::cout << "Area: " << surface.getAreaVector().getMagnitude() << std::endl;
@@ -70,7 +70,7 @@ namespace geometryTests {
 		std::cout << "Volume: " << volume << std::endl << "Centroid: ";
 		// Should be 2.3333
 
-		geometryPrint::printP(centroid);
+		geomPrint::printP(centroid);
 		// Should be 0.8036, 0.8036, 0.3929
 	}
 
@@ -94,11 +94,11 @@ namespace geometryTests {
 		// Should be 2.23607
 
 		std::cout << "Line area vector: ";
-		geometryPrint::printV(areaVector);
+		geomPrint::printV(areaVector);
 		// Should be -2, 1
 
 		std::cout << "Line centroid: ";
-		geometryPrint::printP(centroid);
+		geomPrint::printP(centroid);
 		// Should be 1.5, 2
 	}
 
@@ -111,10 +111,10 @@ namespace geometryTests {
 		P3 p3({ 5, 5, 5 });
 		P3 p4({ 2, 1, 3 });
 
-		std::cout << geometryOperations::arePointsColinear<GeometryDim::D3>({ &p1, &p2, &p3 }) << std::endl;
+		std::cout << geomOp::arePointsColinear<GeometryDim::D3>({ &p1, &p2, &p3 }) << std::endl;
 		// Should be true
 
-		std::cout << geometryOperations::arePointsColinear<GeometryDim::D3>({ &p1, &p2, &p4 }) << std::endl;
+		std::cout << geomOp::arePointsColinear<GeometryDim::D3>({ &p1, &p2, &p4 }) << std::endl;
 		// Should be false
 
 		std::vector<P3*> coplanar({
@@ -126,7 +126,7 @@ namespace geometryTests {
 			new P3({3, -2, -1})     // z = -1
 			});
 
-		std::cout << geometryOperations::arePointsCoplanar(coplanar) << std::endl;
+		std::cout << geomOp::arePointsCoplanar(coplanar) << std::endl;
 		// Should be true
 
 		std::vector<P3*> nonCoplanar({
@@ -138,7 +138,7 @@ namespace geometryTests {
 			new P3({3, -2, 0})      // should be z = -1, but is z = 0
 			});
 
-		std::cout << geometryOperations::arePointsCoplanar(nonCoplanar) << std::endl;
+		std::cout << geomOp::arePointsCoplanar(nonCoplanar) << std::endl;
 		// Should be false
 	}
 }

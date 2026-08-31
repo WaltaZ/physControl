@@ -2,12 +2,14 @@
 
 #include "vector.h"
 #include "point.h"
+#include "matrixTensor.h"
 
 #include <iostream>
 #include <vector>
 #include <assert.h>
+#include <utility/cudaUtils.h>
 
-namespace geometryOperations {
+namespace geomOp {
 
 	using V2 = Vector<GeometryDim::D2>;
 	using V3 = Vector<GeometryDim::D3>;
@@ -37,9 +39,15 @@ namespace geometryOperations {
 
 }
 
+namespace geomUtils {
+	template<typename T>
+	__host__ __device__
+	CudaArray<double> getComponents(T* obj);
+}
+
 // ------------------- Print geometry -----------------------
 
-namespace geometryPrint {
+namespace geomPrint {
 
 	void printP(const Point<GeometryDim::D2>& point);
 

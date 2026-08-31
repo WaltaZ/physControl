@@ -486,7 +486,7 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 
 		// Check if the area vector is pointing outwards the owner cell
 
-		double d_Cf_dot_e_f = geometryOperations::vecDotProduct(
+		double d_Cf_dot_e_f = geomOp::vecDotProduct(
 			face.ownerData.centroidToFace.vector,
 			face.area.normal
 		);
@@ -512,7 +512,7 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 			
 			// g_C
 
-			double denominator = d_Cf_dot_e_f - geometryOperations::vecDotProduct(
+			double denominator = d_Cf_dot_e_f - geomOp::vecDotProduct(
 				face.neighbourData.value().centroidToFace.vector,
 				face.area.normal
 			);

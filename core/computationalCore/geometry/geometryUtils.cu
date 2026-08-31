@@ -1,6 +1,6 @@
 #include "include/geometry/geometryUtils.h"
 
-namespace geometryOperations {
+namespace geomOp {
 
     // -------------------------------- Dot product ------------------------------------
 
@@ -104,7 +104,7 @@ namespace geometryOperations {
         for (int i = 0; i < points.size() - 2; i++) {
             Vector<dim> vecA(*points[i], *points[i + 1]);
             Vector<dim> vecB(*points[i + 1], *points[i + 2]);
-            V3 result = geometryOperations::vecCrossProduct(vecA, vecB);
+            V3 result = geomOp::vecCrossProduct(vecA, vecB);
             double mag = result.getMagnitude();
             areColinear = (abs(mag) < tolerance);
             if (!areColinear) { break; };
@@ -128,10 +128,10 @@ namespace geometryOperations {
         for (int i = 0; i < points.size() - 2; i++) {
             for (int j = i + 1; j < points.size() - 1; j++) {
                 for (int k = j + 1; k < points.size(); k++) {
-                    bool areColinear = geometryOperations::arePointsColinear<GeometryDim::D3>({ points[i], points[j], points[k] });
+                    bool areColinear = geomOp::arePointsColinear<GeometryDim::D3>({ points[i], points[j], points[k] });
                     if (!areColinear) {
                         foundPlane = true;
-                        baseNVector = geometryOperations::vecCrossProduct(V3(*points[i], *points[j]), V3(*points[i], *points[k])).getNormal();
+                        baseNVector = geomOp::vecCrossProduct(V3(*points[i], *points[j]), V3(*points[i], *points[k])).getNormal();
                         basePointIndex = i;
                         break;
                     }
@@ -146,7 +146,7 @@ namespace geometryOperations {
         for (int i = 1; i < points.size(); i++) {
             if (i != basePointIndex) {
                 V3 v(*points[basePointIndex], *points[i]);
-                double dot = geometryOperations::vecDotProduct(baseNVector, v);
+                double dot = geomOp::vecDotProduct(baseNVector, v);
                 if (abs(dot) > tolerance) {
                     return false;
                 }
@@ -157,7 +157,33 @@ namespace geometryOperations {
     }
 }
 
-namespace geometryPrint {
+namespace geomUtils {
+    template<typename T>
+    __host__ __device__
+    CudaArray<double> getComponents(T* obj) {
+        return CudaArray<double>(nullptr, 0, 0);
+    };
+
+    template<>
+    __host__ __device__
+    CudaArray<double> getComponents(double* obj) {
+        return CudaArray<double>(obj, 0, 1);
+    };
+
+    template<>
+    __host__ __device__
+    CudaArray<double> getComponents(Vector<GeometryDim::D3>* obj) {
+        return CudaArray<double>(obj->comp.data(), 0, 3);
+    };
+
+    template<>
+    __host__ __device__
+    CudaArray<double> getComponents(MatrixTensor<GeometryDim::D3>* obj) {
+        return CudaArray<double>(obj->comp.data(), 0, 9);
+    };
+}
+
+namespace geomPrint {
     void printP(const Point<GeometryDim::D2>& point) 
     {
         std::cout << "( " << point.pos[0] << ", " << point.pos[1] << " )\n";

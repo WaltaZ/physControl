@@ -9,7 +9,7 @@ _Line<dim>::~_Line(){};
 template<GeometryDim dim>
 _Line<dim>::P _Line<dim>::getCentroid()
 {
-	return geometryOperations::calculateGeoCenter(std::vector<P*>({ start, end }));
+	return geomOp::calculateGeoCenter(std::vector<P*>({ start, end }));
 }
 
 template<GeometryDim dim>

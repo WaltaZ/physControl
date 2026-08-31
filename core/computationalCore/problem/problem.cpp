@@ -9,8 +9,8 @@ HeatTransferProblemD3::HeatTransferProblemD3(
 {
 	boundaryConditions = std::vector<std::vector<BoundaryConditionD3>>{ 2 };
 	defaultBoundaryConditions = std::vector<BoundaryConditionD3Raw>{
-		BoundaryConditionD3Raw(BoundaryConditionType::Wall, {}),
-		BoundaryConditionD3Raw(BoundaryConditionType::Wall, {})
+		BoundaryConditionD3Raw(BoundaryConditionType::NoSlip, {}),
+		BoundaryConditionD3Raw(BoundaryConditionType::Mixed, {283, 5, 1.708e-5}) // [K], [W/(m^2 * K)], viscosity
 	};
 }
 void HeatTransferProblemD3::initBoundaryPatches(

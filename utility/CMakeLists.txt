@@ -6,6 +6,7 @@ set(utilityHppFiles
 
 set(utilityCppFiles
 	"mathUtils.cpp"
+	"cudaUtils.cpp"
 )
 
 add_library(utility STATIC
