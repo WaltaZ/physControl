@@ -22,20 +22,21 @@ public:
 	V area;
 	P centroid;
 
+	bool isBoundary = false;
+
 	CudaArray<uint32_t> faceNodeIDs;
 
 	uint32_t ownerCellID;
 	CellData<mesh2geom(dim)> ownerData;
-	std::optional<double> ownerFaceWeightFactor;
+
+	// --------------------------- Only valid for inner faces:
+	double ownerFaceWeightFactor;
 
 
-	std::optional<int> neighbourCellID = std::nullopt;
-	std::optional<CellData<mesh2geom(dim)>> neighbourData = std::nullopt;
+	uint32_t neighbourCellID;
+	CellData<mesh2geom(dim)> neighbourData;
 
-	std::optional<V> ownerToNeighbourCell = std::nullopt;
-
-	__host__ __device__
-	bool isBoundary() const;
+	V ownerToNeighbourCell;
 
 	__host__ __device__
 	const CellData<mesh2geom(dim)>& getCellData(uint32_t id) const;

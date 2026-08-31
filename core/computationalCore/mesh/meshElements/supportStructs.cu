@@ -1,9 +1,11 @@
 #include "../include/mesh/meshElements/supportStructs.h"
 
 template<GeometryDim dim>
+__host__ __device__
 VectorData<dim>::VectorData(){};
 
 template<GeometryDim dim>
+__host__ __device__
 VectorData<dim>::VectorData(
 	const V& vector,
 	const V& normal,
@@ -12,6 +14,7 @@ VectorData<dim>::VectorData(
 {};
 
 template<GeometryDim dim>
+__host__ __device__
 VectorData<dim>::VectorData(Vector<dim> vector) :
 	vector(vector), normal(vector.getNormal()), magnitude(vector.getMagnitude())
 {};

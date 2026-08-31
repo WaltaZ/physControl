@@ -14,8 +14,18 @@ void SimpleGradient::compute(
 			field.values.getData(),
 			destField.values.getData(),
 			mesh.getElements());
-	cudaDeviceSynchronize();
 
+	cudaError_t err = cudaGetLastError();
+
+	if (err != cudaSuccess) {
+		printf("Kernel launch error: %s\n", cudaGetErrorString(err));
+	}
+
+	err = cudaDeviceSynchronize();
+
+	if (err != cudaSuccess) {
+		printf("Kernel execution error: %s\n", cudaGetErrorString(err));
+	}
 };
 
 void SimpleGradient::compute(
@@ -39,21 +49,13 @@ __global__ void SimpleGradientCuda::_compute_EC_internalFaces(
 		for (int i = 0; i < cell.cellFaceIDs.length; i++) {
 			const auto& face = mesh->faces[cell.cellFaceIDs[i]];
 
-			if (!face.isBoundary()) {
+			if (!face.isBoundary) {
 
 				double g_C = face.getWeightFactor(id);
 				double g_F = 1 - g_C;
 
 				double faceValue = (g_C * values[id]) + (g_F * values[face.getNeighbourCellID(id)]);
 				grad = grad + (face.getArea(id).vector * faceValue);
-
-				printf(
-					"cell=%u face=%u owner=%u neighbour=%u\n",
-					id,
-					cell.cellFaceIDs[i],
-					face.ownerCellID,
-					face.getNeighbourCellID(id)
-				);
 			}
 		}
 		destVector[id] = grad / cell.volume;

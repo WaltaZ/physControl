@@ -19,7 +19,7 @@ set(meshCppFiles
 	"meshElements/mesh.cpp"
 	"meshElements/node.cpp"
 	"meshElements/tests.cpp"
-	"meshElements/supportStructs.cpp"
+	"meshElements/supportStructs.cu"
 	"meshers/mesherElements.cpp"
 	"meshElements/cell.cpp"
 )

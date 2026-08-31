@@ -23,27 +23,35 @@ public:
 	uint32_t offset;
 	uint32_t length;
 
-	CudaArray(T** dataSource, uint32_t offset, uint32_t length) : 
-		dataSource(dataSource), offset(offset), length(length) {};
+	CudaArray(T* data, uint32_t offset, uint32_t length) : 
+		data(data), offset(offset), length(length) {};
 
 	__host__ __device__ T& operator[](size_t index) {
-		return (*dataSource)[index + offset];
+		return data[index + offset];
 	};
 
 	__host__ __device__ const T& operator[](size_t index) const {
-		return (*dataSource)[index + offset];
+		return data[index + offset];
+	};
+
+	__host__ __device__ T** getDataPointer() {
+		return &data;
+	};
+
+	__host__ __device__ const T** getDataPointer() const {
+		return &data;
 	};
 
 	__host__ __device__ T* getData() {
-		return ((*dataSource) + offset);
+		return (data + offset);
 	}
 
 	__host__ __device__ const T* getData() const {
-		return ((*dataSource) + offset);
+		return (data + offset);
 	}
 
 private:
-	T** dataSource;
+	T* data;
 };
 
 template<typename T>
@@ -81,6 +89,7 @@ public:
 		if (data != nullptr) {
 			cudaFree(data);
 		}
+		
 	}
 
 private:

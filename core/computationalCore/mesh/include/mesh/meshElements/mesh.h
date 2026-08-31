@@ -14,8 +14,6 @@ struct MeshElementsIDs {
 	CudaAllocatedObj<uint32_t> cellNodeIDs;
 	CudaAllocatedObj<uint32_t> cellFaceIDs;
 	CudaAllocatedObj<uint32_t> cellNeighbourCells;
-
-	~MeshElementsIDs();
 };
 
 template<MeshDim dim>

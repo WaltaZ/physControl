@@ -14,13 +14,17 @@ struct VectorData {
 	V normal;
 	double magnitude;
 	
+	__host__ __device__
 	VectorData();
+
+	__host__ __device__
 	VectorData(
 		const V& vector,
 		const V& normal,
 		const double& magnitude
 	);
 
+	__host__ __device__
 	VectorData(Vector<dim> vector);
 };
 

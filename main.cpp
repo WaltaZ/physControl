@@ -6,7 +6,7 @@
 #include <visuals/displayer/displayer.h>
 
 int main() {
-	constexpr int amount = 10;
+	constexpr int amount = 20;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);
@@ -53,10 +53,6 @@ int main() {
 	problem.initFields(mesh);
 
 	fieldTests::setUpRadialScalarField(problem.fields.pressure, mesh, box.getCentroid());
-
-	/*for (int i = 0; i < mesh.getElements()->cells.length; i++) {
-		geometryPrint::printP(mesh.getElements()->cells[i].centroid);
-	}*/
 
 	HeatTransferSimulationD3 simulation(problem, mesh);
 
