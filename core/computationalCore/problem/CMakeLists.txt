@@ -13,7 +13,7 @@ set(problemCppFiles
 	"problem.cpp"
 	"problemGeometry.cpp"
 	"boundaryCondition.cpp"
-	"boundaryPatch.cpp"
+	"boundaryPatch.cu"
 )
 
 add_library(problem ${problemHppFiles} ${problemCppFiles})

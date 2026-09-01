@@ -21,16 +21,15 @@ MesherBoundaryCondition CartesianMesher<MeshDim::D3>::_getMesherBCFromSurface(co
 	V v23(*surface.vertices[1], *surface.vertices[2]);
 
 	// The type of field
-	Cuboid::FaceType faceType;
+	Cuboid::FaceType faceType{};
 
 	auto checkAxis = [](const V& v) {
-		constexpr double eps = 1e-11;
 
 		int zeroCount = 0;
 		int axis = 0;
 
 		for (int i = 0; i < 3; i++) {
-			if (std::abs(v.comp[i]) < eps) {
+			if (calc::approxEq<double>(v.comp[i], 0)){
 				zeroCount++;
 			}
 			else {
@@ -38,46 +37,56 @@ MesherBoundaryCondition CartesianMesher<MeshDim::D3>::_getMesherBCFromSurface(co
 			}
 		}
 
-		assert(zeroCount == 2, "The rectangle doesn't lie on one of the axes");
+		assert(zeroCount == 2 && "The rectangle doesn't lie on one of the axes");
 		return axis;
 	};
 
 	int axis12 = checkAxis(v12);
 	int axis23 = checkAxis(v23);
 
+	bool isFaceTypeSet = false;
+
 	if ((axis12 == 1 && axis23 == 2) || (axis12 == 2 && axis23 == 1)) {
 		// YZ
 		
-		if (surface.vertices[0]->pos[0] == cuboid.points[0]->pos[0]) {
+		if (calc::approxEq(surface.vertices[0]->pos[0], cuboid.points[0]->pos[0])) {
 			faceType = Cuboid::FaceType::Back;
+			isFaceTypeSet = true;
 		}
-		else if (surface.vertices[0]->pos[0] == cuboid.points[1]->pos[0]) {
+		else if (calc::approxEq(surface.vertices[0]->pos[0], cuboid.points[1]->pos[0])) {
 			faceType = Cuboid::FaceType::Front;
+			isFaceTypeSet = true;
 		};
 	}
 	else if ((axis12 == 0 && axis23 == 2) || (axis12 == 2 && axis23 == 0)) {
 		// XZ
 
-		if (surface.vertices[0]->pos[1] == cuboid.points[0]->pos[1]) {
+		if (calc::approxEq(surface.vertices[0]->pos[1], cuboid.points[0]->pos[1])) {
 			faceType = Cuboid::FaceType::Left;
+			isFaceTypeSet = true;
 		}
-		else if (surface.vertices[0]->pos[1] == cuboid.points[3]->pos[1]) {
+		else if (calc::approxEq(surface.vertices[0]->pos[1], cuboid.points[3]->pos[1])) {
 			faceType = Cuboid::FaceType::Right;
+			isFaceTypeSet = true;
 		};
 	}
 	else if ((axis12 == 0 && axis23 == 1) || (axis12 == 1 && axis23 == 0)) {
 		// XY
 
-		if (surface.vertices[0]->pos[2] == cuboid.points[0]->pos[2]) {
+		if (calc::approxEq(surface.vertices[0]->pos[2], cuboid.points[0]->pos[2])) {
 			faceType = Cuboid::FaceType::Bottom;
+			isFaceTypeSet = true;
 		}
-		else if (surface.vertices[0]->pos[2] == cuboid.points[4]->pos[2]) {
+		else if (calc::approxEq(surface.vertices[0]->pos[2], cuboid.points[4]->pos[2])) {
 			faceType = Cuboid::FaceType::Top;
+			isFaceTypeSet = true;
 		};
 	}
 	else {
 		throw("The shape is not a face");
 	}
+
+	if (!isFaceTypeSet) { throw("Could not classify boundary surface to a cuboid face"); }
 
 	// The array containing normalized (relative to the each cuboid's length) points, marking start and the end of the boundary condition 
 	// along the proper axis. The pair is either XY, XZ or YZ (the lower [in terms of indexing] axis is always first)
@@ -158,6 +167,12 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 
 	// Patch the divisions for the boundaries to stick to the nodes:
 
+	auto sortUnique = [](std::vector<double>& v) {
+		sort(v.begin(), v.end());
+		auto it = unique(v.begin(), v.end(), calc::approxEq<double>);
+		v.erase(it, v.end());
+	};
+
 	if (!mesherBC.empty()) {
 		std::array<std::vector<double>, 3> divisionPatches;
 
@@ -179,7 +194,7 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 
 		for (int i = 0; i < 3; i++) {
 			if (!divisionPatches[i].empty()) {
-				std::sort(divisionPatches[i].begin(), divisionPatches[i].end());
+				sortUnique(divisionPatches[i]);
 
 				if (divisionPatches[i][divisionPatches[i].size() - 1] != 1.0) {
 					divisionPatches[i].emplace_back(1.0);
@@ -188,13 +203,15 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 					divisionPatches[i].insert(divisionPatches[i].begin(), 0);
 				}
 				divisionPattern[i] = mathUtils::linearlyInterpolatePointsWithSpacing(divisionPatches[i], (1 / (double)refinments[i]));
-				/*
+				
 				for (auto& t : divisionPattern[i]) {
 					std::cout << "[ " << i << " ] " << cuboid.points[0]->pos[i] + (_getCuboidDimension(i) * t) << std::endl;
-				}*/
+				}
 			}
 		}
 	}
+
+	auto test = divisionPattern[2][0] == divisionPattern[2][1];
 
 	const std::array<int, 3> sizes = {
 		divisionPattern[0].size(),
@@ -518,6 +535,20 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 			);
 
 			face.ownerFaceWeightFactor = d_Cf_dot_e_f / denominator;
+		}
+	}
+
+	for (auto& bc : mesherBC) {
+		for (auto& faceID : bc.faceIDs) {
+			auto& face = mesh.faces[faceID];
+			std::cout 
+				<< "Face: " 
+				<< faceID 
+				<< ", Owner: " 
+				<< face.ownerCellID 
+				<< ", Has neighbour: " 
+				<< face.neighbourCellID.has_value()
+				;
 		}
 	}
 

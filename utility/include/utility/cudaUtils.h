@@ -30,6 +30,7 @@ public:
 	uint32_t offset;
 	uint32_t length;
 
+	__host__ __device__
 	CudaArray(T* data, uint32_t offset, uint32_t length) : 
 		data(data), offset(offset), length(length) {};
 
@@ -66,6 +67,7 @@ class CudaAllocatedObj {
 public:
 	uint32_t length = 0;
 
+	__host__ __device__
 	CudaAllocatedObj() {};
 
 	__host__ __device__ T& operator[](int index) {

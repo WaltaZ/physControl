@@ -6,6 +6,7 @@
 
 #include <problem/problem.h>
 #include <utility/mathUtils.h>
+#include <utility/utility.h>
 #include <geometry/shapes/cuboid.h>
 #include <geometry/shapes/rectangle.h>
 #include <algorithm>

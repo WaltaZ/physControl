@@ -10,7 +10,7 @@ HeatTransferProblemD3::HeatTransferProblemD3(
 	boundaryConditions = std::vector<std::vector<BoundaryConditionD3>>{ 2 };
 	defaultBoundaryConditions = std::vector<BoundaryConditionD3Raw>{
 		BoundaryConditionD3Raw(BoundaryConditionType::NoSlip, {}),
-		BoundaryConditionD3Raw(BoundaryConditionType::Mixed, {283, 5, 1.708e-5}) // [K], [W/(m^2 * K)], viscosity
+		BoundaryConditionD3Raw(BoundaryConditionType::Mixed, {283, 0.01, 0.0264}) // [K], [W/(m^2 * K)] (convection coeff), thermal conductivity (gamma)
 	};
 }
 void HeatTransferProblemD3::initBoundaryPatches(
@@ -26,7 +26,7 @@ void HeatTransferProblemD3::initBoundaryPatches(
 		boundaryPatches[i].reserve(boundaryConditions[i].size() + 1);
 
 		for (int j = 0; j < boundaryConditions[i].size(); j++) {
-			boundaryPatches[j].emplace_back(
+			boundaryPatches[i].emplace_back(
 				boundaryConditions[i][j].type,
 				mesherBC[mesherBCIndex].faceIDs,
 				boundaryConditions[i][j].values
@@ -49,6 +49,7 @@ void HeatTransferProblemD3::initFields(const Mesh<MeshDim::D3>& mesh)
 {
 	fields.velocity.initFiled(mesh.getElements()->cells);
 	fields.temperature.initFiled(mesh.getElements()->cells);
+	fields.gradTemperature.initFiled(mesh.getElements()->cells);
 	fields.massFlowRate.initFiled(mesh.getElements()->faces);
 	fields.gradVelocity.initFiled(mesh.getElements()->cells);
 	fields.pressure.initFiled(mesh.getElements()->cells);

@@ -19,5 +19,5 @@ struct BoundaryPatch {
 	BoundaryConditionType type;
 
 	CudaArray<uint32_t> faceIDs;
-	CudaArray<uint32_t> values;
+	CudaArray<double> values;
 };

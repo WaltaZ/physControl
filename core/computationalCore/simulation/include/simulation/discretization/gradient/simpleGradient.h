@@ -5,9 +5,10 @@
 
 namespace CUDA_SimpleGradient {
 
+	template<typename Obj, typename ObjDest>
 	__global__ void CUDA_compute_EC_internalFaces(
-		double* value,
-		Vector<GeometryDim::D3>* destVector,
+		Obj* obj,
+		ObjDest* destObj,
 		CudaMesh<MeshDim::D3>* mesh
 	);
 	

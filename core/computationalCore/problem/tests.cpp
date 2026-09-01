@@ -9,7 +9,7 @@ namespace fieldTests {
 		std::cout << "Test\n";
 		for (int i = 0; i < field.values.length; i++) {
 			double r = Vector<GeometryDim::D3>(center, mesh.getElements()->cells[i].centroid).getMagnitude();
-			field.values[i] = 1/pow(r, 2);
+			field.values[i] = 1/r + 293;
 		}
 	}
 }

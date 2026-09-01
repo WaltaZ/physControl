@@ -2,6 +2,7 @@
 
 #include <mesh/meshElements/meshElements.h>
 #include <problem/problem.h>
+#include <geometry/geometryUtils.h>
 
 #include "discretization/gradient/simpleGradient.h"
 

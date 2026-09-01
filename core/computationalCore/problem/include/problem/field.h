@@ -10,6 +10,13 @@ struct Field {
     CudaAllocatedObj<DataType> values;
     DataType initialObj;
 
+    CudaAllocatedObj<BoundaryPatch> boundaryPatches;
+
+    CudaAllocatedObj<uint32_t> bpFaceIDs;
+    CudaAllocatedObj<double> bpValues;
+
+    Field(const DataType& obj = DataType()) : initialObj(obj) {};
+    
     bool isInitilized() {
         if (values.length != 0) {
             return true;
@@ -26,19 +33,7 @@ struct Field {
         }
     };
 
-    Field(const DataType& initialObj = DataType()) : initialObj(initialObj) {};
-};
 
-template<typename DataType, typename StoragePlace>
-struct MainField : public Field<DataType, StoragePlace> {
-
-    CudaAllocatedObj<BoundaryPatch> boundaryPatches;
-
-    CudaAllocatedObj<uint32_t> bpFaceIDs;
-    CudaAllocatedObj<uint32_t> bpValues;
-
-    MainField(
-        const DataType& obj = DataType()) : Field<DataType, StoragePlace>(obj) {};
 
     void initBoundaryPatches(const std::vector<ProblemBoundaryPatch>& boundaryPatches) {
 
@@ -46,14 +41,19 @@ struct MainField : public Field<DataType, StoragePlace> {
         this->boundaryPatches.length = boundaryPatches.size();
 
         std::vector<uint32_t> bpFaceIDs;
-        std::vector<uint32_t> values;
+        std::vector<uint32_t> bpFaceOffset;
+
+        std::vector<double> values;
+        std::vector<double> valuesOffset;
 
         for (size_t i = 0; i < boundaryPatches.size(); i++) {
+            bpFaceOffset.emplace_back(bpFaceIDs.size());
             bpFaceIDs.insert(
                 bpFaceIDs.end(), 
                 boundaryPatches[i].faceIDs.begin(), 
                 boundaryPatches[i].faceIDs.end());
 
+            valuesOffset.emplace_back(valuesOffset.size());
             values.insert(
                 values.end(), 
                 boundaryPatches[i].values.begin(), 
@@ -64,7 +64,7 @@ struct MainField : public Field<DataType, StoragePlace> {
         this->bpFaceIDs.length = bpFaceIDs.size();
 
         if (values.size() > 0) {
-            cudaMallocManaged(this->bpValues.getDataPointer(), values.size() * sizeof(uint32_t));
+            cudaMallocManaged(this->bpValues.getDataPointer(), values.size() * sizeof(double));
             this->bpValues.length = values.size();
         }
 
@@ -73,12 +73,12 @@ struct MainField : public Field<DataType, StoragePlace> {
                 boundaryPatches[i].type,
                 CudaArray<uint32_t>(
                     this->bpFaceIDs.getData(),
-                    static_cast<uint32_t>(bpFaceIDs.size()),
+                    bpFaceOffset[i],
                     static_cast<uint32_t>(boundaryPatches[i].faceIDs.size())
                 ),
-                CudaArray<uint32_t>(
+                CudaArray<double>(
                     this->bpValues.getData(),
-                    static_cast<uint32_t>(values.size()),
+                    valuesOffset[i],
                     static_cast<uint32_t>(boundaryPatches[i].values.size())
                 )
             };

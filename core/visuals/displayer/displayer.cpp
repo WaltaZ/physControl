@@ -95,6 +95,11 @@ FieldDisplayer::FieldDisplayer(
 		_vtkGrid,
 		problem.fields.temperature
 	));
+	_scenes.push_back(std::make_unique<VectorFieldScene>(
+		"GradTemp",
+		_vtkGrid,
+		problem.fields.gradTemperature
+	));
 
 	_scenes.push_back(std::make_unique<VectorFieldScene>(
 		"Velocity",
@@ -131,6 +136,7 @@ void FieldDisplayer::handleKeyPress(const std::string& key)
 	}
 	else if (key == "space") {
 		_simulation.nextStep();
+
 		for (auto& scene : _scenes) {
 			scene->updateScene();
 		}

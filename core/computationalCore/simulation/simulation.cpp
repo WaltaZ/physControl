@@ -21,6 +21,12 @@ void HeatTransferSimulationD3::nextStep()
 	// Update all the fields as a next step
 	auto gradient = SimpleGradient();
 
-	gradient.compute(_problem.fields.pressure, _problem.fields.gradPressure, _mesh);
+	gradient.compute(
+		_problem.fields.temperature, 
+		_problem.fields.gradTemperature, 
+		_mesh);
 
+	/*for (int i = 0; i < _problem.fields.gradTemperature.values.length; i++) {
+		geomPrint::printV(_problem.fields.gradTemperature.values[i]);
+	}*/
 }
