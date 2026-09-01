@@ -1,0 +1,16 @@
+#include "../include/mesh/meshElements/node.h"
+
+template<MeshDim dim>
+Node<dim>::Node(const std::array<double, meshDimSize(dim)>& pos) : pos(pos) {};
+
+template<MeshDim dim>
+Node<dim>::Node(const Point<mesh2geom(dim)>& point) : pos(point.pos) {}
+
+template<MeshDim dim>
+Node<dim>::Node(const MesherNode<dim>& mesherNode) : pos(mesherNode.pos) {};
+
+template<MeshDim dim>
+Node<dim>::Node() {};
+
+template class Node<MeshDim::D2>;
+template class Node<MeshDim::D3>;

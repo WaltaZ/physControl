@@ -1,0 +1,161 @@
+#include "../include/mesh/meshElements/mesh.h"
+
+#include <cuda_runtime.h>
+
+template<MeshDim dim>
+CudaMesh<dim>::CudaMesh(const MesherMesh<dim>& mesherMesh) {
+	// Allocating data into CPU and GPU
+
+	nodes.length = mesherMesh.nodes.size();
+	faces.length = mesherMesh.faces.size();
+	cells.length = mesherMesh.cells.size();
+
+	// Nodes --------------------------------------------------------------
+	cudaMallocManaged(nodes.getDataPointer(), nodes.length * sizeof(Node<dim>));
+	for (int i = 0; i < nodes.length; i++) {
+		nodes[i] = Node<dim>(mesherMesh.nodes[i]);
+	}
+
+	// Faces --------------------------------------------------------------
+	std::vector<uint32_t> faceNodeIDs;
+	std::vector<uint32_t> faceNodeOffsets;
+
+	cudaMallocManaged(faces.getDataPointer(), faces.length * sizeof(Face<dim>));
+	for (int i = 0; i < faces.length; i++) {
+		faceNodeOffsets.emplace_back(faceNodeIDs.size());
+		faceNodeIDs.insert(
+			faceNodeIDs.end(), 
+			mesherMesh.faces[i].nodeIDs.begin(), 
+			mesherMesh.faces[i].nodeIDs.end());
+
+	}
+
+	elementsIDs.faceNodeIDs.length = faceNodeIDs.size();
+	cudaMallocManaged(elementsIDs.faceNodeIDs.getDataPointer(), faceNodeIDs.size() * sizeof(uint32_t));
+
+	for (int i = 0; i < faces.length; i++) {
+		faces[i] = Face<dim>(
+			mesherMesh.faces[i],
+			CudaArray<uint32_t>(
+				elementsIDs.faceNodeIDs.getData(),
+				faceNodeOffsets[i],
+				static_cast<uint32_t>(mesherMesh.faces[i].nodeIDs.size())
+			)
+		);
+	}
+
+	std::copy(
+		faceNodeIDs.begin(),
+		faceNodeIDs.end(), 
+		elementsIDs.faceNodeIDs.getData());
+
+	// Cells --------------------------------------------------------------
+ 	std::vector<uint32_t> cellNodeIDs;
+	std::vector<uint32_t> cellNodeOffsets;
+
+	std::vector<uint32_t> cellFaceIDs;
+	std::vector<uint32_t> cellFaceOffests;
+
+	std::vector<uint32_t> cellNeighbourCells;
+	std::vector<uint32_t> cellcellNeighbourCellsOffsets;
+
+	cudaMallocManaged(cells.getDataPointer(), cells.length * sizeof(Cell<dim>));
+
+	for (int i = 0; i < cells.length; i++) {
+		cellNodeOffsets.emplace_back(cellNodeIDs.size());
+		cellNodeIDs.insert(
+			cellNodeIDs.end(), 
+			mesherMesh.cells[i].nodeIDs.begin(), 
+			mesherMesh.cells[i].nodeIDs.end());
+
+		cellFaceOffests.emplace_back(cellFaceIDs.size());
+		cellFaceIDs.insert(
+			cellFaceIDs.end(), 
+			mesherMesh.cells[i].faceIDs.begin(), 
+			mesherMesh.cells[i].faceIDs.end());
+
+		cellcellNeighbourCellsOffsets.emplace_back(cellNeighbourCells.size());
+		cellNeighbourCells.insert(
+			cellNeighbourCells.end(), 
+			mesherMesh.cells[i].neighbourCellsIDs.begin(), 
+			mesherMesh.cells[i].neighbourCellsIDs.end());
+	}
+
+	elementsIDs.cellNodeIDs.length = cellNodeIDs.size();
+	cudaMallocManaged(
+		elementsIDs.cellNodeIDs.getDataPointer(), 
+		cellNodeIDs.size() * sizeof(uint32_t));
+
+	elementsIDs.cellFaceIDs.length = cellFaceIDs.size();
+	cudaMallocManaged(
+		elementsIDs.cellFaceIDs.getDataPointer(), 
+		cellFaceIDs.size() * sizeof(uint32_t));
+
+	elementsIDs.cellNeighbourCells.length = cellNeighbourCells.size();
+	cudaMallocManaged(
+		elementsIDs.cellNeighbourCells.getDataPointer(), 
+		cellNeighbourCells.size() * sizeof(uint32_t));
+
+	auto test = elementsIDs.cellNodeIDs.getData();
+	
+	for (int i = 0; i < cells.length; i++) {
+		cells[i] = Cell<dim>(
+			mesherMesh.cells[i],
+			CudaArray<uint32_t>(
+				elementsIDs.cellNodeIDs.getData(),
+				static_cast<uint32_t>(cellNodeOffsets[i]),
+				static_cast<uint32_t>(mesherMesh.cells[i].nodeIDs.size())
+			),
+			CudaArray<uint32_t>(
+				elementsIDs.cellFaceIDs.getData(),
+				static_cast<uint32_t>(cellFaceOffests[i]),
+				static_cast<uint32_t>(mesherMesh.cells[i].faceIDs.size())
+			),
+			CudaArray<uint32_t>(
+				elementsIDs.cellNeighbourCells.getData(),
+				static_cast<uint32_t>(cellcellNeighbourCellsOffsets[i]),
+				static_cast<uint32_t>(mesherMesh.cells[i].neighbourCellsIDs.size())
+			)
+		);
+	}
+
+	std::copy(
+		cellNodeIDs.begin(), 
+		cellNodeIDs.end(), 
+		elementsIDs.cellNodeIDs.getData());
+
+	std::copy(
+		cellFaceIDs.begin(), 
+		cellFaceIDs.end(), 
+		elementsIDs.cellFaceIDs.getData());
+
+	std::copy(
+		cellNeighbourCells.begin(), 
+		cellNeighbourCells.end(), 
+		elementsIDs.cellNeighbourCells.getData());
+}
+
+template class CudaMesh<MeshDim::D2>;
+template class CudaMesh<MeshDim::D3>;
+
+template<MeshDim dim>
+Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh)
+{
+	cudaMallocManaged(&_mesh, sizeof(CudaMesh<dim>));
+	new(_mesh) CudaMesh<dim>(mesherMesh);
+}
+
+template<MeshDim dim>
+CudaMesh<dim>* Mesh<dim>::getElements()
+{
+	return _mesh;
+}
+
+template<MeshDim dim>
+const CudaMesh<dim>* Mesh<dim>::getElements() const
+{
+	return _mesh;
+}
+
+template class Mesh<MeshDim::D2>;
+template class Mesh<MeshDim::D3>;
