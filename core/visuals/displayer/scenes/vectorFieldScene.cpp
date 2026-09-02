@@ -18,7 +18,7 @@ VectorFieldScene::VectorFieldScene(
 	_vectors->SetNumberOfTuples(_vtkGrid->GetNumberOfCells());
 
 	double magMax = 0;
-	double magMin = field.values[0].getMagnitude();
+	double magMin = field.getElements()->values[0].getMagnitude();
 
 	updateScene();
 
@@ -94,7 +94,7 @@ void VectorFieldScene::handleKeyPress(const std::string& key) {
 
 	if (key == "Up") {
 		int nextAmount = _amountOfVectors + _amountStep;
-		if (nextAmount > _field.values.length) { return; }
+		if (nextAmount > _field.getElements()->values.length) { return; }
 
 		setAmount(nextAmount);
 	}
@@ -113,16 +113,16 @@ void VectorFieldScene::activateScene() {
 void VectorFieldScene::updateScene()
 {
 	double magMax = 0;
-	double magMin = _field.values[0].getMagnitude();
+	double magMin = _field.getElements()->values[0].getMagnitude();
 
 	for (vtkIdType i = 0; i < _vtkGrid->GetNumberOfCells(); ++i)
 	{
 		_vectors->SetTuple3(
 			i,
-			_field.values[i].comp[0],
-			_field.values[i].comp[1],
-			_field.values[i].comp[2]);
-		double mag = _field.values[i].getMagnitude();
+			_field.getElements()->values[i].comp[0],
+			_field.getElements()->values[i].comp[1],
+			_field.getElements()->values[i].comp[2]);
+		double mag = _field.getElements()->values[i].getMagnitude();
 		if (mag > magMax) {
 			magMax = mag;
 		}

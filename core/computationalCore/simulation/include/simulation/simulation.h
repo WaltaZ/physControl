@@ -4,7 +4,8 @@
 #include <problem/problem.h>
 #include <geometry/geometryUtils.h>
 
-#include "discretization/gradient/simpleGradient.h"
+#include <simulation/discretization/gradient/gradientGauss.h>
+#include <simulation/linearSolver/linearSolverMatrix.h>
 
 class HeatTransferSimulationD3 {
 

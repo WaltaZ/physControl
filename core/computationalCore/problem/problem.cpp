@@ -41,19 +41,19 @@ void HeatTransferProblemD3::initBoundaryPatches(
 		);
 	}
 
-	fields.velocity.initBoundaryPatches(boundaryPatches[0]);
-	fields.temperature.initBoundaryPatches(boundaryPatches[1]);
+	fields.velocity.getElements()->initBoundaryPatches(boundaryPatches[0]);
+	fields.temperature.getElements()->initBoundaryPatches(boundaryPatches[1]);
 };
 
 void HeatTransferProblemD3::initFields(const Mesh<MeshDim::D3>& mesh)
 {
-	fields.velocity.initFiled(mesh.getElements()->cells);
-	fields.temperature.initFiled(mesh.getElements()->cells);
-	fields.gradTemperature.initFiled(mesh.getElements()->cells);
-	fields.massFlowRate.initFiled(mesh.getElements()->faces);
-	fields.gradVelocity.initFiled(mesh.getElements()->cells);
-	fields.pressure.initFiled(mesh.getElements()->cells);
-	fields.gradPressure.initFiled(mesh.getElements()->cells);
+	fields.velocity.getElements()->initFiled(mesh.getElements()->cells);
+	fields.temperature.getElements()->initFiled(mesh.getElements()->cells);
+	fields.gradTemperature.getElements()->initFiled(mesh.getElements()->cells);
+	fields.massFlowRate.getElements()->initFiled(mesh.getElements()->faces);
+	fields.gradVelocity.getElements()->initFiled(mesh.getElements()->cells);
+	fields.pressure.getElements()->initFiled(mesh.getElements()->cells);
+	fields.gradPressure.getElements()->initFiled(mesh.getElements()->cells);
 }
 
 void HeatTransferProblemD3::addVelocityBoundaryCondition(
@@ -71,11 +71,11 @@ void HeatTransferProblemD3::addTemperatureBoundaryCondition(
 void HeatTransferProblemD3::addVelocityInitialCondition(
 	const Vector<GeometryDim::D3>& ic)
 {
-	fields.velocity.initialObj = ic;
+	fields.velocity.getElements()->initialObj = ic;
 };
 
 void HeatTransferProblemD3::addTemperatureInitialCondition(
 	const double& ic)
 {
-	fields.temperature.initialObj = ic;
+	fields.temperature.getElements()->initialObj = ic;
 };

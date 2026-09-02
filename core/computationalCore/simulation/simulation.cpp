@@ -19,14 +19,12 @@ Mesh<MeshDim::D3>& HeatTransferSimulationD3::getMesh()
 void HeatTransferSimulationD3::nextStep()
 {
 	// Update all the fields as a next step
-	auto gradient = SimpleGradient();
+	auto gradient = GradientGauss();
 
 	gradient.compute(
 		_problem.fields.temperature, 
 		_problem.fields.gradTemperature, 
 		_mesh);
 
-	/*for (int i = 0; i < _problem.fields.gradTemperature.values.length; i++) {
-		geomPrint::printV(_problem.fields.gradTemperature.values[i]);
-	}*/
+	LinearSolverMatrix test{ _mesh };
 }

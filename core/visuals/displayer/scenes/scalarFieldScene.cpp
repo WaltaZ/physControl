@@ -133,7 +133,7 @@ void ScalarFieldScene::updateScene()
 {
     for (vtkIdType i = 0; i < _vtkGrid->GetNumberOfCells(); ++i)
     {
-        _vtkFieldValues->SetValue(i, _field.values[i]);
+        _vtkFieldValues->SetValue(i, _field.getElements()->values[i]);
     }
     _vtkFieldValues->Modified();
     

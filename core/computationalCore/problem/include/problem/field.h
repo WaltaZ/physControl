@@ -6,16 +6,18 @@
 #include <cuda_runtime.h>
 
 template<typename DataType, typename StoragePlace>
-struct Field {
+struct CudaField {
+public:
     CudaAllocatedObj<DataType> values;
     DataType initialObj;
 
     CudaAllocatedObj<BoundaryPatch> boundaryPatches;
+    uint32_t bpFaceIDsLengthMax = 0;
 
     CudaAllocatedObj<uint32_t> bpFaceIDs;
     CudaAllocatedObj<double> bpValues;
 
-    Field(const DataType& obj = DataType()) : initialObj(obj) {};
+    CudaField(const DataType& obj = DataType()) : initialObj(obj) {};
     
     bool isInitilized() {
         if (values.length != 0) {
@@ -33,11 +35,12 @@ struct Field {
         }
     };
 
-
-
     void initBoundaryPatches(const std::vector<ProblemBoundaryPatch>& boundaryPatches) {
 
-        cudaMallocManaged(this->boundaryPatches.getDataPointer(), boundaryPatches.size() * sizeof(BoundaryPatch));
+        cudaMallocManaged(
+            this->boundaryPatches.getDataPointer(), 
+            boundaryPatches.size() * sizeof(BoundaryPatch));
+
         this->boundaryPatches.length = boundaryPatches.size();
 
         std::vector<uint32_t> bpFaceIDs;
@@ -69,6 +72,10 @@ struct Field {
         }
 
         for (size_t i = 0; i < boundaryPatches.size(); i++) {
+            if (boundaryPatches[i].faceIDs.size() > bpFaceIDsLengthMax) {
+                bpFaceIDsLengthMax = boundaryPatches[i].faceIDs.size();
+            }
+
             this->boundaryPatches[i] = BoundaryPatch{
                 boundaryPatches[i].type,
                 CudaArray<uint32_t>(
@@ -98,4 +105,21 @@ struct Field {
             this->bpValues.getData()
         );
     }
+};
+
+template<typename DataType, typename StoragePlace>
+class Field {
+public:
+
+    Field(const DataType& obj = DataType()) 
+    {
+        cudaMallocManaged(&_field, sizeof(CudaField<DataType, StoragePlace>));
+
+        new(_field) CudaField<DataType, StoragePlace>(obj);
+    };
+
+    CudaField<DataType, StoragePlace>* getElements() { return _field; };
+    const CudaField<DataType, StoragePlace>* getElements() const { return _field; };
+private:
+    CudaField<DataType, StoragePlace>* _field;
 };

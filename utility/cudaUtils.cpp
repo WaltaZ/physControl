@@ -16,4 +16,17 @@ namespace cudaUtils {
 			printf("Kernel error: %s\n", cudaGetErrorString(err));
 		}
 	}
+
+	KernelArgs getKernelArgs(
+		int numOfElements,
+		int threadsPerBlock)
+	{
+		return KernelArgs{
+			static_cast<int>(
+				ceil( (double)numOfElements / 
+					(double)threadsPerBlock)),
+
+			threadsPerBlock
+		};
+	};
 }

@@ -204,9 +204,9 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 				}
 				divisionPattern[i] = mathUtils::linearlyInterpolatePointsWithSpacing(divisionPatches[i], (1 / (double)refinments[i]));
 				
-				for (auto& t : divisionPattern[i]) {
+				/*for (auto& t : divisionPattern[i]) {
 					std::cout << "[ " << i << " ] " << cuboid.points[0]->pos[i] + (_getCuboidDimension(i) * t) << std::endl;
-				}
+				}*/
 			}
 		}
 	}
@@ -535,20 +535,6 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 			);
 
 			face.ownerFaceWeightFactor = d_Cf_dot_e_f / denominator;
-		}
-	}
-
-	for (auto& bc : mesherBC) {
-		for (auto& faceID : bc.faceIDs) {
-			auto& face = mesh.faces[faceID];
-			std::cout 
-				<< "Face: " 
-				<< faceID 
-				<< ", Owner: " 
-				<< face.ownerCellID 
-				<< ", Has neighbour: " 
-				<< face.neighbourCellID.has_value()
-				;
 		}
 	}
 

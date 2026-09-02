@@ -3,6 +3,7 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 #include <cstdio>
+#include <cmath>
 
 namespace cudaConfig {
 	constexpr cudaMemLocation deviceLocation = {
@@ -18,10 +19,19 @@ namespace cudaConfig {
 	constexpr int defaultThreadsPerBlock = 256;
 }
 
+struct KernelArgs {
+	int blocks;
+	int threads = cudaConfig::defaultThreadsPerBlock;
+};
+
 namespace cudaUtils {
 	void fetchError();
 
 	void fetchError(cudaError_t(*operation)());
+
+	KernelArgs getKernelArgs(
+		int numOfElements,
+		int threadsPerBlock = cudaConfig::defaultThreadsPerBlock);
 }
 
 template<typename T>

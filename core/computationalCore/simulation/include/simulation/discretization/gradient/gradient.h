@@ -1,6 +1,5 @@
 #pragma once
 
-#include <utility/cudaUtils.h>
 #include <problem/field.h>
 #include <mesh/meshElements/meshElements.h>
 #include <geometry/geometry.h>
