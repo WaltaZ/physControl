@@ -1,9 +1,9 @@
 #include <simulation/discretization/gradient/gradientGauss.h>
-#include <geometry/vector.h>
 
-void GradientGauss::compute(
-	Field<double, Cell<MeshDim::D3>>& field,
-	Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
+template<typename Obj, typename ObjDest>
+void GradientGauss::computeImpl(
+	Field<Obj, Cell<MeshDim::D3>>& field,
+	Field<ObjDest, Cell<MeshDim::D3>>& destField,
 	Mesh<MeshDim::D3>& mesh
 ) {
 	// Calculating Gradient inside inner faces
@@ -24,7 +24,7 @@ void GradientGauss::compute(
 	if (field.getElements()->boundaryPatches.length == 0) {
 		args = cudaUtils::getKernelArgs(mesh.getElements()->faces.length);
 		CUDA_compute_EF_noBC
-			<< <args.blocks, args.threads >> > (
+			<<< args.blocks, args.threads >>> (
 				field.getElements(),
 				destField.getElements(),
 				mesh.getElements());
@@ -51,8 +51,16 @@ void GradientGauss::compute(
 	
 };
 
-void GradientGauss::compute(
+template
+void GradientGauss::computeImpl(
+	Field<double, Cell<MeshDim::D3>>& field,
+	Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
+	Mesh<MeshDim::D3>& mesh
+);
+
+template
+void GradientGauss::computeImpl(
 	Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& field,
 	Field<MatrixTensor<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
 	Mesh<MeshDim::D3>& mesh
-) {};
+);

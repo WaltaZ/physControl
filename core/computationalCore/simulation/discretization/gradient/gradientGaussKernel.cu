@@ -5,11 +5,10 @@
 namespace CUDA_GradientGauss {
 
 	template<typename Obj, typename ObjDest>
-	__global__
-		void CUDA_compute_EC_internalFaces(
-			CudaField<Obj, Cell<MeshDim::D3>>* field,
-			CudaField<ObjDest, Cell<MeshDim::D3>>* destField,
-			CudaMesh<MeshDim::D3>* mesh)
+	__global__ void CUDA_compute_EC_internalFaces(
+		CudaField<Obj, C>* field,
+		CudaField<ObjDest, C>* destField,
+		CudaMesh<MeshDim::D3>* mesh)
 	{
 		int id = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -24,13 +23,12 @@ namespace CUDA_GradientGauss {
 		assert(3 * objArray.length == destObjArray.length);
 
 		for (int i = 0; i < objArray.length; i++) {
-			Vector<GeometryDim::D3> grad = Vector<GeometryDim::D3>({ 0, 0, 0 });
+			V grad{};
 			const auto& cell = mesh->cells[id];
 
-			auto& value = objArray.getData()[i];
+			auto& value = objArray[i];
 
 			for (int j = 0; j < cell.cellFaceIDs.length; j++) {
-				Vector<GeometryDim::D3> gradContribution = Vector<GeometryDim::D3>({ 0, 0, 0 });
 
 				const auto& face = mesh->faces[cell.cellFaceIDs[j]];
 
@@ -44,83 +42,95 @@ namespace CUDA_GradientGauss {
 
 				double faceValue = (g_C * objArray[i]) + (g_F * neighbourObjArray[i]);
 
-				//printf("Face nr: %d, Center value: %lf, Face value: %lf\n", cell.cellFaceIDs[i], value, faceValue);
-				gradContribution = face.getArea(id).vector * faceValue;
-				grad = grad + gradContribution;
-				//printf("Cell nr. %d | Face value: %lf | Gradient value: [ %lf, %lf, %lf ]\n", id, faceValue, gradContribution.comp[0], gradContribution.comp[1], gradContribution.comp[2]);
+				grad = grad + face.getArea(id).vector * faceValue;
 			}
 			grad = grad / cell.volume;
 			for (int j = 0; j < 3; j++) {
-				destObjArray[i * objArray.length + j] = grad.comp[j];
+				destObjArray[(3 * i) + j] = grad.comp[j];
 			}
 		}
 	}
 
 	template
-		__global__
-		void CUDA_GradientGauss::CUDA_compute_EC_internalFaces(
-			CudaField<double, Cell<MeshDim::D3>>* field,
-			CudaField<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* destField,
-			CudaMesh<MeshDim::D3>* mesh);
+	__global__ void CUDA_GradientGauss::CUDA_compute_EC_internalFaces(
+		CudaField<double, C>* field,
+		CudaField<V, C>* destField,
+		CudaMesh<MeshDim::D3>* mesh);
 
 	template
-		__global__
-		void CUDA_GradientGauss::CUDA_compute_EC_internalFaces(
-			CudaField<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* field,
-			CudaField<MatrixTensor<GeometryDim::D3>, Cell<MeshDim::D3>>* destField,
-			CudaMesh<MeshDim::D3>* mesh);
+	__global__ void CUDA_GradientGauss::CUDA_compute_EC_internalFaces(
+		CudaField<V, C>* field,
+		CudaField<T, C>* destField,
+		CudaMesh<MeshDim::D3>* mesh);
 
 	// ----------------------------------- CUDA compute Each Face No boundary conditions ------------------------------------
-	// TODO: Make templates out of it:
 
-	__global__
-		void CUDA_compute_EF_noBC(
-			CudaField<double, Cell<MeshDim::D3>>* field,
-			CudaField<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* destField,
-			CudaMesh<MeshDim::D3>* mesh)
+	template<typename Obj, typename ObjDest> 
+	__global__ void CUDA_compute_EF_noBC(
+		CudaField<Obj, C>* field,
+		CudaField<ObjDest, C>* destField,
+		CudaMesh<MeshDim::D3>* mesh)
 	{
-		int id = blockIdx.x * blockDim.x + threadIdx.x;
+		int id = blockIdx.x * blockDim.x + threadIdx.x; // FACE IDs
 
 		if (id >= mesh->faces.length) { return; }
 
 		const auto& face = mesh->faces[id];
 		if (!face.isBoundary) { return; }
 
-		double* value = field->values.getData();
-		Vector<GeometryDim::D3>* destVector = destField->values.getData();
-
 		uint32_t cellID = face.ownerCellID;
 		const auto& cell = mesh->cells[cellID];
 
-		double cellValue = value[cellID];
-		Vector<GeometryDim::D3> contribution =
-			face.getArea(cellID).vector *
-			(cellValue / cell.volume);
+		Obj* obj = field->values.getData();
+		ObjDest* destObj = destField->values.getData();
 
-		for (int i = 0; i < 3; i++) {
-			atomicAdd(&(destVector[cellID].comp[i]), contribution.comp[i]);
+		CudaArray<double> objComp = geomUtils::getComponents(&(obj[cellID]));
+		CudaArray<double> destObjComp = geomUtils::getComponents(&(destObj[cellID]));
+
+		for (size_t i = 0; i < objComp.length; i++)
+		{
+			auto& objValue = objComp[i];
+
+			V contribution =
+				face.getArea(cellID).vector *
+				(objValue / cell.volume);
+
+			for (int j = 0; j < 3; i++) {
+				atomicAdd(&(destObjComp[(3 * i) + j]), contribution.comp[i]);
+			}
 		}
 	}
 
+	template
+	__global__ void CUDA_compute_EF_noBC(
+		CudaField<double, C>* field,
+		CudaField<V, C>* destField,
+		CudaMesh<MeshDim::D3>* mesh);
+
+	template
+	__global__ void CUDA_compute_EF_noBC(
+		CudaField<V, C>* field,
+		CudaField<T, C>* destField,
+		CudaMesh<MeshDim::D3>* mesh);
+
 	// ----------------------------------- CUDA compute Each Face boundary conditions ------------------------------------
 
+	// TODO: Make it more clear by splitting it into functions, like _handleBoundaryPatches();
+	template<typename Obj, typename ObjDest>
 	__global__ void CUDA_compute_EF_BC(
-		CudaField<double, Cell<MeshDim::D3>>* field,
-		CudaField<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* destField,
+		CudaField<Obj, C>* field,
+		CudaField<ObjDest, C>* destField,
 		CudaMesh<MeshDim::D3>* mesh)
 	{
 		int id = blockIdx.x * blockDim.x + threadIdx.x;
 
 		const auto& boundaryPatches = field->boundaryPatches;
 
-		for (size_t i = 0; i < boundaryPatches.length; i++)
+		for (size_t patchNum = 0; patchNum < boundaryPatches.length; patchNum++)
 		{
-			auto& bp = boundaryPatches[i];
+			auto& bp = boundaryPatches[patchNum];
 
 			if (id >= bp.faceIDs.length) { continue; }
-
-			double* value = field->values.getData();
-			Vector<GeometryDim::D3>* destVector = destField->values.getData();
 
 			const uint32_t faceID = bp.faceIDs[id];
 			const auto& face = mesh->faces[faceID];
@@ -128,38 +138,62 @@ namespace CUDA_GradientGauss {
 			const auto& cell = mesh->cells[cellID];
 			const double* bpValues = bp.values.getData();
 
-			Vector<GeometryDim::D3> contribution{};
+			Obj* obj = field->values.getData();
+			ObjDest* destObj = destField->values.getData();
 
-			// Boundary condition handler
-			switch (bp.type) {
-			case BoundaryConditionType::Mixed:
-				double gamma_over_d = (bpValues[2] / face.ownerData.centroidToFace.magnitude);
-				double faceValue =
-					(bpValues[0] * bpValues[1] + gamma_over_d * value[cellID]) /
-					(bpValues[1] + gamma_over_d);
+			CudaArray<double> objComp = geomUtils::getComponents(&(obj[cellID]));
+			CudaArray<double> destObjComp = geomUtils::getComponents(&(destObj[cellID]));
 
-				contribution =
-					face.getArea(cellID).vector *
-					(faceValue / cell.volume);
-				break;
+			for (size_t j = 0; j < objComp.length; j++)
+			{
+				auto& objValue = objComp[j];
 
-			case BoundaryConditionType::Drichlet:
-				contribution =
-					face.getArea(cellID).vector *
-					(bpValues[0] / cell.volume);
-				break;
+				V contribution{};
 
-			case BoundaryConditionType::Neumann:
-				contribution =
-					face.getArea(cellID).normal *
-					bpValues[0];
-				break;
+				// Boundary condition handler
+				switch (bp.type) {
+				case BoundaryConditionType::Mixed:
+					double gamma_over_d = (bpValues[2] / face.ownerData.centroidToFace.magnitude);
+					double faceValue =
+						(bpValues[0] * bpValues[1] + gamma_over_d * objValue) /
+						(bpValues[1] + gamma_over_d);
+
+					contribution =
+						face.getArea(cellID).vector *
+						(faceValue / cell.volume);
+					break;
+
+				case BoundaryConditionType::Drichlet:
+					contribution =
+						face.getArea(cellID).vector *
+						(bpValues[0] / cell.volume);
+					break;
+
+				case BoundaryConditionType::Neumann:
+					contribution =
+						face.getArea(cellID).normal *
+						bpValues[0];
+					break;
+				}
+
+				for (int k = 0; k < 3; k++) {
+					atomicAdd(&(destObjComp[3 * j + k]), contribution.comp[k]);
+				}
+
 			}
-
-			for (int j = 0; j < 3; j++) {
-				atomicAdd(&(destVector[cellID].comp[j]), contribution.comp[j]);
-			}
-
 		}
 	}
+
+	template
+	__global__ void CUDA_compute_EF_BC(
+		CudaField<double, C>* field,
+		CudaField<V, C>* destField,
+		CudaMesh<MeshDim::D3>* mesh);
+
+	template
+	__global__ void CUDA_compute_EF_BC(
+		CudaField<V, C>* field,
+		CudaField<T, C>* destField,
+		CudaMesh<MeshDim::D3>* mesh);
+
 }

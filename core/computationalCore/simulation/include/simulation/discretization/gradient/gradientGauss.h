@@ -5,17 +5,12 @@
 #include <utility/utility.h>
 #include "gradientGaussKernel.h"
 
-class GradientGauss : public Gradient<MeshDim::D3> {	
+class GradientGauss : public Gradient<GradientGauss> {	
 public:
-	void compute(
-		Field<double, Cell<MeshDim::D3>>& field,
-		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
+	template<typename Obj, typename ObjDest>
+	void computeImpl(
+		Field<Obj, Cell<MeshDim::D3>>& field,
+		Field<ObjDest, Cell<MeshDim::D3>>& destField,
 		Mesh<MeshDim::D3>& mesh
-	) override;
-
-	void compute(
-		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& field,
-		Field<MatrixTensor<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
-		Mesh<MeshDim::D3>& mesh
-	) override;
+	);
 };

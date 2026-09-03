@@ -1,6 +1,9 @@
 #include <simulation/linearSolver/linearSolverMatrix.h>
 
-CudaLinearSolverMatrix::CudaLinearSolverMatrix(
+// --------------------- Cuda Linear Solver Matrix ---------------------------
+
+template<typename Obj>
+CudaLinearSolverMatrix<Obj>::CudaLinearSolverMatrix(
 	const Mesh<MeshDim::D3>& mesh
 ) 
 {
@@ -52,26 +55,40 @@ CudaLinearSolverMatrix::CudaLinearSolverMatrix(
 	// B
 	cudaMallocManaged(
 		B.getDataPointer(),
-		numOfCells * sizeof(double)
+		numOfCells * sizeof(Obj)
 	);
-	cudaMemset(B.getData(), 0, numOfCells);
+	for (size_t i = 0; i < numOfCells; i++)
+	{
+		B[i] = Obj();
+	}
 	B.length = numOfCells;
 }
 
-LinearSolverMatrix::LinearSolverMatrix(
+template<typename Obj>
+LinearSolverMatrix<Obj>::LinearSolverMatrix(
 	const Mesh<MeshDim::D3>& mesh) 
 {
 	cudaMallocManaged(
 		&_linearSolverMatrix,
-		sizeof(CudaLinearSolverMatrix));
+		sizeof(CudaLinearSolverMatrix<Obj>));
 
-	new(_linearSolverMatrix) CudaLinearSolverMatrix(mesh);
+	new(_linearSolverMatrix) CudaLinearSolverMatrix<Obj>(mesh);
 }
 
-CudaLinearSolverMatrix* LinearSolverMatrix::getElements() {
+template class LinearSolverMatrix<double>;
+template class LinearSolverMatrix<Vector<GeometryDim::D3>>;
+
+// ------------------------ Linear Solver Matrix ---------------------------
+
+template<typename Obj>
+CudaLinearSolverMatrix<Obj>* LinearSolverMatrix<Obj>::getElements() {
 	return _linearSolverMatrix;
 }
 
-const CudaLinearSolverMatrix* LinearSolverMatrix::getElements() const {
+template<typename Obj>
+const CudaLinearSolverMatrix<Obj>* LinearSolverMatrix<Obj>::getElements() const {
 	return _linearSolverMatrix;
 }
+
+template class CudaLinearSolverMatrix<double>;
+template class CudaLinearSolverMatrix<Vector<GeometryDim::D3>>;

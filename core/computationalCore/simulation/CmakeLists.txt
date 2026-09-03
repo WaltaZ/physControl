@@ -6,18 +6,21 @@ set(simulationHppFiles
 	"include/simulation/linearSolver/linearSolverMatrix.h"
 	"include/simulation/discretization/interpolation.h"
 	"include/simulation/discretization/diffusion/diffusion.h"
+	"include/simulation/discretization/diffusion/diffusionSimple.h"
+	"include/simulation/discretization/diffusion/diffusionKernel.h"
 )
 
 set(simulationCppFiles
 	"simulation.cpp"
 	"discretization/gradient/gradientGauss.cu"
+	"discretization/gradient/gradientGaussKernel.cu"
 	"linearSolver/linearSolverMatrix.cu"
 	"discretization/interpolation.cu"
-	"discretization/diffusion/diffusion.cu"
-	"discretization/gradient/gradientGaussKernel.cu"
+	"discretization/diffusion/diffusionSimple.cu"
+	"discretization/diffusion/diffusionKernel.cu"
 )
 
-add_library(simulation ${simulationHppFiles} ${simulationCppFiles} )
+add_library(simulation ${simulationHppFiles} ${simulationCppFiles})
 
 target_include_directories(simulation PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(simulation PRIVATE mesh problem CUDA::cudart)

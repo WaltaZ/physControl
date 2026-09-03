@@ -25,6 +25,4 @@ void HeatTransferSimulationD3::nextStep()
 		_problem.fields.temperature, 
 		_problem.fields.gradTemperature, 
 		_mesh);
-
-	LinearSolverMatrix test{ _mesh };
 }
