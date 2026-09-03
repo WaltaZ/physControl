@@ -65,6 +65,51 @@ CudaLinearSolverMatrix<Obj>::CudaLinearSolverMatrix(
 }
 
 template<typename Obj>
+__device__
+void CudaLinearSolverMatrix<Obj>::contributeToA(
+	uint32_t cellID,
+	double A_C_contribution) 
+{
+	atomicAdd(&(A_C[cellID]), A_C_contribution);
+};
+
+template<typename Obj>
+__device__
+void CudaLinearSolverMatrix<Obj>::contributeToB(
+	uint32_t cellID,
+	double* B_contribution) 
+{
+	printf("CudaLinearSolverMatrix: Illegal object!");
+};
+
+template<>
+__device__
+void CudaLinearSolverMatrix<double>::contributeToB(
+	uint32_t cellID,
+	double* B_contribution) 
+{
+	atomicAdd(&B[cellID], *B_contribution);
+};
+
+template<>
+__device__
+void CudaLinearSolverMatrix<Vector<GeometryDim::D3>>::contributeToB(
+	uint32_t cellID,
+	double* B_contribution) 
+{
+	for (size_t comp = 0; comp < 3; comp++)
+	{
+		atomicAdd(&(B[cellID].comp[comp]), B_contribution[comp]);
+	}
+};
+
+template class CudaLinearSolverMatrix<double>;
+template class CudaLinearSolverMatrix<Vector<GeometryDim::D3>>;
+
+
+// ------------------------ Linear Solver Matrix ---------------------------
+
+template<typename Obj>
 LinearSolverMatrix<Obj>::LinearSolverMatrix(
 	const Mesh<MeshDim::D3>& mesh) 
 {
@@ -74,11 +119,6 @@ LinearSolverMatrix<Obj>::LinearSolverMatrix(
 
 	new(_linearSolverMatrix) CudaLinearSolverMatrix<Obj>(mesh);
 }
-
-template class LinearSolverMatrix<double>;
-template class LinearSolverMatrix<Vector<GeometryDim::D3>>;
-
-// ------------------------ Linear Solver Matrix ---------------------------
 
 template<typename Obj>
 CudaLinearSolverMatrix<Obj>* LinearSolverMatrix<Obj>::getElements() {
@@ -90,5 +130,5 @@ const CudaLinearSolverMatrix<Obj>* LinearSolverMatrix<Obj>::getElements() const 
 	return _linearSolverMatrix;
 }
 
-template class CudaLinearSolverMatrix<double>;
-template class CudaLinearSolverMatrix<Vector<GeometryDim::D3>>;
+template class LinearSolverMatrix<double>;
+template class LinearSolverMatrix<Vector<GeometryDim::D3>>;

@@ -3,6 +3,7 @@
 #include "diffusion.h"
 
 class SimpleDiffusion : Diffusion<SimpleDiffusion> {
+public:
 	template<typename Obj>
 	__device__ void assembleInnerImpl(
 		CudaMesh<MeshDim::D3>* mesh,

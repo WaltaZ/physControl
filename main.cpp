@@ -6,7 +6,7 @@
 #include <visuals/displayer/displayer.h>
 
 int main() {
-	constexpr int amount = 20;
+	constexpr int amount = 10;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);

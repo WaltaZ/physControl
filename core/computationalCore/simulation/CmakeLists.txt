@@ -7,7 +7,6 @@ set(simulationHppFiles
 	"include/simulation/discretization/interpolation.h"
 	"include/simulation/discretization/diffusion/diffusion.h"
 	"include/simulation/discretization/diffusion/diffusionSimple.h"
-	"include/simulation/discretization/diffusion/diffusionKernel.h"
 )
 
 set(simulationCppFiles
@@ -17,7 +16,6 @@ set(simulationCppFiles
 	"linearSolver/linearSolverMatrix.cu"
 	"discretization/interpolation.cu"
 	"discretization/diffusion/diffusionSimple.cu"
-	"discretization/diffusion/diffusionKernel.cu"
 )
 
 add_library(simulation ${simulationHppFiles} ${simulationCppFiles})
