@@ -4,6 +4,7 @@
 #include <simulation/discretization/gradient/gradientGauss.h>
 #include <simulation/linearSolver/linearSolverMatrix.h>
 #include <simulation/discretization/diffusion/diffusionSimple.h>
+#include <simulation/discretization/convection/convectionUpwind.h>
 
 HeatTransferSimulationD3::HeatTransferSimulationD3(
 	HeatTransferProblemD3& problem,

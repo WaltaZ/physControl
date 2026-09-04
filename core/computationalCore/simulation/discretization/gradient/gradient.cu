@@ -2,9 +2,11 @@
 
 namespace gradUtils {
 
+	// ------------------------- Interpolate on face -------------------------
+
 	template<typename Obj, typename GradObj>
 	__device__
-		V interpolateOnFace(
+		GradObj interpolateOnFace(
 			uint32_t faceID,
 			CudaField<Obj, C>* field,
 			CudaField <GradObj, C>* gradField,
@@ -39,4 +41,20 @@ namespace gradUtils {
 			(e_CF * (phi_F - phi_C) / d_CF) -
 			(e_CF * geomOp::dotProduct(grad_bar, e_CF));
 	}
+
+	template
+		__device__
+		V interpolateOnFace(
+			uint32_t faceID,
+			CudaField<double, C>* field,
+			CudaField <V, C>* gradField,
+			CudaMesh<MeshDim::D3>* mesh);
+
+	template
+		__device__
+		T interpolateOnFace(
+			uint32_t faceID,
+			CudaField<V, C>* field,
+			CudaField <T, C>* gradField,
+			CudaMesh<MeshDim::D3>* mesh);
 }

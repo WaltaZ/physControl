@@ -59,7 +59,7 @@ namespace gradUtils {
 
 	template<typename Obj, typename GradObj>
 	__device__
-		V interpolateOnFace(
+		GradObj interpolateOnFace(
 			uint32_t faceID,
 			CudaField<Obj, C>* field,
 			CudaField <GradObj, C>* gradField,

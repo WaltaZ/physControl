@@ -32,7 +32,7 @@ void DiffusionSimple::assembleInnerImpl(
 			matrix->A_F[id][i] += A_F_contribution;
 		}
 	}
-	matrix->contributeToA(id, A_C_contribution);
+	matrix->contributeTo_A_C(id, A_C_contribution);
 }
 
 template void DiffusionSimple::assembleInnerImpl(
@@ -131,8 +131,8 @@ void DiffusionSimple::assembleBoundariesImpl(
 			continue;
 		}
 		
-		matrix->contributeToA(cellID, A_C_contribution);
-		matrix->contributeToB(cellID, B_contribution);
+		matrix->contributeTo_A_C(cellID, A_C_contribution);
+		matrix->contributeTo_B(cellID, B_contribution);
 
 		delete[] B_contribution;
 	}

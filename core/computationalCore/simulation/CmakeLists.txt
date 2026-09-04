@@ -9,6 +9,7 @@ set(simulationHppFiles
 	"include/simulation/discretization/diffusion/diffusionSimple.h"
 	"include/simulation/discretization/convection/convection.h"
 	"include/simulation/discretization/convection/convectionQUICK.h"
+	"include/simulation/discretization/convection/convectionUpwind.h"
 )
 
 set(simulationCppFiles
@@ -20,6 +21,7 @@ set(simulationCppFiles
 	"discretization/interpolation.cu"
 	"discretization/diffusion/diffusionSimple.cu"
 	"discretization/convection/convectionQUICK.cu"
+	"discretization/convection/convectionUpwind.cu"
 )
 
 add_library(simulation ${simulationHppFiles} ${simulationCppFiles})

@@ -66,7 +66,7 @@ CudaLinearSolverMatrix<Obj>::CudaLinearSolverMatrix(
 
 template<typename Obj>
 __device__
-void CudaLinearSolverMatrix<Obj>::contributeToA(
+void CudaLinearSolverMatrix<Obj>::contributeTo_A_C(
 	uint32_t cellID,
 	double A_C_contribution) 
 {
@@ -75,7 +75,7 @@ void CudaLinearSolverMatrix<Obj>::contributeToA(
 
 template<typename Obj>
 __device__
-void CudaLinearSolverMatrix<Obj>::contributeToB(
+void CudaLinearSolverMatrix<Obj>::contributeTo_B(
 	uint32_t cellID,
 	double* B_contribution) 
 {
@@ -84,7 +84,7 @@ void CudaLinearSolverMatrix<Obj>::contributeToB(
 
 template<>
 __device__
-void CudaLinearSolverMatrix<double>::contributeToB(
+void CudaLinearSolverMatrix<double>::contributeTo_B(
 	uint32_t cellID,
 	double* B_contribution) 
 {
@@ -93,7 +93,7 @@ void CudaLinearSolverMatrix<double>::contributeToB(
 
 template<>
 __device__
-void CudaLinearSolverMatrix<Vector<GeometryDim::D3>>::contributeToB(
+void CudaLinearSolverMatrix<Vector<GeometryDim::D3>>::contributeTo_B(
 	uint32_t cellID,
 	double* B_contribution) 
 {

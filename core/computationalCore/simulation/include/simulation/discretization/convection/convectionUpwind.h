@@ -1,10 +1,8 @@
 #pragma once
 
 #include "convection.h"
-#include "convectionUpwind.h"
-#include <simulation/discretization/gradient/gradient.h>
 
-class ConvectionQUICK : public Convection<ConvectionQUICK> {
+class ConvectionUpwind : public Convection<ConvectionUpwind> {
 public:
 	template<typename Obj, typename GradObj>
 	__device__ void assembleInnerImpl(
@@ -23,4 +21,5 @@ public:
 		CudaField<double, F>* massFlowRate,
 		CudaLinearSolverMatrix<Obj>* matrix
 	);
+
 };
