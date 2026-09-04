@@ -2,7 +2,7 @@
 
 #include "diffusion.h"
 
-class SimpleDiffusion : Diffusion<SimpleDiffusion> {
+class DiffusionSimple : public Diffusion<DiffusionSimple> {
 public:
 	template<typename Obj>
 	__device__ void assembleInnerImpl(

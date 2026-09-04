@@ -5,6 +5,8 @@
 #include <utility/utility.h>
 #include "gradientGaussKernel.h"
 
+// TODO: Change to GradObj
+
 class GradientGauss : public Gradient<GradientGauss> {	
 public:
 	template<typename Obj, typename ObjDest>

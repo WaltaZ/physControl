@@ -16,7 +16,24 @@ Vector<dim>::Vector(const Point<dim>& pointA, const Point<dim>& pointB)
 	for (int i = 0; i < _numOfComp; i++) {
 		comp[i] = pointB.pos[i] - pointA.pos[i];
 	};
-}
+};
+
+template<GeometryDim dim>
+__host__ __device__
+MatrixTensor<dim> Vector<dim>::operator*(const Vector<dim>& vec) const
+{
+	std::array<double, _numOfComp*_numOfComp> tensorComp{};
+
+	for (size_t i = 0; i < _numOfComp; i++)
+	{
+		for (size_t j = 0; j < _numOfComp; j++)
+		{
+			tensorComp[i * _numOfComp + j] = comp[i] * vec.comp[j];
+		}
+	}
+
+	return MatrixTensor<dim>(tensorComp);
+};
 
 template<GeometryDim dim>
 __host__ __device__

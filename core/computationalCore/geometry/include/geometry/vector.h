@@ -3,6 +3,7 @@
 #include "geometryEnums.h"
 #include "point.h"
 #include "tensor.h"
+#include "matrixTensor.h"
 
 #include <array>
 
@@ -13,6 +14,7 @@ public:
 	using ThisTensor = Tensor<Vector<dim>, dim, 1>;
 	using ThisTensor::comp;
 	using ThisTensor::_numOfComp;
+	using ThisTensor::operator*;
 
 	__host__ __device__ 
 	Vector();
@@ -25,6 +27,9 @@ public:
 
 	__host__ __device__ 
 	Vector(const Point<dim>& pointA, const Point<dim>& pointB);
+
+	__host__ __device__
+	MatrixTensor<dim> operator*(const Vector<dim>& vec) const; // Tensor product
 
 	__host__ __device__ 
 	double getMagnitude() const;

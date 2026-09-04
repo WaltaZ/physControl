@@ -5,10 +5,10 @@ namespace geomOp {
     // -------------------------------- Dot product ------------------------------------
 
     template<GeometryDim dim>
-    double vecDotProduct(
+    __host__ __device__
+    double dotProduct(
         const Vector<dim>& vec1,
-        const Vector<dim>& vec2
-    )
+        const Vector<dim>& vec2)
     {
         double product = 0;
 
@@ -19,12 +19,37 @@ namespace geomOp {
         return product;
     }
 
-    template double vecDotProduct(const V2&, const V2&);
-    template double vecDotProduct(const V3&, const V3&);
+    template<GeometryDim dim>
+    __host__ __device__
+        Vector<dim> dotProduct(
+        const MatrixTensor<dim>& tensor,
+        const Vector<dim>& vec)
+    {
+        Vector<dim> product{};
+        int dimSize = geometryDimSize(dim);
+
+        for (size_t i = 0; i < dimSize; i++)
+        {
+            double component = 0;
+            for (size_t j = 0; j < dimSize; j++)
+            {
+                component += tensor.comp[dimSize * i + j] * vec.comp[j];
+            }
+            product.comp[i] = component;
+        }
+
+        return product;
+    }
+
+    template double dotProduct(const V2&, const V2&);
+    template double dotProduct(const V3&, const V3&);
+
+    template V2 dotProduct(const T2&, const V2&);
+    template V3 dotProduct(const T3&, const V3&);
 
     // -------------------------------- Cross product ------------------------------------
 
-    Vector<GeometryDim::D3> vecCrossProduct(const V2& vec1, const V2& vec2)
+    Vector<GeometryDim::D3> crossProduct(const V2& vec1, const V2& vec2)
     {
         return Vector<GeometryDim::D3>({
             0,
@@ -33,7 +58,7 @@ namespace geomOp {
             });
     };
 
-    Vector<GeometryDim::D3> vecCrossProduct(const V3& vec1, const V3& vec2)
+    Vector<GeometryDim::D3> crossProduct(const V3& vec1, const V3& vec2)
     {
         return Vector<GeometryDim::D3>({
             (vec1.comp[1] * vec2.comp[2]) - (vec1.comp[2] * vec2.comp[1]),
@@ -49,7 +74,7 @@ namespace geomOp {
     {
         Vector<dim> v1(p1), v2(p2), v3(p3);
 
-        V3 area = vecCrossProduct((v2 - v1), (v3 - v1)) * 0.5;
+        V3 area = crossProduct((v2 - v1), (v3 - v1)) * 0.5;
         return area;
     }
 
@@ -104,7 +129,7 @@ namespace geomOp {
         for (int i = 0; i < points.size() - 2; i++) {
             Vector<dim> vecA(*points[i], *points[i + 1]);
             Vector<dim> vecB(*points[i + 1], *points[i + 2]);
-            V3 result = geomOp::vecCrossProduct(vecA, vecB);
+            V3 result = crossProduct(vecA, vecB);
             double mag = result.getMagnitude();
             areColinear = (abs(mag) < tolerance);
             if (!areColinear) { break; };
@@ -131,7 +156,7 @@ namespace geomOp {
                     bool areColinear = geomOp::arePointsColinear<GeometryDim::D3>({ points[i], points[j], points[k] });
                     if (!areColinear) {
                         foundPlane = true;
-                        baseNVector = geomOp::vecCrossProduct(V3(*points[i], *points[j]), V3(*points[i], *points[k])).getNormal();
+                        baseNVector = geomOp::crossProduct(V3(*points[i], *points[j]), V3(*points[i], *points[k])).getNormal();
                         basePointIndex = i;
                         break;
                     }
@@ -146,7 +171,7 @@ namespace geomOp {
         for (int i = 1; i < points.size(); i++) {
             if (i != basePointIndex) {
                 V3 v(*points[basePointIndex], *points[i]);
-                double dot = geomOp::vecDotProduct(baseNVector, v);
+                double dot = geomOp::dotProduct(baseNVector, v);
                 if (abs(dot) > tolerance) {
                     return false;
                 }

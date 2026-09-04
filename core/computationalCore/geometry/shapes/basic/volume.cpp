@@ -105,7 +105,7 @@ double Volume::getVolume() const
 
 		V surfCentrToGeoCenter(surfaceCentroid, geoCenter);
 
-		double pyramidArea = abs(geomOp::vecDotProduct(surfCentrToGeoCenter, surfaceAreaVector));
+		double pyramidArea = abs(geomOp::dotProduct(surfCentrToGeoCenter, surfaceAreaVector));
 
 		volume = volume + pyramidArea;
 
@@ -127,7 +127,7 @@ Volume::P Volume::getCentroid() const
 		V surfCentrToGeoCenter(surfaceCentroid, geoCenter);
 
 		P pyramidCentroid = geomOp::movePointWithVector(surfaceCentroid, surfCentrToGeoCenter * 0.25);
-		double pyramidVolume = abs(geomOp::vecDotProduct(surfCentrToGeoCenter, surfaceAreaVector)) / 3.0;
+		double pyramidVolume = abs(geomOp::dotProduct(surfCentrToGeoCenter, surfaceAreaVector)) / 3.0;
 		volume = volume + pyramidVolume;
 
 		centroid = centroid + (pyramidCentroid * pyramidVolume);

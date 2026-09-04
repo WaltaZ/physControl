@@ -50,3 +50,18 @@ public:
 			);
 	};
 };
+
+namespace gradUtils {
+
+	using V = Vector<GeometryDim::D3>;
+	using T = MatrixTensor<GeometryDim::D3>;
+	using C = Cell<MeshDim::D3>;
+
+	template<typename Obj, typename GradObj>
+	__device__
+		V interpolateOnFace(
+			uint32_t faceID,
+			CudaField<Obj, C>* field,
+			CudaField <GradObj, C>* gradField,
+			CudaMesh<MeshDim::D3>* mesh);
+}

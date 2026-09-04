@@ -1,6 +1,9 @@
 #include <simulation/simulation.h>
 
 #include <geometry/geometryUtils.h>
+#include <simulation/discretization/gradient/gradientGauss.h>
+#include <simulation/linearSolver/linearSolverMatrix.h>
+#include <simulation/discretization/diffusion/diffusionSimple.h>
 
 HeatTransferSimulationD3::HeatTransferSimulationD3(
 	HeatTransferProblemD3& problem,
@@ -20,6 +23,8 @@ void HeatTransferSimulationD3::nextStep()
 {
 	// Update all the fields as a next step
 	auto gradient = GradientGauss();
+
+	auto diffusion = DiffusionSimple();
 
 	gradient.compute(
 		_problem.fields.temperature, 

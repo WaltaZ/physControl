@@ -6,7 +6,7 @@
 
 template<typename Obj>
 __device__
-void SimpleDiffusion::assembleInnerImpl(
+void DiffusionSimple::assembleInnerImpl(
 	CudaMesh<MeshDim::D3>* mesh,
 	CudaField<Obj, C>* field,
 	CudaLinearSolverMatrix<Obj>* matrix,
@@ -32,16 +32,16 @@ void SimpleDiffusion::assembleInnerImpl(
 			matrix->A_F[id][i] += A_F_contribution;
 		}
 	}
-	matrix->A_C[id] += A_C_contribution;
+	matrix->contributeToA(id, A_C_contribution);
 }
 
-template void SimpleDiffusion::assembleInnerImpl(
+template void DiffusionSimple::assembleInnerImpl(
 	CudaMesh<MeshDim::D3>* mesh,
 	CudaField<double, C>* field,
 	CudaLinearSolverMatrix<double>* matrix,
 	double diffCoeff);
 
-template void SimpleDiffusion::assembleInnerImpl(
+template void DiffusionSimple::assembleInnerImpl(
 	CudaMesh<MeshDim::D3>* mesh,
 	CudaField<V, C>* field,
 	CudaLinearSolverMatrix<V>* matrix,
@@ -51,7 +51,7 @@ template void SimpleDiffusion::assembleInnerImpl(
 
 template<typename Obj>
 __device__
-void SimpleDiffusion::assembleBoundariesImpl(
+void DiffusionSimple::assembleBoundariesImpl(
 	CudaMesh<MeshDim::D3>* mesh,
 	CudaField<Obj, C>* field,
 	CudaLinearSolverMatrix<Obj>* matrix,
@@ -138,13 +138,13 @@ void SimpleDiffusion::assembleBoundariesImpl(
 	}
 }
 
-template void SimpleDiffusion::assembleBoundariesImpl(
+template void DiffusionSimple::assembleBoundariesImpl(
 	CudaMesh<MeshDim::D3>* mesh,
 	CudaField<double, C>* field,
 	CudaLinearSolverMatrix<double>* matrix,
 	double diffCoeff);
 
-template void SimpleDiffusion::assembleBoundariesImpl(
+template void DiffusionSimple::assembleBoundariesImpl(
 	CudaMesh<MeshDim::D3>* mesh,
 	CudaField<V, C>* field,
 	CudaLinearSolverMatrix<V>* matrix,

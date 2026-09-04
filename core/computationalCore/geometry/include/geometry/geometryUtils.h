@@ -17,11 +17,19 @@ namespace geomOp {
 	using P2 = Point<GeometryDim::D2>;
 	using P3 = Point<GeometryDim::D3>;
 
-	template<GeometryDim dim>
-	double vecDotProduct(const Vector<dim>& vec1, const Vector<dim>& vec2);
+	using T2 = MatrixTensor<GeometryDim::D2>;
+	using T3 = MatrixTensor<GeometryDim::D3>;
 
-	Vector<GeometryDim::D3> vecCrossProduct(const V2& vec1, const V2& vec2);
-	Vector<GeometryDim::D3> vecCrossProduct(const V3& vec1, const V3& vec2);
+	template<GeometryDim dim>
+	__host__ __device__
+	double dotProduct(const Vector<dim>& vec1, const Vector<dim>& vec2);
+
+	template<GeometryDim dim>
+	__host__ __device__
+	Vector<dim> dotProduct(const MatrixTensor<dim>& tensor, const Vector<dim>& vec);
+
+	Vector<GeometryDim::D3> crossProduct(const V2& vec1, const V2& vec2);
+	Vector<GeometryDim::D3> crossProduct(const V3& vec1, const V3& vec2);
 
 	template<GeometryDim dim>
 	V3 calculateTriangleArea(const Point<dim>& p1, const Point<dim>& p2, const Point<dim>& p3);

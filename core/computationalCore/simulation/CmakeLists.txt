@@ -7,15 +7,19 @@ set(simulationHppFiles
 	"include/simulation/discretization/interpolation.h"
 	"include/simulation/discretization/diffusion/diffusion.h"
 	"include/simulation/discretization/diffusion/diffusionSimple.h"
+	"include/simulation/discretization/convection/convection.h"
+	"include/simulation/discretization/convection/convectionQUICK.h"
 )
 
 set(simulationCppFiles
 	"simulation.cpp"
+	"discretization/gradient/gradient.cu"
 	"discretization/gradient/gradientGauss.cu"
 	"discretization/gradient/gradientGaussKernel.cu"
 	"linearSolver/linearSolverMatrix.cu"
 	"discretization/interpolation.cu"
 	"discretization/diffusion/diffusionSimple.cu"
+	"discretization/convection/convectionQUICK.cu"
 )
 
 add_library(simulation ${simulationHppFiles} ${simulationCppFiles})
