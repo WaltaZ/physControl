@@ -13,6 +13,12 @@ public:
 	using ThisTensor::comp;
 	using ThisTensor::_numOfComp;
 
+	__host__ __device__
 	MatrixTensor();
+
+	__host__ __device__
 	MatrixTensor(std::array<double, _numOfComp> comp);
+
+	__host__ __device__
+	MatrixTensor(const double* comp);
 };

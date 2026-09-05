@@ -62,11 +62,10 @@ public:
 		double diffCoeff
 	) override
 	{
-		static_cast<Derived*>(this)-> 
+		static_cast<Derived*>(this)->
 			template assembleInnerImpl<V>(
 				mesh, field, matrix, diffCoeff);
 	}
-
 
 	__device__ void assembleBoundaries(
 		CudaMesh<MeshDim::D3>* mesh,

@@ -1,6 +1,11 @@
 #include <utility/cudaUtils.h>
 
+
 namespace cudaUtils {
+
+	using V = Vector<GeometryDim::D3>;
+	using T = MatrixTensor<GeometryDim::D3>;
+
 	void fetchError() {
 		cudaError_t err = cudaGetLastError();
 
@@ -28,5 +33,25 @@ namespace cudaUtils {
 
 			threadsPerBlock
 		};
+	};
+
+	template<class Obj>
+	__device__
+		void contributeTo(Obj& dest, const Obj& obj)
+	{
+		for (size_t i = 0; i < obj.comp.size(); i++)
+		{
+			atomicAdd(&(dest.comp[i]), obj.comp[i]);
+		}
+	};
+
+	template __device__ void contributeTo(V& dest, const V& obj);
+	template __device__ void contributeTo(T& dest, const T& obj);
+
+	template<>
+	__device__
+		void contributeTo(double& dest, const double& obj)
+	{
+		atomicAdd(&dest, obj);
 	};
 }

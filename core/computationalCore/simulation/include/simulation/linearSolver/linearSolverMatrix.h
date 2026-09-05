@@ -12,16 +12,6 @@ public:
 
 	CudaLinearSolverMatrix(const Mesh<MeshDim::D3>& mesh);
 	
-	
-	__device__
-		void contributeTo_A_C(
-			uint32_t cellID,
-			double A_C_contribution);
-	
-	__device__
-		void contributeTo_B(
-			uint32_t cellID,
-			double* B_contribution);
 private:
 	CudaAllocatedObj<double> A_Fs;
 };

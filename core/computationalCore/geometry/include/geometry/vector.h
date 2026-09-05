@@ -22,6 +22,9 @@ public:
 	__host__ __device__ 
 	Vector(std::array<double, _numOfComp> comp);
 
+	__host__ __device__ 
+	Vector(const double* comp);
+
 	__host__ __device__
 	Vector(Point<dim> point) : ThisTensor(point.pos) {};
 

@@ -12,29 +12,29 @@ __device__ void ConvectionUpwind::assembleInnerImpl(
 	CudaLinearSolverMatrix<Obj>* matrix
 )
 {
-	int id = threadIdx.x + blockDim.x * blockIdx.x; // Id of a cell
+	int C_id = threadIdx.x + blockDim.x * blockIdx.x; // Id of a cell
 
-	if (id >= mesh->cells.length) { return; }
+	if (C_id >= mesh->cells.length) { return; }
 
-	const auto& cell = mesh->cells[id];
+	const auto& C = mesh->cells[C_id];
 
 	double A_C_contribution = 0;
 
-	for (size_t i = 0; i < cell.cellFaceIDs.length; i++)
+	for (size_t i = 0; i < C.cellFaceIDs.length; i++)
 	{
-		uint32_t faceID = cell.cellFaceIDs[i];
-		const auto& face = mesh->faces[faceID];
+		uint32_t f_id = C.cellFaceIDs[i];
+		const auto& f = mesh->faces[f_id];
 
-		if (face.isBoundary) { continue; }
+		if (f.isBoundary) { continue; }
 
-		double massFlowRate = massFlowRateField->values[faceID];
+		double m_f = massFlowRateField->values[f_id];
 
 		// Page 410 from the book
-		matrix->A_F[id][i] = -std::max(-massFlowRate, 0.0);
-		A_C_contribution += std::max(massFlowRate, 0.0);
+		matrix->A_F[C_id][i] = -std::max(-m_f, 0.0);
+		A_C_contribution += std::max(m_f, 0.0);
 	}
 
-	matrix->contributeTo_A_C(id, A_C_contribution);
+	matrix->A_C[C_id] = A_C_contribution;
 
 	// No B contribution
 };

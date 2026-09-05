@@ -32,7 +32,7 @@ void DiffusionSimple::assembleInnerImpl(
 			matrix->A_F[id][i] += A_F_contribution;
 		}
 	}
-	matrix->contributeTo_A_C(id, A_C_contribution);
+	matrix->A_C[id] = A_C_contribution;
 }
 
 template void DiffusionSimple::assembleInnerImpl(
@@ -58,7 +58,7 @@ void DiffusionSimple::assembleBoundariesImpl(
 	double diffCoeff
 ) 
 {
-	int id = threadIdx.x + blockDim.x * blockIdx.x; // index of an array faceIDs inside a patch
+	int bp_faceId = threadIdx.x + blockDim.x * blockIdx.x; // index of an array faceIDs inside a patch
 
 	auto& boundaryPatches = field->boundaryPatches;
 
@@ -66,16 +66,12 @@ void DiffusionSimple::assembleBoundariesImpl(
 	{
 		const auto& bp = boundaryPatches[patchNum];
 
-		if (id >= bp.faceIDs.length) { continue; }
+		if (bp_faceId >= bp.faceIDs.length) { continue; }
 
 		// Mesh elements
-		const auto& face = mesh->faces[bp.faceIDs[id]];
-		const auto& cellID = face.ownerCellID;
-		const auto& cell = mesh->cells[cellID];
-
-		// Getting all the components to iterate over
-		Obj* obj = field->values.getData() + cellID;
-		CudaArray<double> objComp = geomUtils::getComponents(obj);
+		const auto& f = mesh->faces[bp.faceIDs[bp_faceId]];
+		const auto& C_id = f.ownerCellID;
+		const auto& C = mesh->cells[C_id];
 
 		// Temporary walkaround for not refactoring everything again. BoundaryPatch has a value field
 		// which is supposed to operate not only on doubles. What if the boundary value is a vector?
@@ -90,51 +86,56 @@ void DiffusionSimple::assembleBoundariesImpl(
 		// value[2] = phi_infty.comp[2]
 		// value[3] = h_infty
 
-		size_t objLength = objComp.length;
-
 		double A_C_contribution = 0;
 		// double A_F_contribution = 0; -> This is always equal to zero
-		double* B_contribution = new double[objLength];
+		Obj B_contribution{};
+
+		const double* bp_values = bp.values.getData();
+		Obj phi_b = mathUtils::createMathObj<Obj>(bp_values);
+		uint32_t phi_b_numOfComp = mathUtils::getNumOfComp(phi_b);
 
 		switch (bp.type) {
 		case BoundaryConditionType::Drichlet:
 			A_C_contribution =
-				(face.area.magnitude /
-					face.ownerData.centroidToFace.magnitude) *
-				diffCoeff;
-			for (size_t comp = 0; comp < objLength; comp++)
-			{
-				B_contribution[comp] = A_C_contribution * bp.values[comp];
-			}
+				(
+					f.area.magnitude 
+					/ f.ownerData.centroidToFace.magnitude
+				) 
+				* diffCoeff;
+
+			B_contribution = A_C_contribution * phi_b;
 			break;
 
 		case BoundaryConditionType::Neumann:
-			for (size_t comp = 0; comp < objLength; comp++)
-			{
-				B_contribution[comp] = -bp.values[comp] * face.area.magnitude;
-			}
+			B_contribution = -f.area.magnitude * phi_b;
 			break;
 
 		case BoundaryConditionType::Mixed:
-			double gamma_over_d = diffCoeff / face.ownerData.centroidToFace.magnitude;
-			double Req = (bp.values[objLength] * gamma_over_d) / (bp.values[objLength] + gamma_over_d);
+			double h_infty = bp_values[phi_b_numOfComp];
+			double gamma_b = bp_values[phi_b_numOfComp + 1];
+
+			double gamma_over_d =
+				(
+					gamma_b
+					/ f.ownerData.centroidToFace.magnitude
+					);
+			double Req = 
+			(
+				(h_infty * gamma_over_d) / (h_infty + gamma_over_d)
+			)
+			*
+			f.area.magnitude;
 
 			A_C_contribution = Req;
-			for (size_t comp = 0; comp < objLength; comp++)
-			{
-				B_contribution[comp] = Req * bp.values[comp];
-			}
+			B_contribution = -Req * phi_b;
 			break;
 
 		default:
-			delete[] B_contribution;
 			continue;
 		}
 		
-		matrix->contributeTo_A_C(cellID, A_C_contribution);
-		matrix->contributeTo_B(cellID, B_contribution);
-
-		delete[] B_contribution;
+		cudaUtils::contributeTo(matrix->A_C[C_id], A_C_contribution);
+		cudaUtils::contributeTo(matrix->B[C_id], B_contribution);
 	}
 }
 

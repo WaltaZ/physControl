@@ -1,6 +1,7 @@
 #pragma once
 
 #include "diffusion.h"
+#include <utility/mathUtils.h>
 
 class DiffusionSimple : public Diffusion<DiffusionSimple> {
 public:

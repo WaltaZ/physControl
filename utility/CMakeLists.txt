@@ -5,8 +5,8 @@ set(utilityHppFiles
 )
 
 set(utilityCppFiles
-	"mathUtils.cpp"
-	"cudaUtils.cpp"
+	"mathUtils.cu"
+	"cudaUtils.cu"
 	"utility.cpp"
 )
 

@@ -17,7 +17,7 @@ set(geometryHppFiles
 
 set(geometryCppFiles
 	"geometryUtils.cu"
-	"matrixTensor.cpp"
+	"matrixTensor.cu"
 	"tests.cpp"
 	"vector.cu"
 	"shapes/cuboid.cpp"

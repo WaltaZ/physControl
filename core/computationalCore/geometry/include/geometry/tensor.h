@@ -26,7 +26,14 @@ public:
 	__host__ __device__
 	Tensor(std::array<double, _numOfComp> comp) : comp(comp) {};
 
+	__host__ __device__
+	Tensor(const double* comp) {
+		this->comp = std::array<double, _numOfComp>{};
+		std::copy(comp, comp + _numOfComp - 1, this->comp.data());
+	}
+
 	// OPERATIONS ------------------------------------
+
 	__host__ __device__
 	double& operator[](int index) {
 		return comp[index];
@@ -65,6 +72,12 @@ public:
 			finalComp[i] = comp[i] * scalar;
 		}
 		return Derived(finalComp);
+	}
+	
+	__host__ __device__
+	friend Derived operator*(const double& scalar, const Derived& tensor)
+	{
+		return tensor * scalar;
 	}
 
 	__host__ __device__

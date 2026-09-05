@@ -9,10 +9,10 @@
 
 class GradientGauss : public Gradient<GradientGauss> {	
 public:
-	template<typename Obj, typename ObjDest>
+	template<typename Obj, typename GradObj>
 	void computeImpl(
 		Field<Obj, Cell<MeshDim::D3>>& field,
-		Field<ObjDest, Cell<MeshDim::D3>>& destField,
+		Field<GradObj, Cell<MeshDim::D3>>& destField,
 		Mesh<MeshDim::D3>& mesh
 	);
 };

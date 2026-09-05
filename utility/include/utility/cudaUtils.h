@@ -5,6 +5,9 @@
 #include <cstdio>
 #include <cmath>
 
+#include <geometry/vector.h>
+#include <geometry/matrixTensor.h>
+
 namespace cudaConfig {
 	constexpr cudaMemLocation deviceLocation = {
 		cudaMemLocationTypeDevice,
@@ -32,6 +35,10 @@ namespace cudaUtils {
 	KernelArgs getKernelArgs(
 		int numOfElements,
 		int threadsPerBlock = cudaConfig::defaultThreadsPerBlock);
+
+	template<class Obj>
+	__device__
+		void contributeTo(Obj& dest, const Obj& obj);
 }
 
 template<typename T>

@@ -4,125 +4,103 @@
 
 namespace CUDA_GradientGauss {
 
-	template<typename Obj, typename ObjDest>
+	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EC_internalFaces(
 		CudaField<Obj, C>* field,
-		CudaField<ObjDest, C>* destField,
+		CudaField<GradObj, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh)
 	{
-		int id = blockIdx.x * blockDim.x + threadIdx.x;
+		int C_id = blockIdx.x * blockDim.x + threadIdx.x;
 
-		if (id >= mesh->cells.length) { return; };
+		if (C_id >= mesh->cells.length) { return; };
+		
+		GradObj grad{};
+		const auto& C = mesh->cells[C_id];
 
-		Obj* obj = field->values.getData();
-		ObjDest* destObj = destField->values.getData();
+		const Obj& phi_C = field->values[C_id];
 
-		CudaArray<double> objArray = geomUtils::getComponents(&(obj[id]));
-		CudaArray<double> destObjArray = geomUtils::getComponents(&(destObj[id]));
+		for (int j = 0; j < C.cellFaceIDs.length; j++) {
 
-		assert(3 * objArray.length == destObjArray.length);
+			const auto& face = mesh->faces[C.cellFaceIDs[j]];
 
-		for (int i = 0; i < objArray.length; i++) {
-			V grad{};
-			const auto& cell = mesh->cells[id];
+			if (face.isBoundary) { continue; }
 
-			auto& value = objArray[i];
+			const uint32_t F_id = face.getNeighbourCellID(C_id);
 
-			for (int j = 0; j < cell.cellFaceIDs.length; j++) {
+			const Obj& phi_F = field->values[F_id];
 
-				const auto& face = mesh->faces[cell.cellFaceIDs[j]];
+			double g_C = face.getWeightFactor(C_id);
+			double g_F = 1 - g_C;
 
-				if (face.isBoundary) { continue; }
+			Obj faceValue = (phi_C * g_C) + (phi_F * g_F);
 
-				CudaArray<double> neighbourObjArray =
-					geomUtils::getComponents(&obj[face.getNeighbourCellID(id)]);
-
-				double g_C = face.getWeightFactor(id);
-				double g_F = 1 - g_C;
-
-				double faceValue = (g_C * objArray[i]) + (g_F * neighbourObjArray[i]);
-
-				grad = grad + face.getArea(id).vector * faceValue;
-			}
-			grad = grad / cell.volume;
-			for (int j = 0; j < 3; j++) {
-				destObjArray[(3 * i) + j] = grad.comp[j];
-			}
+			grad = grad + (faceValue * face.getArea(C_id).vector);
 		}
+		grad = grad / C.volume;
+		
+		gradField->values[C_id] = grad;
 	}
 
 	template
 	__global__ void CUDA_GradientGauss::CUDA_compute_EC_internalFaces(
 		CudaField<double, C>* field,
-		CudaField<V, C>* destField,
+		CudaField<V, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh);
 
 	template
 	__global__ void CUDA_GradientGauss::CUDA_compute_EC_internalFaces(
 		CudaField<V, C>* field,
-		CudaField<T, C>* destField,
+		CudaField<T, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh);
 
 	// ----------------------------------- CUDA compute Each Face No boundary conditions ------------------------------------
 
-	template<typename Obj, typename ObjDest> 
+	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EF_noBC(
 		CudaField<Obj, C>* field,
-		CudaField<ObjDest, C>* destField,
+		CudaField<GradObj, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh)
 	{
-		int id = blockIdx.x * blockDim.x + threadIdx.x; // FACE IDs
+		int f_id = blockIdx.x * blockDim.x + threadIdx.x;
 
-		if (id >= mesh->faces.length) { return; }
+		if (f_id >= mesh->faces.length) { return; }
 
-		const auto& face = mesh->faces[id];
+		const auto& face = mesh->faces[f_id];
 		if (!face.isBoundary) { return; }
 
-		uint32_t cellID = face.ownerCellID;
-		const auto& cell = mesh->cells[cellID];
+		const uint32_t C_id = face.ownerCellID;
+		const auto& C = mesh->cells[C_id];
 
-		Obj* obj = field->values.getData();
-		ObjDest* destObj = destField->values.getData();
+		const Obj& phi_C = field->values[C_id];
 
-		CudaArray<double> objComp = geomUtils::getComponents(&(obj[cellID]));
-		CudaArray<double> destObjComp = geomUtils::getComponents(&(destObj[cellID]));
-
-		for (size_t i = 0; i < objComp.length; i++)
-		{
-			auto& objValue = objComp[i];
-
-			V contribution =
-				face.getArea(cellID).vector *
-				(objValue / cell.volume);
-
-			for (int j = 0; j < 3; i++) {
-				atomicAdd(&(destObjComp[(3 * i) + j]), contribution.comp[i]);
-			}
-		}
+		GradObj contribution =
+			(phi_C * face.getArea(C_id).vector) / C.volume;
+		
+		cudaUtils::contributeTo(gradField->values[C_id], contribution);
 	}
 
 	template
 	__global__ void CUDA_compute_EF_noBC(
 		CudaField<double, C>* field,
-		CudaField<V, C>* destField,
+		CudaField<V, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh);
 
 	template
 	__global__ void CUDA_compute_EF_noBC(
 		CudaField<V, C>* field,
-		CudaField<T, C>* destField,
+		CudaField<T, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh);
 
 	// ----------------------------------- CUDA compute Each Face boundary conditions ------------------------------------
 
 	// TODO: Make it more clear by splitting it into functions, like _handleBoundaryPatches();
-	template<typename Obj, typename ObjDest>
+	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EF_BC(
 		CudaField<Obj, C>* field,
-		CudaField<ObjDest, C>* destField,
+		CudaField<GradObj, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh)
 	{
-		int id = blockIdx.x * blockDim.x + threadIdx.x;
+		int bp_faceId = blockIdx.x * blockDim.x + threadIdx.x;
 
 		const auto& boundaryPatches = field->boundaryPatches;
 
@@ -130,70 +108,78 @@ namespace CUDA_GradientGauss {
 		{
 			auto& bp = boundaryPatches[patchNum];
 
-			if (id >= bp.faceIDs.length) { continue; }
+			if (bp_faceId >= bp.faceIDs.length) { continue; }
 
-			const uint32_t faceID = bp.faceIDs[id];
-			const auto& face = mesh->faces[faceID];
-			uint32_t cellID = face.ownerCellID;
-			const auto& cell = mesh->cells[cellID];
-			const double* bpValues = bp.values.getData();
+			const uint32_t f_id = bp.faceIDs[bp_faceId];
+			const auto& f = mesh->faces[f_id];
+			uint32_t C_id = f.ownerCellID;
+			const auto& C = mesh->cells[C_id];
+			const double* bp_values = bp.values.getData();
 
-			Obj* obj = field->values.getData();
-			ObjDest* destObj = destField->values.getData();
+			const Obj& phi_C = field->values[C_id];
 
-			CudaArray<double> objComp = geomUtils::getComponents(&(obj[cellID]));
-			CudaArray<double> destObjComp = geomUtils::getComponents(&(destObj[cellID]));
+			Obj phi_b = mathUtils::createMathObj<Obj>(bp_values);
+			uint32_t phi_b_numOfComp = mathUtils::getNumOfComp(phi_b);
+			GradObj contribution{};
 
-			for (size_t j = 0; j < objComp.length; j++)
-			{
-				auto& objValue = objComp[j];
+			// Boundary condition handler
+			switch (bp.type) {
+			case BoundaryConditionType::Mixed:
 
-				V contribution{};
+				double h_infty = bp_values[phi_b_numOfComp];
+				double gamma_b = bp_values[phi_b_numOfComp + 1];
 
-				// Boundary condition handler
-				switch (bp.type) {
-				case BoundaryConditionType::Mixed:
-					double gamma_over_d = (bpValues[2] / face.ownerData.centroidToFace.magnitude);
-					double faceValue =
-						(bpValues[0] * bpValues[1] + gamma_over_d * objValue) /
-						(bpValues[1] + gamma_over_d);
+				double gamma_over_d = 
+				(
+					gamma_b
+					/ f.ownerData.centroidToFace.magnitude
+				);
+				Obj faceValue =
+					(
+						(
+							h_infty * phi_b
+						)
+						+
+						(
+							phi_C * gamma_over_d
+						)
+					)
+					/
+					(
+						h_infty + gamma_over_d
+					);
 
-					contribution =
-						face.getArea(cellID).vector *
-						(faceValue / cell.volume);
-					break;
+				contribution =
+					(faceValue / C.volume)
+					* f.getArea(C_id).vector;
+				break;
 
-				case BoundaryConditionType::Drichlet:
-					contribution =
-						face.getArea(cellID).vector *
-						(bpValues[0] / cell.volume);
-					break;
+			case BoundaryConditionType::Drichlet:
+				contribution =
+					(phi_b / C.volume)
+					* f.getArea(C_id).vector;
+				break;
 
-				case BoundaryConditionType::Neumann:
-					contribution =
-						face.getArea(cellID).normal *
-						bpValues[0];
-					break;
-				}
-
-				for (int k = 0; k < 3; k++) {
-					atomicAdd(&(destObjComp[3 * j + k]), contribution.comp[k]);
-				}
-
+			case BoundaryConditionType::Neumann:
+				contribution =
+					(phi_b / C.volume)
+					* f.getArea(C_id).normal;
+				break;
 			}
+			cudaUtils::contributeTo<GradObj>(gradField->values[C_id], contribution);
 		}
 	}
 
 	template
 	__global__ void CUDA_compute_EF_BC(
 		CudaField<double, C>* field,
-		CudaField<V, C>* destField,
+		CudaField<V, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh);
 
 	template
 	__global__ void CUDA_compute_EF_BC(
 		CudaField<V, C>* field,
-		CudaField<T, C>* destField,
+		CudaField<T, C>* gradField,
 		CudaMesh<MeshDim::D3>* mesh);
 
 }

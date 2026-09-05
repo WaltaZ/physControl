@@ -10,6 +10,10 @@ Vector<dim>::Vector(std::array<double, _numOfComp> comp): ThisTensor(comp) {}
 
 template<GeometryDim dim>
 __host__ __device__
+Vector<dim>::Vector(const double* comp) : ThisTensor(comp) {};
+
+template<GeometryDim dim>
+__host__ __device__
 Vector<dim>::Vector(const Point<dim>& pointA, const Point<dim>& pointB)
 {
 	comp = std::array<double, _numOfComp>{};

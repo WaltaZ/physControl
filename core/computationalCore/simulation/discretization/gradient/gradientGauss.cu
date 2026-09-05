@@ -1,9 +1,9 @@
 #include <simulation/discretization/gradient/gradientGauss.h>
 
-template<typename Obj, typename ObjDest>
+template<typename Obj, typename GradObj>
 void GradientGauss::computeImpl(
 	Field<Obj, Cell<MeshDim::D3>>& field,
-	Field<ObjDest, Cell<MeshDim::D3>>& destField,
+	Field<GradObj, Cell<MeshDim::D3>>& destField,
 	Mesh<MeshDim::D3>& mesh
 ) {
 	// Calculating Gradient inside inner faces

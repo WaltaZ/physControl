@@ -11,7 +11,7 @@ public:
 		CudaMesh<MeshDim::D3>* mesh,
 		CudaField<Obj, C>* field,
 		CudaField<GradObj, C>* gradField,
-		CudaField<double, F>* massFlowRate,
+		CudaField<double, F>* massFlowRateField,
 		CudaLinearSolverMatrix<Obj>* matrix
 	);
 
@@ -20,7 +20,7 @@ public:
 		CudaMesh<MeshDim::D3>* mesh,
 		CudaField<Obj, C>* field,
 		CudaField<GradObj, C>* gradField,
-		CudaField<double, F>* massFlowRate,
+		CudaField<double, F>* massFlowRateField,
 		CudaLinearSolverMatrix<Obj>* matrix
 	);
 };

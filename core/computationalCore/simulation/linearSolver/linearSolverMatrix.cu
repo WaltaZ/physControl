@@ -64,45 +64,6 @@ CudaLinearSolverMatrix<Obj>::CudaLinearSolverMatrix(
 	B.length = numOfCells;
 }
 
-template<typename Obj>
-__device__
-void CudaLinearSolverMatrix<Obj>::contributeTo_A_C(
-	uint32_t cellID,
-	double A_C_contribution) 
-{
-	atomicAdd(&(A_C[cellID]), A_C_contribution);
-};
-
-template<typename Obj>
-__device__
-void CudaLinearSolverMatrix<Obj>::contributeTo_B(
-	uint32_t cellID,
-	double* B_contribution) 
-{
-	printf("CudaLinearSolverMatrix: Illegal object!");
-};
-
-template<>
-__device__
-void CudaLinearSolverMatrix<double>::contributeTo_B(
-	uint32_t cellID,
-	double* B_contribution) 
-{
-	atomicAdd(&B[cellID], *B_contribution);
-};
-
-template<>
-__device__
-void CudaLinearSolverMatrix<Vector<GeometryDim::D3>>::contributeTo_B(
-	uint32_t cellID,
-	double* B_contribution) 
-{
-	for (size_t comp = 0; comp < 3; comp++)
-	{
-		atomicAdd(&(B[cellID].comp[comp]), B_contribution[comp]);
-	}
-};
-
 template class CudaLinearSolverMatrix<double>;
 template class CudaLinearSolverMatrix<Vector<GeometryDim::D3>>;
 
