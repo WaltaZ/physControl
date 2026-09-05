@@ -12,7 +12,7 @@ __device__ void ConvectionUpwind::assembleInnerImpl(
 	CudaLinearSolverMatrix<Obj>* matrix
 )
 {
-	int C_id = threadIdx.x + blockDim.x * blockIdx.x; // Id of a cell
+	int C_id = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (C_id >= mesh->cells.length) { return; }
 

@@ -12,27 +12,27 @@ void DiffusionSimple::assembleInnerImpl(
 	CudaLinearSolverMatrix<Obj>* matrix,
 	double diffCoeff) 
 {
-	int id = threadIdx.x + blockDim.x * blockIdx.x;
+	int C_id = blockIdx.x * blockDim.x + threadIdx.x;;
 
-	const auto& cell = mesh->cells[id];
+	const auto& cell = mesh->cells[C_id];
 
 	double A_C_contribution = 0;
 
-	for (int i = 0; i < matrix->A_F[id].length; i++) {
+	for (int i = 0; i < matrix->A_F[C_id].length; i++) {
 		const auto& face = mesh->faces[cell.cellFaceIDs[i]];
 
 		if (!face.isBoundary) {
 			double A_F_contribution = 
 				-diffCoeff * 
-				face.getArea(id).magnitude / 
-				face.getCellData(id).centroidToFace.magnitude;
+				face.getArea(C_id).magnitude / 
+				face.getCellData(C_id).centroidToFace.magnitude;
 
 			A_C_contribution += -A_F_contribution;
 
-			matrix->A_F[id][i] += A_F_contribution;
+			matrix->A_F[C_id][i] += A_F_contribution;
 		}
 	}
-	matrix->A_C[id] = A_C_contribution;
+	matrix->A_C[C_id] = A_C_contribution;
 }
 
 template void DiffusionSimple::assembleInnerImpl(
@@ -58,7 +58,7 @@ void DiffusionSimple::assembleBoundariesImpl(
 	double diffCoeff
 ) 
 {
-	int bp_faceId = threadIdx.x + blockDim.x * blockIdx.x; // index of an array faceIDs inside a patch
+	int bp_faceId = blockIdx.x * blockDim.x + threadIdx.x; // index of an array faceIDs inside a patch
 
 	auto& boundaryPatches = field->boundaryPatches;
 
