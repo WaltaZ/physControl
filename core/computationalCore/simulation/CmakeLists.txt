@@ -12,6 +12,8 @@ set(simulationHppFiles
 	"include/simulation/discretization/convection/convectionUpwind.h"
 	"include/simulation/discretization/source/sourceGravity.h"
 	"include/simulation/discretization/source/sourceBoussinesq.h"
+	"include/simulation/discretization/unsteady/unsteady.h"
+	"include/simulation/discretization/unsteady/unsteadyEulerBackward.h"
 )
 
 set(simulationCppFiles
@@ -26,6 +28,7 @@ set(simulationCppFiles
 	"discretization/convection/convectionUpwind.cu"
 	"discretization/source/sourceGravity.cu"
 	"discretization/source/sourceBoussinesq.cu"
+	"discretization/unsteady/unsteadyEulerBackward.cu"
 )
 
 add_library(simulation ${simulationHppFiles} ${simulationCppFiles})

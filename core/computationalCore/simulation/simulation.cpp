@@ -1,10 +1,7 @@
 #include <simulation/simulation.h>
 
 #include <geometry/geometryUtils.h>
-#include <simulation/discretization/gradient/gradientGauss.h>
-#include <simulation/linearSolver/linearSolverMatrix.h>
-#include <simulation/discretization/diffusion/diffusionSimple.h>
-#include <simulation/discretization/convection/convectionQUICK.h>
+#include <simulation/discretization/discretization.h>
 
 HeatTransferSimulationD3::HeatTransferSimulationD3(
 	HeatTransferProblemD3& problem,
@@ -28,6 +25,10 @@ void HeatTransferSimulationD3::nextStep()
 	auto diffusion = DiffusionSimple();
 
 	auto convection = ConvectionQUICK();
+
+	auto unsteady = UnsteadyEulerBackward();
+
+	_problem.fields.temperature.getElements()->initPastTrace(1);
 
 	gradient.compute(
 		_problem.fields.temperature, 

@@ -5,11 +5,12 @@
 #include <type_traits>
 #include <cuda_runtime.h>
 
-template<typename DataType, typename StoragePlace>
+template<typename Data, typename StoragePlace>
 struct CudaField {
 public:
-    CudaAllocatedObj<DataType> values;
-    DataType initialObj;
+    CudaAllocatedObj<Data> values;
+    CudaAllocatedObj<CudaArray<Data>> pastValues;
+    Data initialObj;
 
     CudaAllocatedObj<BoundaryPatch> boundaryPatches;
     uint32_t bpFaceIDsLengthMax = 0;
@@ -17,7 +18,7 @@ public:
     CudaAllocatedObj<uint32_t> bpFaceIDs;
     CudaAllocatedObj<double> bpValues;
 
-    CudaField(const DataType& obj = DataType()) : initialObj(obj) {};
+    CudaField(const Data& obj = Data()) : initialObj(obj) {};
     
     bool isInitilized() {
         if (values.length != 0) {
@@ -27,13 +28,50 @@ public:
     };
 
     void initFiled(const CudaAllocatedObj<StoragePlace>& meshElements) {
-        cudaMallocManaged(this->values.getDataPointer(), meshElements.length * sizeof(DataType));
+        cudaMallocManaged(this->values.getDataPointer(), meshElements.length * sizeof(Data));
         this->values.length = meshElements.length;
 
         for (int i = 0; i < meshElements.length; i++) {
             values[i] = initialObj;
         }
     };
+
+    void initPastTrace(uint32_t traceLength) {
+        assert(traceLength > 0);
+        assert(isInitilized());
+
+        uint32_t fieldLength = values.length;
+
+        cudaMallocManaged(
+            _pastValuesAll.getDataPointer(), 
+            traceLength * fieldLength * sizeof(Data)
+        );
+        _pastValuesAll.length = traceLength * fieldLength;
+
+        cudaMallocManaged(
+            pastValues.getDataPointer(),
+            traceLength * sizeof(CudaArray<Data>)
+        );
+        pastValues.length = traceLength;
+
+        uint32_t offset = 0;
+        for (size_t i = 0; i < traceLength; i++)
+        {
+            pastValues[i] = CudaArray(
+                _pastValuesAll.getData(),
+                offset,
+                fieldLength
+            );
+
+            std::copy(
+                values.getData(),
+                values.getData() + fieldLength,
+                pastValues[i].getData()
+            );
+
+            offset += fieldLength;
+        }
+    }
 
     void initBoundaryPatches(const std::vector<ProblemBoundaryPatch>& boundaryPatches) {
 
@@ -105,6 +143,9 @@ public:
             this->bpValues.getData()
         );
     }
+
+private:
+    CudaAllocatedObj<Data> _pastValuesAll;
 };
 
 template<typename DataType, typename StoragePlace>
