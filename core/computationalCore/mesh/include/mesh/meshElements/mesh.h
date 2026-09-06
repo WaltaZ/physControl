@@ -9,19 +9,19 @@
 #include <algorithm>
 
 struct MeshElementsIDs {
-	CudaAllocatedObj<uint32_t> faceNodeIDs;
+	CudaPackedArray<uint32_t> faceNodeIDs;
 
-	CudaAllocatedObj<uint32_t> cellNodeIDs;
-	CudaAllocatedObj<uint32_t> cellFaceIDs;
-	CudaAllocatedObj<uint32_t> cellNeighbourCells;
+	CudaPackedArray<uint32_t> cellNodeIDs;
+	CudaPackedArray<uint32_t> cellFaceIDs;
+	CudaPackedArray<uint32_t> cellNeighbourCells;
 };
 
 template<MeshDim dim>
 class CudaMesh {
 public:
-	CudaAllocatedObj<Node<dim>> nodes;
-	CudaAllocatedObj<Face<dim>> faces;
-	CudaAllocatedObj<Cell<dim>> cells;
+	CudaPackedArray<Node<dim>> nodes;
+	CudaPackedArray<Face<dim>> faces;
+	CudaPackedArray<Cell<dim>> cells;
 
 	MeshElementsIDs elementsIDs;
 

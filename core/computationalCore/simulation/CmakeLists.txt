@@ -17,7 +17,7 @@ set(simulationHppFiles
 )
 
 set(simulationCppFiles
-	"simulation.cpp"
+	"simulation.cu"
 	"discretization/gradient/gradient.cu"
 	"discretization/gradient/gradientGauss.cu"
 	"discretization/gradient/gradientGaussKernel.cu"

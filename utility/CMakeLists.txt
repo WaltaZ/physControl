@@ -2,6 +2,7 @@ set(utilityHppFiles
 	"include/utility/utility.h"
 	"include/utility/mathUtils.h"
 	"include/utility/cudaUtils.h"
+	"include/utility/debugUtils.h"
 )
 
 set(utilityCppFiles

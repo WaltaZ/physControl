@@ -8,15 +8,15 @@
 template<typename Data, typename StoragePlace>
 struct CudaField {
 public:
-    CudaAllocatedObj<Data> values;
-    CudaAllocatedObj<CudaArray<Data>> pastValues;
+    CudaPackedArray<Data> values;
+    CudaPackedArray<CudaArray<Data>> pastValues;
     Data initialObj;
 
-    CudaAllocatedObj<BoundaryPatch> boundaryPatches;
+    CudaPackedArray<BoundaryPatch> boundaryPatches;
     uint32_t bpFaceIDsLengthMax = 0;
 
-    CudaAllocatedObj<uint32_t> bpFaceIDs;
-    CudaAllocatedObj<double> bpValues;
+    CudaPackedArray<uint32_t> bpFaceIDs;
+    CudaPackedArray<double> bpValues;
 
     CudaField(const Data& obj = Data()) : initialObj(obj) {};
     
@@ -27,7 +27,7 @@ public:
         return false;
     };
 
-    void initFiled(const CudaAllocatedObj<StoragePlace>& meshElements) {
+    void initFiled(const CudaPackedArray<StoragePlace>& meshElements) {
         cudaMallocManaged(this->values.getDataPointer(), meshElements.length * sizeof(Data));
         this->values.length = meshElements.length;
 
@@ -36,7 +36,7 @@ public:
         }
     };
 
-    void initPastTrace(uint32_t traceLength) {
+    void initPastTrace(uint32_t traceLength) { // Works
         assert(traceLength > 0);
         assert(isInitilized());
 
@@ -144,8 +144,22 @@ public:
         );
     }
 
+    __device__
+    void moveTraceToNextStep() { // Works
+        int C_id = blockDim.x * blockIdx.x + threadIdx.x;
+
+        if (C_id >= values.length) { return; }
+
+        for (size_t i = 0; i < pastValues.length - 1; i++)
+        {
+            pastValues[i + 1][C_id] = pastValues[i][C_id];
+        }
+
+        pastValues[0][C_id] = values[C_id];
+    }
+
 private:
-    CudaAllocatedObj<Data> _pastValuesAll;
+    CudaPackedArray<Data> _pastValuesAll;
 };
 
 template<typename DataType, typename StoragePlace>

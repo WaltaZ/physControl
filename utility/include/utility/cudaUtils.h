@@ -4,6 +4,8 @@
 #include <device_launch_parameters.h>
 #include <cstdio>
 #include <cmath>
+#include <utility>
+#include <new>
 
 #include <geometry/vector.h>
 #include <geometry/matrixTensor.h>
@@ -39,6 +41,20 @@ namespace cudaUtils {
 	template<class Obj>
 	__device__
 		void contributeTo(Obj& dest, const Obj& obj);
+
+	template<class Obj, typename... Args>
+	Obj* create(Args&&... args){
+		Obj* obj = nullptr;
+		cudaMallocManaged(&obj, sizeof(Obj));
+		new(obj) Obj(std::forward<Args>(args)...);
+		return obj;
+	}
+
+	template<class Obj>
+	void destroy(Obj* obj) {
+		obj->~Obj();
+		cudaFree(obj);
+	}
 }
 
 template<typename T>
@@ -80,12 +96,12 @@ private:
 };
 
 template<typename T>
-class CudaAllocatedObj {
+class CudaPackedArray {
 public:
 	uint32_t length = 0;
 
 	__host__ __device__
-	CudaAllocatedObj() {};
+	CudaPackedArray() {};
 
 	__host__ __device__ T& operator[](int index) {
 		return data[index];
@@ -111,7 +127,7 @@ public:
 		return data;
 	}
 
-	~CudaAllocatedObj() {
+	~CudaPackedArray() {
 		if (data != nullptr) {
 			cudaFree(data);
 		}

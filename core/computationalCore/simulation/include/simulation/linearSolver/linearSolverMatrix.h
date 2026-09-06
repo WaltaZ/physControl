@@ -6,14 +6,14 @@
 template<typename Obj>
 class CudaLinearSolverMatrix {
 public:
-	CudaAllocatedObj<double> A_C;
-	CudaAllocatedObj<CudaArray<double>> A_F;
-	CudaAllocatedObj<Obj> B;
+	CudaPackedArray<double> A_C;
+	CudaPackedArray<CudaArray<double>> A_F;
+	CudaPackedArray<Obj> B;
 
 	CudaLinearSolverMatrix(const Mesh<MeshDim::D3>& mesh);
 	
 private:
-	CudaAllocatedObj<double> A_Fs;
+	CudaPackedArray<double> A_Fs;
 };
 
 template<typename Obj>
