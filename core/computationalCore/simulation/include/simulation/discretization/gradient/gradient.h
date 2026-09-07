@@ -7,15 +7,15 @@
 class GradientBase {
 public:
 	virtual void compute(
-		Field<double, Cell<MeshDim::D3>>& field,
-		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
-		Mesh<MeshDim::D3>& mesh
+		const Field<double, Cell<MeshDim::D3>>* field,
+		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* gradField,
+		const Mesh<MeshDim::D3>* mesh
 	) = 0;
 
 	virtual void compute(
-		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& field,
-		Field<MatrixTensor<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
-		Mesh<MeshDim::D3>& mesh
+		const Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* field,
+		Field<MatrixTensor<GeometryDim::D3>, Cell<MeshDim::D3>>* gradField,
+		const Mesh<MeshDim::D3>* mesh
 	) = 0;
 };
 
@@ -23,29 +23,29 @@ template<class Derived>
 class Gradient : public GradientBase {
 public:
 	void compute(
-		Field<double, Cell<MeshDim::D3>>& field,
-		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
-		Mesh<MeshDim::D3>& mesh
+		const Field<double, Cell<MeshDim::D3>>* field,
+		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* gradField,
+		const Mesh<MeshDim::D3>* mesh
 	) override 
 	{
 		static_cast<Derived*>(this)->
 			template computeImpl<double, Vector<GeometryDim::D3>>(
 				field,
-				destField,
+				gradField,
 				mesh
 			);
 	};
 
 	void compute(
-		Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& field,
-		Field<MatrixTensor<GeometryDim::D3>, Cell<MeshDim::D3>>& destField,
-		Mesh<MeshDim::D3>& mesh
+		const Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* field,
+		Field<MatrixTensor<GeometryDim::D3>, Cell<MeshDim::D3>>* gradField,
+		const Mesh<MeshDim::D3>* mesh
 	) override 
 	{
 		static_cast<Derived*>(this)->
 			template computeImpl<Vector<GeometryDim::D3>, MatrixTensor<GeometryDim::D3>>(
 				field,
-				destField,
+				gradField,
 				mesh
 			);
 	};
@@ -61,7 +61,7 @@ namespace gradUtils {
 	__device__
 		GradObj interpolateOnFace(
 			uint32_t faceID,
-			CudaField<Obj, C>* field,
-			CudaField <GradObj, C>* gradField,
-			CudaMesh<MeshDim::D3>* mesh);
+			const Field<Obj, C>* field,
+			Field<GradObj, C>* gradField,
+			const Mesh<MeshDim::D3>* mesh);
 }

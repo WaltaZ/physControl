@@ -13,8 +13,8 @@ public:
 
 	__device__
 		void assembleInner(
-			CudaMesh<MeshDim::D3>* mesh,
-			CudaLinearSolverMatrix<V>* matrix,
+			const Mesh<MeshDim::D3>* mesh,
+			LinearSolverMatrix<V>* matrix,
 			V g
 		);
 };

@@ -3,7 +3,7 @@
 ScalarFieldScene::ScalarFieldScene(
     const std::string& fieldName,
     vtkSmartPointer<vtkUnstructuredGrid> vtkGrid,
-    const Field<double, Cell<MeshDim::D3>>& field
+    const Field<double, Cell<MeshDim::D3>>* field
 ) :
     _vtkGrid(vtkGrid),
     _field(field),
@@ -133,7 +133,7 @@ void ScalarFieldScene::updateScene()
 {
     for (vtkIdType i = 0; i < _vtkGrid->GetNumberOfCells(); ++i)
     {
-        _vtkFieldValues->SetValue(i, _field.getElements()->values[i]);
+        _vtkFieldValues->SetValue(i, _field->values[i]);
     }
     _vtkFieldValues->Modified();
     

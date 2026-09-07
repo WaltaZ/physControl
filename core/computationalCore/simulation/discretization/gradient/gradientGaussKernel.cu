@@ -6,9 +6,9 @@ namespace CUDA_GradientGauss {
 
 	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EC_internalFaces(
-		CudaField<Obj, C>* field,
-		CudaField<GradObj, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh)
+		const Field<Obj, C>* field,
+		Field<GradObj, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh)
 	{
 		int C_id = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -43,23 +43,23 @@ namespace CUDA_GradientGauss {
 
 	template
 	__global__ void CUDA_GradientGauss::CUDA_compute_EC_internalFaces(
-		CudaField<double, C>* field,
-		CudaField<V, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh);
+		const Field<double, C>* field,
+		Field<V, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh);
 
 	template
 	__global__ void CUDA_GradientGauss::CUDA_compute_EC_internalFaces(
-		CudaField<V, C>* field,
-		CudaField<T, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh);
+		const Field<V, C>* field,
+		Field<T, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh);
 
 	// ----------------------------------- CUDA compute Each Face No boundary conditions ------------------------------------
 
 	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EF_noBC(
-		CudaField<Obj, C>* field,
-		CudaField<GradObj, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh)
+		const Field<Obj, C>* field,
+		Field<GradObj, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh)
 	{
 		int f_id = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -81,24 +81,24 @@ namespace CUDA_GradientGauss {
 
 	template
 	__global__ void CUDA_compute_EF_noBC(
-		CudaField<double, C>* field,
-		CudaField<V, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh);
+		const Field<double, C>* field,
+		Field<V, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh);
 
 	template
 	__global__ void CUDA_compute_EF_noBC(
-		CudaField<V, C>* field,
-		CudaField<T, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh);
+		const Field<V, C>* field,
+		Field<T, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh);
 
 	// ----------------------------------- CUDA compute Each Face boundary conditions ------------------------------------
 
 	// TODO: Make it more clear by splitting it into functions, like _handleBoundaryPatches();
 	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EF_BC(
-		CudaField<Obj, C>* field,
-		CudaField<GradObj, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh)
+		const Field<Obj, C>* field,
+		Field<GradObj, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh)
 	{
 		int bp_faceId = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -172,14 +172,14 @@ namespace CUDA_GradientGauss {
 
 	template
 	__global__ void CUDA_compute_EF_BC(
-		CudaField<double, C>* field,
-		CudaField<V, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh);
+		const Field<double, C>* field,
+		Field<V, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh);
 
 	template
 	__global__ void CUDA_compute_EF_BC(
-		CudaField<V, C>* field,
-		CudaField<T, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh);
+		const Field<V, C>* field,
+		Field<T, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh);
 
 }

@@ -6,7 +6,7 @@
 #include <cuda_runtime.h>
 
 template<typename Data, typename StoragePlace>
-struct CudaField {
+struct Field {
 public:
     CudaPackedArray<Data> values;
     CudaPackedArray<CudaArray<Data>> pastValues;
@@ -18,7 +18,7 @@ public:
     CudaPackedArray<uint32_t> bpFaceIDs;
     CudaPackedArray<double> bpValues;
 
-    CudaField(const Data& obj = Data()) : initialObj(obj) {};
+    Field(const Data& obj = Data()) : initialObj(obj) {};
     
     bool isInitilized() {
         if (values.length != 0) {
@@ -160,21 +160,4 @@ public:
 
 private:
     CudaPackedArray<Data> _pastValuesAll;
-};
-
-template<typename DataType, typename StoragePlace>
-class Field {
-public:
-
-    Field(const DataType& obj = DataType()) 
-    {
-        cudaMallocManaged(&_field, sizeof(CudaField<DataType, StoragePlace>));
-
-        new(_field) CudaField<DataType, StoragePlace>(obj);
-    };
-
-    CudaField<DataType, StoragePlace>* getElements() { return _field; };
-    const CudaField<DataType, StoragePlace>* getElements() const { return _field; };
-private:
-    CudaField<DataType, StoragePlace>* _field;
 };

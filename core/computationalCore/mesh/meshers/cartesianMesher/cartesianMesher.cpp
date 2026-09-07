@@ -149,7 +149,7 @@ void CartesianMesher<MeshDim::D3>::setDivisionPattern(
 	this->divisionPattern[index] = divisionPattern;
 }
 
-const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
+Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 {
 	// TODO: Something breaks up when there's more than 1 boundary condition.
 
@@ -540,5 +540,5 @@ const Mesh<MeshDim::D3> CartesianMesher<MeshDim::D3>::generateMesh()
 
 	problem.initBoundaryPatches(mesherBC, mesherBCDefault);
 
-	return Mesh<MeshDim::D3>(mesh);
+	return cudaUtils::create<Mesh<MeshDim::D3>>(mesh);
 };

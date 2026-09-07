@@ -11,8 +11,8 @@ class GradientGauss : public Gradient<GradientGauss> {
 public:
 	template<typename Obj, typename GradObj>
 	void computeImpl(
-		Field<Obj, Cell<MeshDim::D3>>& field,
-		Field<GradObj, Cell<MeshDim::D3>>& destField,
-		Mesh<MeshDim::D3>& mesh
+		const Field<Obj, Cell<MeshDim::D3>>* field,
+		Field<GradObj, Cell<MeshDim::D3>>* gradField,
+		const Mesh<MeshDim::D3>* mesh
 	);
 };

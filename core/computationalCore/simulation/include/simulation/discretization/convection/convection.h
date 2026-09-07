@@ -13,36 +13,36 @@ protected:
 	using F = Face<MeshDim::D3>;
 public:
 	__device__ virtual void assembleInner(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<double, C>* field,
-		CudaField<V, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<double>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, C>* field,
+		Field<V, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<double>* matrix
 	) = 0;
 
 	__device__ virtual void assembleInner(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<V, C>* field,
-		CudaField<T, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<V>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* field,
+		Field<T, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<V>* matrix
 	) = 0;
 
 
 	__device__ virtual void assembleBoundaries(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<double, C>* field,
-		CudaField<V, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<double>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, C>* field,
+		Field<V, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<double>* matrix
 	) = 0;
 
 	__device__ virtual void assembleBoundaries(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<V, C>* field,
-		CudaField<T, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<V>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* field,
+		Field<T, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<V>* matrix
 	) = 0;
 };
 
@@ -50,11 +50,11 @@ template<class Derived>
 class Convection : public ConvectionBase {
 public:
 	__device__ void assembleInner(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<double, C>* field,
-		CudaField<V, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<double>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, C>* field,
+		Field<V, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<double>* matrix
 	) override
 	{
 		static_cast<Derived*>(this)->
@@ -63,11 +63,11 @@ public:
 	}
 
 	__device__ void assembleInner(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<V, C>* field,
-		CudaField<T, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<V>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* field,
+		Field<T, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<V>* matrix
 	) override
 	{
 		static_cast<Derived*>(this)->
@@ -77,11 +77,11 @@ public:
 
 
 	__device__ void assembleBoundaries(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<double, C>* field,
-		CudaField<V, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<double>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, C>* field,
+		Field<V, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<double>* matrix
 	) override
 	{
 		static_cast<Derived*>(this)->
@@ -90,11 +90,11 @@ public:
 	}
 
 	__device__ void assembleBoundaries(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<V, C>* field,
-		CudaField<T, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<V>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* field,
+		Field<T, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<V>* matrix
 	) override
 	{
 		static_cast<Derived*>(this)->

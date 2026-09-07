@@ -3,9 +3,9 @@
 template<class Obj>
 __device__
 void UnsteadyEulerBackward::assembleImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<Obj, C>* field,
-	CudaLinearSolverMatrix<Obj>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<Obj, C>* field,
+	LinearSolverMatrix<Obj>* matrix,
 	double delta_t
 ) 
 {
@@ -26,16 +26,16 @@ void UnsteadyEulerBackward::assembleImpl(
 
 template __device__
 void UnsteadyEulerBackward::assembleImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<double, C>* field,
-	CudaLinearSolverMatrix<double>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<double, C>* field,
+	LinearSolverMatrix<double>* matrix,
 	double delta_t
 );
 
 template __device__
 void UnsteadyEulerBackward::assembleImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<V, C>* field,
-	CudaLinearSolverMatrix<V>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<V, C>* field,
+	LinearSolverMatrix<V>* matrix,
 	double delta_t
 );

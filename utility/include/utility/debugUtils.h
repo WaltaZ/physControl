@@ -7,7 +7,7 @@
 namespace debug {
 	template<class StoragePlace>
 	void printField(
-		const Mesh<MeshDim::D3>& mesh, 
+		const Mesh<MeshDim::D3>* mesh, 
 		Field<double, StoragePlace>& field,
 		uint32_t t = 0
 		) 
@@ -20,7 +20,7 @@ namespace debug {
 
 		for (int C_id = 0; C_id < field.getElements()->values.length; C_id++)
 		{
-			const auto& cell = mesh.getElements()->cells[C_id];
+			const auto& cell = mesh->cells[C_id];
 			const auto& p = cell.centroid;
 			const auto& phi = values[C_id];
 
@@ -30,7 +30,7 @@ namespace debug {
 
 	template<class StoragePlace>
 	void printField(
-		const Mesh<MeshDim::D3>& mesh, 
+		const Mesh<MeshDim::D3>* mesh, 
 		const Field<Vector<GeometryDim::D3>, StoragePlace>& field,
 		uint32_t t = 0
 	) 
@@ -45,7 +45,7 @@ namespace debug {
 
 		for (int C_id = 0; C_id < field.getElements()->values.length; C_id++)
 		{
-			const auto& cell = mesh.getElements()->cells[C_id];
+			const auto& cell = mesh->cells[C_id];
 			const auto& p = cell.centroid;
 			const V& phi = values[C_id];
 

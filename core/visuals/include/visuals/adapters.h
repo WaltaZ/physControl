@@ -8,6 +8,6 @@
 
 namespace vtkAdapter {
 
-	vtkSmartPointer<vtkUnstructuredGrid> createVtkMeshD3(const Mesh<MeshDim::D3>& mesh);
+	vtkSmartPointer<vtkUnstructuredGrid> createVtkMeshD3(const Mesh<MeshDim::D3>* mesh);
 
 }

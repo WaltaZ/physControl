@@ -3,18 +3,18 @@
 // --------------------- Cuda Linear Solver Matrix ---------------------------
 
 template<typename Obj>
-CudaLinearSolverMatrix<Obj>::CudaLinearSolverMatrix(
-	const Mesh<MeshDim::D3>& mesh
+LinearSolverMatrix<Obj>::LinearSolverMatrix(
+	const Mesh<MeshDim::D3>* mesh
 ) 
 {
 	// TODO: This is only for the nearest neighbourhood. If I ever 
 	// wanted to implement something more complex, this needs to be changed \/
 
 	const uint32_t numOfCells = 
-		mesh.getElements()->cells.length;
+		mesh->cells.length;
 
 	const uint32_t numOfNeighbourCells = 
-		mesh.getElements()->
+		mesh->
 		elementsIDs.cellNeighbourCells.length;
 
 	// A_C
@@ -42,7 +42,7 @@ CudaLinearSolverMatrix<Obj>::CudaLinearSolverMatrix(
 	uint32_t offset = 0;
 	for (int i = 0; i < numOfCells; i++) {
 		uint32_t length = 
-			mesh.getElements()->
+			mesh->
 			cells[i].cellNeighbourCells.length;
 
 		A_F[i] = CudaArray<double>(
@@ -62,33 +62,6 @@ CudaLinearSolverMatrix<Obj>::CudaLinearSolverMatrix(
 		B[i] = Obj();
 	}
 	B.length = numOfCells;
-}
-
-template class CudaLinearSolverMatrix<double>;
-template class CudaLinearSolverMatrix<Vector<GeometryDim::D3>>;
-
-
-// ------------------------ Linear Solver Matrix ---------------------------
-
-template<typename Obj>
-LinearSolverMatrix<Obj>::LinearSolverMatrix(
-	const Mesh<MeshDim::D3>& mesh) 
-{
-	cudaMallocManaged(
-		&_linearSolverMatrix,
-		sizeof(CudaLinearSolverMatrix<Obj>));
-
-	new(_linearSolverMatrix) CudaLinearSolverMatrix<Obj>(mesh);
-}
-
-template<typename Obj>
-CudaLinearSolverMatrix<Obj>* LinearSolverMatrix<Obj>::getElements() {
-	return _linearSolverMatrix;
-}
-
-template<typename Obj>
-const CudaLinearSolverMatrix<Obj>* LinearSolverMatrix<Obj>::getElements() const {
-	return _linearSolverMatrix;
 }
 
 template class LinearSolverMatrix<double>;

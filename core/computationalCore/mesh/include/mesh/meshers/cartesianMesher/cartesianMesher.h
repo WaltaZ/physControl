@@ -54,5 +54,5 @@ public:
 
 	void setDivisionPattern(const std::vector<double>& divisionPattern, int index);
 
-	const Mesh<MeshDim::D3> generateMesh();
+	Mesh<MeshDim::D3>* generateMesh();
 };

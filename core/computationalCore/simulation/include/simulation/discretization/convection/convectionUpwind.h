@@ -6,20 +6,20 @@ class ConvectionUpwind : public Convection<ConvectionUpwind> {
 public:
 	template<typename Obj, typename GradObj>
 	__device__ void assembleInnerImpl(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<Obj, C>* field,
-		CudaField<GradObj, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<Obj>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<Obj, C>* field,
+		Field<GradObj, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<Obj>* matrix
 	);
 
 	template<typename Obj, typename GradObj>
 	__device__ void assembleBoundariesImpl(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<Obj, C>* field,
-		CudaField<GradObj, C>* gradField,
-		CudaField<double, F>* massFlowRate,
-		CudaLinearSolverMatrix<Obj>* matrix
+		const Mesh<MeshDim::D3>* mesh,
+		Field<Obj, C>* field,
+		Field<GradObj, C>* gradField,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<Obj>* matrix
 	);
 
 };

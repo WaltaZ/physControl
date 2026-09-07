@@ -15,10 +15,10 @@ public:
 
 	__device__
 		void assembleInner(
-			CudaMesh<MeshDim::D3>* mesh,
-			CudaLinearSolverMatrix<V>* matrix,
+			const Mesh<MeshDim::D3>* mesh,
+			LinearSolverMatrix<V>* matrix,
 			V g,
-			CudaField<double, C>* temperatureField,
+			Field<double, C>* temperatureField,
 			const double T_0,
 			const double beta
 		);

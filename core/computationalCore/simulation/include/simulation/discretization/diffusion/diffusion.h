@@ -11,31 +11,31 @@ protected:
 	using C = Cell<MeshDim::D3>;
 public:
 	__device__ virtual void assembleInner(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<double, C>* field,
-		CudaLinearSolverMatrix<double>* matrix,
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, C>* field,
+		LinearSolverMatrix<double>* matrix,
 		double diffCoeff
 	) = 0;
 
 	__device__ virtual void assembleInner(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<V, C>* field,
-		CudaLinearSolverMatrix<V>* matrix,
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* field,
+		LinearSolverMatrix<V>* matrix,
 		double diffCoeff
 	) = 0;
 
 
 	__device__ virtual void assembleBoundaries(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<double, C>* field,
-		CudaLinearSolverMatrix<double>* matrix,
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, C>* field,
+		LinearSolverMatrix<double>* matrix,
 		double diffCoeff
 	) = 0;
 
 	__device__ virtual void assembleBoundaries(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<V, C>* field,
-		CudaLinearSolverMatrix<V>* matrix,
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* field,
+		LinearSolverMatrix<V>* matrix,
 		double diffCoeff
 	) = 0;
 };
@@ -44,9 +44,9 @@ template<class Derived>
 class Diffusion : public DiffusionBase {
 public:
 	__device__ void assembleInner(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<double, C>* field,
-		CudaLinearSolverMatrix<double>* matrix,
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, C>* field,
+		LinearSolverMatrix<double>* matrix,
 		double diffCoeff
 	) override 
 	{
@@ -56,9 +56,9 @@ public:
 	}
 
 	__device__ void assembleInner(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<V, C>* field,
-		CudaLinearSolverMatrix<V>* matrix,
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* field,
+		LinearSolverMatrix<V>* matrix,
 		double diffCoeff
 	) override
 	{
@@ -68,9 +68,9 @@ public:
 	}
 
 	__device__ void assembleBoundaries(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<double, C>* field,
-		CudaLinearSolverMatrix<double>* matrix,
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, C>* field,
+		LinearSolverMatrix<double>* matrix,
 		double diffCoeff
 	) override 
 	{
@@ -80,9 +80,9 @@ public:
 	}
 
 	__device__ void assembleBoundaries(
-		CudaMesh<MeshDim::D3>* mesh,
-		CudaField<V, C>* field,
-		CudaLinearSolverMatrix<V>* matrix,
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* field,
+		LinearSolverMatrix<V>* matrix,
 		double diffCoeff
 	) override
 	{

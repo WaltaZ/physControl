@@ -7,9 +7,9 @@
 template<typename Obj>
 __device__
 void DiffusionSimple::assembleInnerImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<Obj, C>* field,
-	CudaLinearSolverMatrix<Obj>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<Obj, C>* field,
+	LinearSolverMatrix<Obj>* matrix,
 	double diffCoeff) 
 {
 	int C_id = blockIdx.x * blockDim.x + threadIdx.x;;
@@ -36,15 +36,15 @@ void DiffusionSimple::assembleInnerImpl(
 }
 
 template void DiffusionSimple::assembleInnerImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<double, C>* field,
-	CudaLinearSolverMatrix<double>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<double, C>* field,
+	LinearSolverMatrix<double>* matrix,
 	double diffCoeff);
 
 template void DiffusionSimple::assembleInnerImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<V, C>* field,
-	CudaLinearSolverMatrix<V>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<V, C>* field,
+	LinearSolverMatrix<V>* matrix,
 	double diffCoeff);
 
 // ------------------------------ Assemble Boundary Faces Implementation ----------------------------
@@ -52,9 +52,9 @@ template void DiffusionSimple::assembleInnerImpl(
 template<typename Obj>
 __device__
 void DiffusionSimple::assembleBoundariesImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<Obj, C>* field,
-	CudaLinearSolverMatrix<Obj>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<Obj, C>* field,
+	LinearSolverMatrix<Obj>* matrix,
 	double diffCoeff
 ) 
 {
@@ -140,13 +140,13 @@ void DiffusionSimple::assembleBoundariesImpl(
 }
 
 template void DiffusionSimple::assembleBoundariesImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<double, C>* field,
-	CudaLinearSolverMatrix<double>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<double, C>* field,
+	LinearSolverMatrix<double>* matrix,
 	double diffCoeff);
 
 template void DiffusionSimple::assembleBoundariesImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<V, C>* field,
-	CudaLinearSolverMatrix<V>* matrix,
+	const Mesh<MeshDim::D3>* mesh,
+	Field<V, C>* field,
+	LinearSolverMatrix<V>* matrix,
 	double diffCoeff);

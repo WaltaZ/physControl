@@ -7,6 +7,7 @@
 #include <geometry/geometry.h>
 #include <mesh/meshElements/meshElements.h>
 #include <mesh/meshers/mesherElements.h>
+#include <utility/cudaUtils.h>
 #include <vector>
 
 class ProblemD3 {
@@ -23,7 +24,7 @@ public:
 		const std::vector<MesherBoundaryConditionRaw>& mesherBCDefault
 	) = 0;
 
-	virtual void initFields(const Mesh<MeshDim::D3>& mesh) = 0;
+	virtual void initFields(const Mesh<MeshDim::D3>* mesh) = 0;
 };
 
 class HeatTransferFieldsD3 {
@@ -33,17 +34,30 @@ private:
 	using C = Cell<geom2mesh(GeometryDim::D3)>;
 	using F = Face<geom2mesh(GeometryDim::D3)>;
 public:
-	Field<V, C> velocity = Field<V, C>(V({0, 0, 0}));
-	Field<M, C> gradVelocity = Field<M, C>(M({
-		0, 0, 0,
-		0, 0, 0, 
-		0, 0, 0
-	}));
-	Field<double, C> temperature = Field<double, C>(298);
-	Field<V, C> gradTemperature = Field<V, C>(V({ 0, 0, 0 }));
-	Field<double, F> massFlowRate = Field<double, F>(0);
-	Field<double, C> pressure = Field<double, C>(10e5);
-	Field<V, C> gradPressure = Field<V, C>(V({ 0, 0, 0 }));
+	Field<V, C>* velocity = cudaUtils::create<Field<V, C>>(
+		V({0, 0, 0})
+	);
+	Field<M, C>* gradVelocity = cudaUtils::create<Field<M, C>>(
+		M({
+			0, 0, 0,
+			0, 0, 0, 
+			0, 0, 0
+		}));
+	Field<double, C>* temperature = cudaUtils::create<Field<double, C>>(
+		298
+	);
+	Field<V, C>* gradTemperature = cudaUtils::create<Field<V, C>>(
+		V({ 0, 0, 0 })
+	);
+	Field<double, F>* massFlowRate = cudaUtils::create<Field<double, F>>(
+		0
+	);
+	Field<double, C>* pressure = cudaUtils::create<Field<double, C>>(
+		10e5
+	);
+	Field<V, C>* gradPressure = cudaUtils::create<Field<V, C>>(
+		V({ 0, 0, 0 })
+	);
 };
 
 class HeatTransferProblemD3 : public ProblemD3 {
@@ -58,7 +72,7 @@ public:
 		const std::vector<MesherBoundaryCondition>& mesherBC,
 		const std::vector<MesherBoundaryConditionRaw>& mesherBCDefault) override;
 
-	void initFields(const Mesh<MeshDim::D3>& mesh) override;
+	void initFields(const Mesh<MeshDim::D3>* mesh) override;
 
 	void addVelocityBoundaryCondition(
 		const BoundaryConditionD3& bc);

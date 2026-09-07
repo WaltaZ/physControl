@@ -45,7 +45,7 @@ int main() {
 
 	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, (int)(amount*0.8), (int)(amount*0.4)});
 
-	Mesh<MeshDim::D3> mesh = mesher.generateMesh();
+	Mesh<MeshDim::D3>* mesh = mesher.generateMesh();
 	problem.initFields(mesh);
 
 	fieldTests::setUpRadialScalarField(problem.fields.temperature, mesh, box.getCentroid());

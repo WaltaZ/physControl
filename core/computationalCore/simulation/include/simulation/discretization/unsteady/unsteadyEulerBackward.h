@@ -7,9 +7,9 @@ public:
 	template<class Obj>
 	__device__
 		void assembleImpl(
-			CudaMesh<MeshDim::D3>* mesh,
-			CudaField<Obj, C>* field,
-			CudaLinearSolverMatrix<Obj>* matrix,
+			const Mesh<MeshDim::D3>* mesh,
+			Field<Obj, C>* field,
+			LinearSolverMatrix<Obj>* matrix,
 			double delta_t
 		);
 };

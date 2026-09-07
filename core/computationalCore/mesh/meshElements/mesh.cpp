@@ -3,7 +3,7 @@
 #include <cuda_runtime.h>
 
 template<MeshDim dim>
-CudaMesh<dim>::CudaMesh(const MesherMesh<dim>& mesherMesh) {
+Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 	// Allocating data into CPU and GPU
 
 	nodes.length = mesherMesh.nodes.size();
@@ -133,28 +133,6 @@ CudaMesh<dim>::CudaMesh(const MesherMesh<dim>& mesherMesh) {
 		cellNeighbourCells.begin(), 
 		cellNeighbourCells.end(), 
 		elementsIDs.cellNeighbourCells.getData());
-}
-
-template class CudaMesh<MeshDim::D2>;
-template class CudaMesh<MeshDim::D3>;
-
-template<MeshDim dim>
-Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh)
-{
-	cudaMallocManaged(&_mesh, sizeof(CudaMesh<dim>));
-	new(_mesh) CudaMesh<dim>(mesherMesh);
-}
-
-template<MeshDim dim>
-CudaMesh<dim>* Mesh<dim>::getElements()
-{
-	return _mesh;
-}
-
-template<MeshDim dim>
-const CudaMesh<dim>* Mesh<dim>::getElements() const
-{
-	return _mesh;
 }
 
 template class Mesh<MeshDim::D2>;

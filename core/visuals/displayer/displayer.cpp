@@ -6,7 +6,7 @@
 // --------------------- DISPLAYER -----------------------------
 
 Displayer::Displayer(
-	const Mesh<MeshDim::D3>& mesh)
+	const Mesh<MeshDim::D3>* mesh)
 	:
 	_renderer(vtkNew<vtkRenderer>()),
 	_window(vtkNew<vtkRenderWindow>()),
@@ -41,7 +41,7 @@ void SceneDisplayer::_addBaseActors()
 	}
 }
 
-SceneDisplayer::SceneDisplayer(const Mesh<MeshDim::D3>& mesh) : Displayer(mesh) {
+SceneDisplayer::SceneDisplayer(const Mesh<MeshDim::D3>* mesh) : Displayer(mesh) {
 	vtkNew<SceneDisplayerCustomInteractorStyle> interactorStyle;
 	interactorStyle->displayer = this;
 	_interactor->SetInteractorStyle(interactorStyle);
@@ -86,9 +86,9 @@ bool SceneDisplayer::_switchScenesHandler(const std::string& key)
 // ----------------------------- FIELD DISPLAYER -----------------------------
 
 FieldDisplayer::FieldDisplayer(
-	HeatTransferSimulationD3& simulation) : SceneDisplayer(simulation.getMesh()), _simulation(simulation)
+	HeatTransferSimulationD3& simulation) : SceneDisplayer(simulation.mesh), _simulation(simulation)
 {
-	HeatTransferProblemD3& problem = simulation.getProblem();
+	HeatTransferProblemD3& problem = simulation.problem;
 
 	_scenes.push_back(std::make_unique<ScalarFieldScene>(
 		"Temperature",

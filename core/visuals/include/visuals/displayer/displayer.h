@@ -27,7 +27,7 @@ protected:
 	vtkSmartPointer<vtkCameraOrientationWidget> _cow;
 	vtkSmartPointer<vtkUnstructuredGrid> _vtkGrid;
 public:
-	Displayer(const Mesh<MeshDim::D3>& mesh);
+	Displayer(const Mesh<MeshDim::D3>* mesh);
 	void display();
 };
 
@@ -40,7 +40,7 @@ protected:
 	void _addBaseActors();
 	bool _switchScenesHandler(const std::string& key);
 public:
-	SceneDisplayer(const Mesh<MeshDim::D3>& mesh);
+	SceneDisplayer(const Mesh<MeshDim::D3>* mesh);
 
 	virtual void handleKeyPress(const std::string& key) = 0;
 	void displayScene(int index);

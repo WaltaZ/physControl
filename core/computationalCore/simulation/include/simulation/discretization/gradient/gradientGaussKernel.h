@@ -15,22 +15,22 @@ namespace CUDA_GradientGauss {
 
 	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EC_internalFaces(
-		CudaField<Obj, C>* field,
-		CudaField<GradObj, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh
+		const Field<Obj, C>* field,
+		Field<GradObj, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh
 	);
 
 	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EF_noBC(
-		CudaField<Obj, C>* field,
-		CudaField<GradObj, C>* gradField,
-		CudaMesh<MeshDim::D3>* mesh
+		const Field<Obj, C>* field,
+		Field<GradObj, C>* gradField,
+		const Mesh<MeshDim::D3>* mesh
 	);
 
 	template<typename Obj, typename GradObj>
 	__global__ void CUDA_compute_EF_BC(
-		CudaField<Obj, Cell<MeshDim::D3>>* field,
-		CudaField<GradObj, Cell<MeshDim::D3>>* gradField,
-		CudaMesh<MeshDim::D3>* mesh
+		const Field<Obj, Cell<MeshDim::D3>>* field,
+		Field<GradObj, Cell<MeshDim::D3>>* gradField,
+		const Mesh<MeshDim::D3>* mesh
 	);
 }

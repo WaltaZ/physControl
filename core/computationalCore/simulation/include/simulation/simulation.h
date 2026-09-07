@@ -6,18 +6,14 @@
 #include <utility/cudaUtils.h>
 
 class HeatTransferSimulationD3 {
-
-	HeatTransferProblemD3& _problem;
-	Mesh<MeshDim::D3>& _mesh;
-
 public:
+	HeatTransferProblemD3& problem;
+	const Mesh<MeshDim::D3>* mesh;
+
 	HeatTransferSimulationD3(
 		HeatTransferProblemD3& problem,
-		Mesh<MeshDim::D3>& mesh
+		const Mesh<MeshDim::D3>* mesh
 	);
-
-	HeatTransferProblemD3& getProblem();
-	Mesh<MeshDim::D3>& getMesh();
 
 	void nextStep();
 };

@@ -31,7 +31,7 @@ public:
 	ScalarFieldScene(
 		const std::string& fieldName,
 		vtkSmartPointer<vtkUnstructuredGrid> vtkGrid,
-		const Field<double, Cell<MeshDim::D3>>& field
+		const Field<double, Cell<MeshDim::D3>>* field
 	);
 
 private:
@@ -44,7 +44,7 @@ private:
 	vtkSmartPointer<vtkPolyDataMapper> _mapper;
 
 	std::string _fieldName;
-	const Field<double, Cell<MeshDim::D3>>& _field;
+	const Field<double, Cell<MeshDim::D3>>* _field;
 
 	int _currentPlaneOrientation = 2;
 	double _currentPlanePos[3];

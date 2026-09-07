@@ -19,7 +19,7 @@ protected:
 	vtkSmartPointer<vtkLookupTable> _lut;
 	vtkSmartPointer<vtkPolyDataMapper> _mapper;
 
-	const Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& _field;
+	const Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* _field;
 
 	int _amountOfVectors = 1000;
 	int _amountStep = 100;
@@ -28,7 +28,7 @@ public:
 	VectorFieldScene(
 		const std::string& fieldName,
 		vtkSmartPointer<vtkUnstructuredGrid> vtkGrid,
-		const Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>& field);
+		const Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* field);
 
 	void handleKeyPress(const std::string& key) override;
 	void activateScene() override;

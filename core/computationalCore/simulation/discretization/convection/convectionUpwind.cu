@@ -5,11 +5,11 @@
 
 template<typename Obj, typename GradObj>
 __device__ void ConvectionUpwind::assembleInnerImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<Obj, C>* field,
-	CudaField<GradObj, C>* gradField,
-	CudaField<double, F>* massFlowRateField,
-	CudaLinearSolverMatrix<Obj>* matrix
+	const Mesh<MeshDim::D3>* mesh,
+	Field<Obj, C>* field,
+	Field<GradObj, C>* gradField,
+	Field<double, F>* massFlowRateField,
+	LinearSolverMatrix<Obj>* matrix
 )
 {
 	int C_id = blockIdx.x * blockDim.x + threadIdx.x;
@@ -41,48 +41,48 @@ __device__ void ConvectionUpwind::assembleInnerImpl(
 
 template
 __device__ void ConvectionUpwind::assembleInnerImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<double, C>* field,
-	CudaField<V, C>* gradField,
-	CudaField<double, F>* massFlowRate,
-	CudaLinearSolverMatrix<double>* matrix
+	const Mesh<MeshDim::D3>* mesh,
+	Field<double, C>* field,
+	Field<V, C>* gradField,
+	Field<double, F>* massFlowRate,
+	LinearSolverMatrix<double>* matrix
 );
 
 template
 __device__ void ConvectionUpwind::assembleInnerImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<V, C>* field,
-	CudaField<T, C>* gradField,
-	CudaField<double, F>* massFlowRate,
-	CudaLinearSolverMatrix<V>* matrix
+	const Mesh<MeshDim::D3>* mesh,
+	Field<V, C>* field,
+	Field<T, C>* gradField,
+	Field<double, F>* massFlowRate,
+	LinearSolverMatrix<V>* matrix
 );
 
 // -------------------- Assemble Boundaries Implementation ----------------------
 
 template<typename Obj, typename GradObj>
 __device__ void ConvectionUpwind::assembleBoundariesImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<Obj, C>* field,
-	CudaField<GradObj, C>* gradField,
-	CudaField<double, F>* massFlowRateField,
-	CudaLinearSolverMatrix<Obj>* matrix
+	const Mesh<MeshDim::D3>* mesh,
+	Field<Obj, C>* field,
+	Field<GradObj, C>* gradField,
+	Field<double, F>* massFlowRateField,
+	LinearSolverMatrix<Obj>* matrix
 ) 
 {}; // TODO: Implement
 
 template
 __device__ void ConvectionUpwind::assembleBoundariesImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<double, C>* field,
-	CudaField<V, C>* gradField,
-	CudaField<double, F>* massFlowRate,
-	CudaLinearSolverMatrix<double>* matrix
+	const Mesh<MeshDim::D3>* mesh,
+	Field<double, C>* field,
+	Field<V, C>* gradField,
+	Field<double, F>* massFlowRate,
+	LinearSolverMatrix<double>* matrix
 );
 
 template
 __device__ void ConvectionUpwind::assembleBoundariesImpl(
-	CudaMesh<MeshDim::D3>* mesh,
-	CudaField<V, C>* field,
-	CudaField<T, C>* gradField,
-	CudaField<double, F>* massFlowRate,
-	CudaLinearSolverMatrix<V>* matrix
+	const Mesh<MeshDim::D3>* mesh,
+	Field<V, C>* field,
+	Field<T, C>* gradField,
+	Field<double, F>* massFlowRate,
+	LinearSolverMatrix<V>* matrix
 );

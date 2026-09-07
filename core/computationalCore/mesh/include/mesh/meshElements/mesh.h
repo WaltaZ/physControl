@@ -17,29 +17,15 @@ struct MeshElementsIDs {
 };
 
 template<MeshDim dim>
-class CudaMesh {
+class Mesh {
 public:
 	CudaPackedArray<Node<dim>> nodes;
 	CudaPackedArray<Face<dim>> faces;
 	CudaPackedArray<Cell<dim>> cells;
 
 	MeshElementsIDs elementsIDs;
-
-	~CudaMesh();
 	
-	CudaMesh(const MesherMesh<dim>& mesherMesh);
-
-	//size_t getMeshSize();
-};
-
-template<MeshDim dim>
-class Mesh {
-	CudaMesh<dim>* _mesh;
-
-public:
 	Mesh(const MesherMesh<dim>& mesherMesh);
 
-	CudaMesh<dim>* getElements();
-
-	const CudaMesh<dim>* getElements() const;
+	//size_t getMeshSize();
 };

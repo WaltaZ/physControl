@@ -8,9 +8,9 @@ namespace gradUtils {
 	__device__
 		GradObj interpolateOnFace(
 			uint32_t faceID,
-			CudaField<Obj, C>* field,
-			CudaField <GradObj, C>* gradField,
-			CudaMesh<MeshDim::D3>* mesh)
+			const Field<Obj, C>* field,
+			Field <GradObj, C>* gradField,
+			const Mesh<MeshDim::D3>* mesh)
 	{
 		const auto& face = mesh->faces[faceID];
 
@@ -46,15 +46,15 @@ namespace gradUtils {
 		__device__
 		V interpolateOnFace(
 			uint32_t faceID,
-			CudaField<double, C>* field,
-			CudaField <V, C>* gradField,
-			CudaMesh<MeshDim::D3>* mesh);
+			const Field<double, C>* field,
+			Field <V, C>* gradField,
+			const Mesh<MeshDim::D3>* mesh);
 
 	template
 		__device__
 		T interpolateOnFace(
 			uint32_t faceID,
-			CudaField<V, C>* field,
-			CudaField <T, C>* gradField,
-			CudaMesh<MeshDim::D3>* mesh);
+			const Field<V, C>* field,
+			Field <T, C>* gradField,
+			const Mesh<MeshDim::D3>* mesh);
 }
