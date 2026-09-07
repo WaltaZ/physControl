@@ -30,11 +30,11 @@ __device__ void ConvectionUpwind::assembleInnerImpl(
 		double m_f = massFlowRateField->values[f_id];
 
 		// Page 410 from the book
-		matrix->A_F[C_id][i] = -std::max(-m_f, 0.0);
+		matrix->A_F[C_id][i] += -std::max(-m_f, 0.0);
 		A_C_contribution += std::max(m_f, 0.0);
 	}
 
-	matrix->A_C[C_id] = A_C_contribution;
+	matrix->A_C[C_id] += A_C_contribution;
 
 	// No B contribution
 };

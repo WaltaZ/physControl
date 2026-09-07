@@ -13,5 +13,5 @@ void SourceGravity::assembleInner(
 
 	const auto& C = mesh->cells[C_id];
 
-	matrix->B[C_id] = matrix->B[C_id] + (g * C.volume);
+	matrix->B[C_id] += (g * C.volume);
 };

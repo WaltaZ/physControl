@@ -17,8 +17,7 @@ void SourceBoussinesq::assembleInner(
 	const auto& C = mesh->cells[C_id];
 	const double T_C = temperatureField->values[C_id];
 
-	matrix->B[C_id] = 
-		matrix->B[C_id] + 
+	matrix->B[C_id] += 
 		(
 			(g * C.volume * beta)
 			* (T_0 - T_C)

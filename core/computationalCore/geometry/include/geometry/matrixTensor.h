@@ -11,13 +11,13 @@ public:
 	using ThisTensor = Tensor<MatrixTensor<dim>, dim, 2>;
 	using ThisTensor::ThisTensor;
 	using ThisTensor::comp;
-	using ThisTensor::_numOfComp;
+	using ThisTensor::numOfComp;
 
 	__host__ __device__
 	MatrixTensor();
 
 	__host__ __device__
-	MatrixTensor(std::array<double, _numOfComp> comp);
+	MatrixTensor(std::array<double, numOfComp> comp);
 
 	__host__ __device__
 	MatrixTensor(const double* comp);

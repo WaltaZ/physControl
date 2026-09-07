@@ -14,6 +14,8 @@ void DiffusionSimple::assembleInnerImpl(
 {
 	int C_id = blockIdx.x * blockDim.x + threadIdx.x;;
 
+	if (C_id >= mesh->cells.length) { return; }
+
 	const auto& cell = mesh->cells[C_id];
 
 	double A_C_contribution = 0;
@@ -32,7 +34,7 @@ void DiffusionSimple::assembleInnerImpl(
 			matrix->A_F[C_id][i] += A_F_contribution;
 		}
 	}
-	matrix->A_C[C_id] = A_C_contribution;
+	matrix->A_C[C_id] += A_C_contribution;
 }
 
 template void DiffusionSimple::assembleInnerImpl(

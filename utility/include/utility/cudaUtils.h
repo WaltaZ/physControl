@@ -30,6 +30,7 @@ struct KernelArgs {
 };
 
 namespace cudaUtils {
+
 	void fetchError();
 
 	void fetchError(cudaError_t(*operation)());
@@ -43,18 +44,18 @@ namespace cudaUtils {
 		void contributeTo(Obj& dest, const Obj& obj);
 
 	template<class Obj, typename... Args>
-	Obj* create(Args&&... args){
+	Obj* create(Args&&... args) {
 		Obj* obj = nullptr;
 		cudaMallocManaged(&obj, sizeof(Obj));
 		new(obj) Obj(std::forward<Args>(args)...);
 		return obj;
-	}
+	};
 
 	template<class Obj>
 	void destroy(Obj* obj) {
 		obj->~Obj();
 		cudaFree(obj);
-	}
+	};
 }
 
 template<typename T>

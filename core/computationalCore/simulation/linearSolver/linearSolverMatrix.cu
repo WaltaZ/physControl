@@ -21,7 +21,7 @@ LinearSolverMatrix<Obj>::LinearSolverMatrix(
 	cudaMallocManaged(
 		A_C.getDataPointer(), 
 		numOfCells * sizeof(double));
-	cudaMemset(A_C.getData(), 0, numOfCells);
+	cudaMemset(A_C.getData(), 0, numOfCells * sizeof(double));
 	A_C.length = numOfCells;
 
 	// A_Fs
@@ -29,7 +29,7 @@ LinearSolverMatrix<Obj>::LinearSolverMatrix(
 		A_Fs.getDataPointer(),
 		numOfNeighbourCells * sizeof(double)
 	);
-	cudaMemset(A_C.getData(), 0, numOfNeighbourCells);
+	cudaMemset(A_Fs.getData(), 0, numOfNeighbourCells * sizeof(double));
 	A_Fs.length = numOfNeighbourCells;
 
 	// A_F
@@ -50,6 +50,8 @@ LinearSolverMatrix<Obj>::LinearSolverMatrix(
 			offset,
 			length
 		);
+
+		offset += length;
 	}
 
 	// B

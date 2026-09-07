@@ -6,7 +6,7 @@ MatrixTensor<dim>::MatrixTensor() : ThisTensor() {};
 
 template<GeometryDim dim>
 __host__ __device__
-MatrixTensor<dim>::MatrixTensor(std::array<double, _numOfComp> comp) : ThisTensor(comp) {};
+MatrixTensor<dim>::MatrixTensor(std::array<double, numOfComp> comp) : ThisTensor(comp) {};
 
 template<GeometryDim dim>
 __host__ __device__

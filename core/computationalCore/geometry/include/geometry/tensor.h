@@ -7,29 +7,30 @@
 
 template<typename Derived, GeometryDim dim, int rank>
 class Tensor {
-protected:
-	static constexpr int _numOfComp = [] {
+public:
+
+	static constexpr int numOfComp = [] {
 		int result = 1;
 		for (int i = 0; i < rank; i++)
 			result *= geometryDimSize(dim);
 		return result;
 		}();
-public:
-	std::array<double, _numOfComp> comp;
+
+	std::array<double, numOfComp> comp;
 
 	__host__ __device__ Tensor()
 	{
-		comp = std::array<double, _numOfComp>{};
+		comp = std::array<double, numOfComp>{};
 		std::fill(std::begin(comp), std::end(comp), 0);
 	};
 
 	__host__ __device__
-	Tensor(std::array<double, _numOfComp> comp) : comp(comp) {};
+	Tensor(std::array<double, numOfComp> comp) : comp(comp) {};
 
 	__host__ __device__
 	Tensor(const double* comp) {
-		this->comp = std::array<double, _numOfComp>{};
-		std::copy(comp, comp + _numOfComp - 1, this->comp.data());
+		this->comp = std::array<double, numOfComp>{};
+		std::copy(comp, comp + numOfComp - 1, this->comp.data());
 	}
 
 	// OPERATIONS ------------------------------------
@@ -47,18 +48,28 @@ public:
 	__host__ __device__
 	Derived operator+(const Derived& tensor) const
 	{
-		std::array<double, _numOfComp> finalComp{};
-		for (int i = 0; i < _numOfComp; i++) {
+		std::array<double, numOfComp> finalComp{};
+		for (int i = 0; i < numOfComp; i++) {
 			finalComp[i] = comp[i] + tensor.comp[i];
 		}
 		return Derived(finalComp);
 	};
 
 	__host__ __device__
+	Derived& operator+=(const Derived& tensor) 
+	{
+		for (size_t i = 0; i < numOfComp; i++)
+		{
+			comp[i] += tensor.comp[i];
+		}
+		return *static_cast<Derived*>(this);
+	}
+
+	__host__ __device__
 	Derived operator-(const Derived& tensor) const
 	{
-		std::array<double, _numOfComp> finalComp{};
-		for (int i = 0; i < _numOfComp; i++) {
+		std::array<double, numOfComp> finalComp{};
+		for (int i = 0; i < numOfComp; i++) {
 			finalComp[i] = comp[i] - tensor.comp[i];
 		}
 		return Derived(finalComp);
@@ -67,8 +78,8 @@ public:
 	__host__ __device__
 	Derived operator*(const double& scalar) const
 	{
-		std::array<double, _numOfComp> finalComp{};
-		for (int i = 0; i < _numOfComp; i++) {
+		std::array<double, numOfComp> finalComp{};
+		for (int i = 0; i < numOfComp; i++) {
 			finalComp[i] = comp[i] * scalar;
 		}
 		return Derived(finalComp);
@@ -83,8 +94,8 @@ public:
 	__host__ __device__
 	Derived operator/(const double& scalar) const
 	{
-		std::array<double, _numOfComp> finalComp{};
-		for (int i = 0; i < _numOfComp; i++) {
+		std::array<double, numOfComp> finalComp{};
+		for (int i = 0; i < numOfComp; i++) {
 			finalComp[i] = comp[i] / scalar;
 		}
 		return Derived(finalComp);
@@ -94,7 +105,7 @@ public:
 	bool operator==(const Derived& tensor) const
 	{
 		bool isTheSame = true;
-		for (int i = 0; i < _numOfComp; i++) {
+		for (int i = 0; i < numOfComp; i++) {
 			isTheSame = (comp[i] == tensor.comp[i]);
 			if (!isTheSame) { break; }
 		}

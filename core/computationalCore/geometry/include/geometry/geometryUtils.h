@@ -52,17 +52,3 @@ namespace geomUtils {
 	__host__ __device__
 	CudaArray<double> getComponents(T* obj);
 }
-
-// ------------------- Print geometry -----------------------
-
-namespace geomPrint {
-
-	void printP(const Point<GeometryDim::D2>& point);
-
-	void printV(const Vector<GeometryDim::D2>& vector);
-
-	void printP(const Point<GeometryDim::D3>& point);
-
-	void printV(const Vector<GeometryDim::D3>& vector);
-
-}

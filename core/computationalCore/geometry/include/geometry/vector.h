@@ -13,14 +13,14 @@ public:
 
 	using ThisTensor = Tensor<Vector<dim>, dim, 1>;
 	using ThisTensor::comp;
-	using ThisTensor::_numOfComp;
+	using ThisTensor::numOfComp;
 	using ThisTensor::operator*;
 
 	__host__ __device__ 
 	Vector();
 
 	__host__ __device__ 
-	Vector(std::array<double, _numOfComp> comp);
+	Vector(std::array<double, numOfComp> comp);
 
 	__host__ __device__ 
 	Vector(const double* comp);

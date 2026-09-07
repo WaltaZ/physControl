@@ -20,8 +20,8 @@ void UnsteadyEulerBackward::assembleImpl(
 
 	double v_over_dt = C.volume / delta_t;
 
-	matrix->A_C[C_id] = matrix->A_C[C_id] + v_over_dt;
-	matrix->B[C_id] = matrix->B[C_id] + (v_over_dt * phi_past);
+	matrix->A_C[C_id] += v_over_dt;
+	matrix->B[C_id] += (v_over_dt * phi_past);
 };
 
 template __device__
