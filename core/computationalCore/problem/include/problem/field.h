@@ -158,6 +158,23 @@ public:
         pastValues[0][C_id] = values[C_id];
     }
 
+    __host__ __device__
+    Data& operator[](int index) 
+    {
+        return values[index];
+    }
+
+    __host__ __device__
+    const Data& operator[](int index) const 
+    {
+        return values[index];
+    }
+
+    __host__ __device__
+    uint32_t getLength() const {
+        return values.length;
+    }
+
 private:
     CudaPackedArray<Data> _pastValuesAll;
 };

@@ -43,17 +43,17 @@ namespace debug {
 	template<class StoragePlace>
 	void printField(
 		const Mesh<MeshDim::D3>* mesh,
-		Field<double, StoragePlace>& field,
+		Field<double, StoragePlace>* field,
 		uint32_t t = 0
 	)
 	{
-		assert(t <= field.getElements()->pastValues.length);
+		assert(t <= field->pastValues.length);
 
-		double* values = field.getElements()->values.getData();
+		double* values = field->values.getData();
 
-		if (t > 0) { values = field.getElements()->pastValues[t - 1].getData(); }
+		if (t > 0) { values = field->pastValues[t - 1].getData(); }
 
-		for (int C_id = 0; C_id < field.getElements()->values.length; C_id++)
+		for (int C_id = 0; C_id < field->values.length; C_id++)
 		{
 			const auto& cell = mesh->cells[C_id];
 			const auto& p = cell.centroid;
@@ -66,19 +66,19 @@ namespace debug {
 	template<class StoragePlace>
 	void printField(
 		const Mesh<MeshDim::D3>* mesh,
-		const Field<Vector<GeometryDim::D3>, StoragePlace>& field,
+		Field<Vector<GeometryDim::D3>, StoragePlace>* field,
 		uint32_t t = 0
 	)
 	{
-		assert(t <= field.getElements()->pastValues.length);
+		assert(t <= field->pastValues.length);
 
 		using V = Vector<GeometryDim::D3>;
 
-		V* values = field.getElements()->values.getData();
+		V* values = field->values.getData();
 
-		if (t > 0) { values = field.getElements()->pastValues[t - 1].getData(); }
+		if (t > 0) { values = field->pastValues[t - 1].getData(); }
 
-		for (int C_id = 0; C_id < field.getElements()->values.length; C_id++)
+		for (int C_id = 0; C_id < field->values.length; C_id++)
 		{
 			const auto& cell = mesh->cells[C_id];
 			const auto& p = cell.centroid;

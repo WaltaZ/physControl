@@ -11,7 +11,7 @@ public:
 	using LinearSolver<Obj>::_mesh;
 
 	LinearSolverJacobi(
-		Mesh<MeshDim::D3>* mesh,
+		const Mesh<MeshDim::D3>* mesh,
 		Field<Obj, Cell<MeshDim::D3>>* field
 	);
 

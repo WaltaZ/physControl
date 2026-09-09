@@ -2,7 +2,7 @@
 
 #include <geometry/geometryUtils.h>
 #include <simulation/discretization/discretization.h>
-#include <simulation/linearSolver/linearSolverMatrix.h>
+#include <simulation/linearSolver/linearSolverJacobi.h>
 
 #include <utility/cudaUtilsWithKernels.h>
 
@@ -26,7 +26,7 @@ void testKernel(
 {
 	convection->assembleInner(mesh, field, gradField, massFlowRate, matrix);
 	diffusion->assembleInner(mesh, field, matrix, 2e-5);
-	unsteady->assemble(mesh, field, matrix, 0.001);
+	unsteady->assemble(mesh, field, matrix, 0.1);
 }
 
 void HeatTransferSimulationD3::nextStep()
@@ -34,8 +34,8 @@ void HeatTransferSimulationD3::nextStep()
 	// Update all the fields as a next step
 	GradientGauss* gradient = cudaUtils::create<GradientGauss>();
 
-	LinearSolverMatrix<double>* matrix = cudaUtils::create<LinearSolverMatrix<double>>(mesh);
-
+	LinearSolverJacobi<double> solver(mesh, problem.fields.temperature);
+	
 	DiffusionBase* diffusion = cudaUtils::createInDevice<DiffusionSimple>();
 	ConvectionBase* convection = cudaUtils::createInDevice<ConvectionUpwind>();
 	UnsteadyBase* unsteady = cudaUtils::createInDevice<UnsteadyEulerBackward>();
@@ -48,7 +48,7 @@ void HeatTransferSimulationD3::nextStep()
 		problem.fields.temperature,
 		problem.fields.gradTemperature,
 		problem.fields.massFlowRate,
-		matrix,
+		solver.matrix,
 		diffusion,
 		convection,
 		unsteady
@@ -56,7 +56,11 @@ void HeatTransferSimulationD3::nextStep()
 
 	cudaUtils::fetchError(cudaDeviceSynchronize);
 
-	debug::printSolverMatrix(matrix);
+	debug::printSolverMatrix(solver.matrix);
+
+	solver.solve();
+
+	//debug::printField(mesh, problem.fields.temperature);
 
 	/*gradient->compute(
 		problem.fields.temperature, 
