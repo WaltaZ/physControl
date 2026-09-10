@@ -2,7 +2,7 @@
 
 #include <geometry/geometryUtils.h>
 #include <simulation/discretization/discretization.h>
-#include <simulation/linearSolver/linearSolverJacobi.h>
+#include <simulation/linearSolver/jacobi/linearSolverJacobi.h>
 
 #include <utility/cudaUtilsWithKernels.h>
 
@@ -25,7 +25,7 @@ void testKernel(
 ) 
 {
 	convection->assembleInner(mesh, field, gradField, massFlowRate, matrix);
-	diffusion->assembleInner(mesh, field, matrix, 2e-5);
+	diffusion->assembleInner(mesh, field, matrix, 0.026);
 	unsteady->assemble(mesh, field, matrix, 0.1);
 }
 
@@ -56,9 +56,19 @@ void HeatTransferSimulationD3::nextStep()
 
 	cudaUtils::fetchError(cudaDeviceSynchronize);
 
-	debug::printSolverMatrix(solver.matrix);
+	/*debug::printSolverMatrix(solver.matrix);
+	debug::printField(mesh, problem.fields.temperature);
+
+	for (size_t i = 0; i < mesh->cells[0].cellNeighbourCells.length; i++)
+	{
+		uint32_t Fid = mesh->cells[0].cellNeighbourCells[i];
+
+		std::cout << problem.fields.temperature->values[Fid] << ", ";
+	}
+	std::cout << std::endl;*/
 
 	solver.solve();
+	
 
 	//debug::printField(mesh, problem.fields.temperature);
 

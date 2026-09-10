@@ -1,9 +1,6 @@
-#include <simulation/linearSolver/linearSolverJacobi.h>
+#include <simulation/linearSolver/jacobi/linearSolverJacobiKernel.h>
 
-#include <utility/cudaUtils.h>
-#include <utility/mathUtils.h>
-
-constexpr int THREADS_PER_BLOCK = 64;
+#include <simulation/linearSolver/jacobi/linearSolverJacobiConfig.h>
 
 namespace jacobiKernels {
 
@@ -151,7 +148,7 @@ namespace jacobiKernels {
 			uint32_t globId,
 			double& s_r,
 			double* scalar
-		) 
+		)
 	{
 		s_r = scalar[globId] * scalar[globId];
 	}
@@ -161,7 +158,7 @@ namespace jacobiKernels {
 			uint32_t globId,
 			double& s_r,
 			Vector<GeometryDim::D3>* vec
-		) 
+		)
 	{
 		uint32_t vecId = globId / 3;
 		uint32_t comp = globId % 3;
@@ -175,14 +172,14 @@ namespace jacobiKernels {
 			Obj* r,
 			double* normR,
 			uint32_t numOfAdditions
-		) 
+		)
 	{
 		int tId = threadIdx.x;
 		int bId = blockIdx.x;
 
 		int globId = bId * blockDim.x + tId;
 
-		__shared__ double s_r[THREADS_PER_BLOCK];
+		__shared__ double s_r[jacobiConfig::THREADS_PER_BLOCK];
 
 		if (globId < numOfAdditions) {
 			_copyDataIntoShared(globId, s_r[tId], r);
@@ -193,10 +190,10 @@ namespace jacobiKernels {
 
 		__syncthreads();
 
-		for (size_t s = 1; s < blockDim.x; s*=2)
+		for (size_t s = 1; s < blockDim.x; s *= 2)
 		{
 			int index = 2 * s * tId;
-			if (index < blockDim.x) 
+			if (index < blockDim.x)
 			{
 				s_r[index] += s_r[index + s];
 			}
@@ -210,7 +207,7 @@ namespace jacobiKernels {
 	}
 
 	template
-	__global__
+		__global__
 		void _addSquares(
 			double* r,
 			double* r_result,
@@ -218,73 +215,10 @@ namespace jacobiKernels {
 		);
 
 	template
-	__global__
+		__global__
 		void _addSquares(
 			Vector<GeometryDim::D3>* r,
 			double* r_result,
 			uint32_t numOfAdditions
 		);
 }
-
-template<class Obj>
-LinearSolverJacobi<Obj>::LinearSolverJacobi(
-	const Mesh<MeshDim::D3>* mesh, 
-	Field<Obj, Cell<MeshDim::D3>>* field) 
-	: LinearSolver<Obj>(mesh, field) {};
-
-template<class Obj>
-void LinearSolverJacobi<Obj>::solve() {
-
-	using namespace jacobiKernels;
-
-	uint32_t fieldLength = _field->getLength();
-
-	Obj* newPhi;
-	cudaMalloc(&newPhi, fieldLength * sizeof(Obj));
-
-	Obj* residuals;
-	cudaMallocManaged(&residuals, fieldLength * sizeof(Obj));
-
-	double* normResidual;
-	cudaMallocManaged(&normResidual, sizeof(double));
-
-	KernelArgs args = cudaUtils::getKernelArgs(_field->values.length);
-
-	_nextStep<<<args.blocks, args.threads>>>(newPhi, _field, matrix, _mesh);
-	cudaUtils::fetchError(cudaDeviceSynchronize);
-
-	_updateField<<<args.blocks, args.threads>>>(newPhi, _field);
-	_updateRisiduals<<<args.blocks, args.threads>>>(
-		residuals, 
-		newPhi, 
-		fieldLength, 
-		matrix, 
-		_mesh);
-	cudaUtils::fetchError(cudaDeviceSynchronize);
-
-
-	cudaMemset(normResidual, 0, sizeof(double));
-
-	uint32_t numOfAdditions = 
-		fieldLength * mathUtils::getNumOfComp(newPhi[0]);
-
-	args = cudaUtils::getKernelArgs(
-		numOfAdditions,
-		THREADS_PER_BLOCK);
-
-	_addSquares <<<args.blocks, args.threads >>> (
-		residuals, 
-		normResidual, 
-		numOfAdditions);
-	cudaUtils::fetchError(cudaDeviceSynchronize);
-
-	*normResidual = sqrt(*normResidual);
-	
-	for (size_t i = 0; i < fieldLength; i++)
-	{
-		std::cout << "Cell: " << i << " | Residual: " << static_cast<double>(residuals[i]) << std::endl;
-	}
-}
-
-template class LinearSolverJacobi<double>;
-//template class LinearSolverJacobi<Vector<GeometryDim::D3>>;

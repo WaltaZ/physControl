@@ -1,6 +1,6 @@
 #pragma once
 
-#include "linearSolver.h"
+#include "../linearSolver.h"
 
 template<class Obj>
 class LinearSolverJacobi : public LinearSolver<Obj> {
