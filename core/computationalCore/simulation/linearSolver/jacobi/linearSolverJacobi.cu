@@ -6,6 +6,7 @@
 #include <utility/cudaUtils.h>
 #include <utility/mathUtils.h>
 
+// ---------------------------- Linear Solver Jacobi ------------------------------
 
 template<class Obj>
 LinearSolverJacobi<Obj>::LinearSolverJacobi(
@@ -72,4 +73,26 @@ void LinearSolverJacobi<Obj>::solve() {
 }
 
 template class LinearSolverJacobi<double>;
-//template class LinearSolverJacobi<Vector<GeometryDim::D3>>;
+template class LinearSolverJacobi<Vector<GeometryDim::D3>>;
+
+// ------------------------- Linear Solver Jacobi Factory -----------------------------
+
+std::unique_ptr<LinearSolver<double>> 
+LinearSolverJacobiFactory::getSolver(
+	const Mesh<MeshDim::D3>* mesh,
+	Field<double, Cell<MeshDim::D3>>* field
+) 
+{
+	return std::make_unique<LinearSolverJacobi<double>>
+		(LinearSolverJacobi<double>(mesh, field));
+};
+
+std::unique_ptr<LinearSolver<Vector<GeometryDim::D3>>> 
+LinearSolverJacobiFactory::getSolver(
+	const Mesh<MeshDim::D3>* mesh,
+	Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>* field
+) 
+{
+	return std::make_unique<LinearSolverJacobi<Vector<GeometryDim::D3>>>
+		(LinearSolverJacobi<Vector<GeometryDim::D3>>(mesh, field));
+};

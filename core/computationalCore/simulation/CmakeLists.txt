@@ -1,5 +1,8 @@
 set(simulationHppFiles
-	"include/simulation/simulation.h"
+	"include/simulation/heatTransfer/simulation.h"
+	"include/simulation/heatTransfer/simulationConfig.h"
+	"include/simulation/heatTransfer/simulationKernel.h"
+	"include/simulation/heatTransfer/simulationMethods.h"
 	"include/simulation/discretization/gradient/gradient.h"
 	"include/simulation/discretization/gradient/gradientGauss.h"
 	"include/simulation/discretization/gradient/gradientGaussKernel.h"
@@ -21,7 +24,9 @@ set(simulationHppFiles
 )
 
 set(simulationCppFiles
-	"simulation.cu"
+	"heatTransfer/simulation.cu"
+	"heatTransfer/simulationKernel.cu"
+	"heatTransfer/simulationMethods.cu"
 	"discretization/gradient/gradient.cu"
 	"discretization/gradient/gradientGauss.cu"
 	"discretization/gradient/gradientGaussKernel.cu"

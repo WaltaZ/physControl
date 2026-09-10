@@ -40,6 +40,8 @@ public:
         assert(traceLength > 0);
         assert(isInitilized());
 
+        // TODO: Write a kernel which would allocate it
+
         uint32_t fieldLength = values.length;
 
         cudaMallocManaged(
@@ -71,6 +73,8 @@ public:
 
             offset += fieldLength;
         }
+
+        cudaUtils::fetchError(cudaDeviceSynchronize);
     }
 
     void initBoundaryPatches(const std::vector<ProblemBoundaryPatch>& boundaryPatches) {

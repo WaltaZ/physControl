@@ -5,8 +5,12 @@
 #include <problem/tests.h>
 #include <visuals/displayer/displayer.h>
 
+#include <simulation/heatTransfer/simulation.h>
+#include <simulation/linearSolver/jacobi/linearSolverJacobi.h>
+#include <simulation/discretization/discretization.h>
+
 int main() {
-	constexpr int amount = 40;
+	constexpr int amount = 10;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);
@@ -50,7 +54,18 @@ int main() {
 
 	fieldTests::setUpRadialScalarField(problem.fields.temperature, mesh, box.getCentroid());
 
-	HeatTransferSimulationD3 simulation(problem, mesh);
+	// ------------ Discretization terms -------------
+
+	HeatTransferSimulationD3 simulation(
+		problem, 
+		mesh,
+		HeatTransferSimulationMethods(
+			cudaUtils::create<GradientGauss>(),
+			cudaUtils::create<DiffusionSimple>(),
+			cudaUtils::create<ConvectionUpwind>(),
+			cudaUtils::create<UnsteadyEulerBackward>(),
+			new LinearSolverJacobiFactory()
+		));
 
 	FieldDisplayer displayer = FieldDisplayer(simulation);
 

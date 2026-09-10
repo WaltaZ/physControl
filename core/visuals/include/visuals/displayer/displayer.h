@@ -17,7 +17,7 @@
 
 #include <vector>
 #include <memory>
-#include <simulation/simulation.h>
+#include <simulation/heatTransfer/simulation.h>
 
 class Displayer {
 protected:
