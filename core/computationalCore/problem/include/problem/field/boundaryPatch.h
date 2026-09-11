@@ -1,6 +1,6 @@
 #pragma once
 
-#include "boundaryCondition.h"
+#include "../boundaryCondition.h"
 #include <utility/cudaUtils.h>
 
 struct ProblemBoundaryPatch {

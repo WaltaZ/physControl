@@ -1,4 +1,4 @@
-#include "include/problem/boundaryPatch.h"
+#include <problem/field/boundaryPatch.h>
 
 ProblemBoundaryPatch::ProblemBoundaryPatch(
 	const BoundaryConditionType& type,

@@ -1,4 +1,17 @@
-find_package(VTK REQUIRED)
+find_package(VTK REQUIRED COMPONENTS
+	CommonCore
+	InteractionStyle
+	RenderingCore
+	RenderingFreeType
+	RenderingOpenGL2
+	InteractionWidgets
+	RenderingAnnotation
+	FiltersModeling
+)
+
+set(physControl_VTK_LIBS
+	VTK::CommonCore
+)
 
 if (NOT VTK_FOUND)
   message(FATAL_ERROR "CylinderExample: Unable to find the VTK build folder.")
@@ -28,13 +41,13 @@ set(libCppFiles
 
 add_library(${libName} ${libHppFiles} ${libCppFiles})
 target_include_directories(${libName} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${libName} PUBLIC
-${VTK_LIBRARIES}
-mesh
-simulation
+target_link_libraries(${libName} 
+PUBLIC
+	mesh
+	simulation
+	${VTK_LIBRARIES}
 )
 
-# vtk_module_autoinit is needed
 vtk_module_autoinit(
   TARGETS ${libName}
   MODULES ${VTK_LIBRARIES}

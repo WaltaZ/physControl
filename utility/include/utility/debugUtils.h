@@ -1,6 +1,6 @@
 #pragma once
 
-#include <problem/field.h>
+#include <problem/field/field.h>
 #include <mesh/meshElements/meshElements.h>
 #include <simulation/linearSolver/linearSolverMatrix.h>
 
@@ -22,6 +22,23 @@ namespace debug {
 		}
 		printf("%lf ]", obj->comp[obj->numOfComp - 1]);
 		if (withNewLine) { printf("\n"); }
+	};
+
+	template<GeometryDim dim>
+	void printObj(const MatrixTensor<dim>* obj, bool withNewLine) {
+
+		int gDim = geometryDimSize(dim);
+
+		for (size_t i = 0; i < gDim; i++)
+		{
+			printf("[ ");
+			for (size_t j = 0; j < gDim - 1; j++)
+			{
+				printf("%lf, ", obj->comp[gDim * i + j]);
+			}
+			printf("%lf ]\n", obj->comp[gDim * i]);
+		}
+		
 	};
 
 	template<GeometryDim dim>
@@ -86,6 +103,33 @@ namespace debug {
 
 			printf("Cell %d (%lf, %lf, %lf) | Value: ", C_id, p.pos[0], p.pos[1], p.pos[2]);
 			printObj(phi);
+		}
+	};
+
+	template<class StoragePlace>
+	void printField(
+		const Mesh<MeshDim::D3>* mesh,
+		Field<MatrixTensor<GeometryDim::D3>, StoragePlace>* field,
+		uint32_t t = 0
+	)
+	{
+		assert(t <= field->pastValues.length);
+
+		using M = MatrixTensor<GeometryDim::D3>;
+
+		M* values = field->values.getData();
+
+		if (t > 0) { values = field->pastValues[t - 1].getData(); }
+
+		for (int C_id = 0; C_id < field->values.length; C_id++)
+		{
+			const auto& cell = mesh->cells[C_id];
+			const auto& p = cell.centroid;
+			const M& phi = values[C_id];
+
+			printf("Cell %d (%lf, %lf, %lf)\n", C_id, p.pos[0], p.pos[1], p.pos[2]);
+			printObj(phi);
+			printf("\n");
 		}
 	};
 

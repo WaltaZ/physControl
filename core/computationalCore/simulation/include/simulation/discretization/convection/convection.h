@@ -2,7 +2,7 @@
 
 #include <cuda_runtime.h>
 #include <mesh/meshElements/mesh.h>
-#include <problem/field.h>
+#include <problem/field/field.h>
 #include <simulation/linearSolver/linearSolverMatrix.h>
 
 class ConvectionBase {

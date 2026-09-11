@@ -4,7 +4,7 @@
 #include <utility/utility.h>
 #include <mesh/meshElements/meshElements.h>
 #include <simulation/linearSolver/linearSolverMatrix.h>
-#include <problem/field.h>
+#include <problem/field/field.h>
 
 class SourceBoussinesq {
 
@@ -19,7 +19,6 @@ public:
 			LinearSolverMatrix<V>* matrix,
 			V g,
 			Field<double, C>* temperatureField,
-			const double T_0,
 			const double beta
 		);
 };

@@ -11,7 +11,7 @@ class HeatTransferSimulationD3 {
 public:
 	HeatTransferProblemD3& problem;
 	const Mesh<MeshDim::D3>* mesh;
-	HeatTransferSimulationMethods methods;
+	HeatTransferSimulationMethods* methods;
 
 	HeatTransferSimulationD3(
 		HeatTransferProblemD3& problem,

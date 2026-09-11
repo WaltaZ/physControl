@@ -9,6 +9,9 @@
 #include <simulation/linearSolver/jacobi/linearSolverJacobi.h>
 #include <simulation/discretization/discretization.h>
 
+#include <utility/debugUtils.h>
+#include <utility/cudaUtilsWithKernels.h>
+
 int main() {
 	constexpr int amount = 10;
 
@@ -52,7 +55,8 @@ int main() {
 	Mesh<MeshDim::D3>* mesh = mesher.generateMesh();
 	problem.initFields(mesh);
 
-	fieldTests::setUpRadialScalarField(problem.fields.temperature, mesh, box.getCentroid());
+	fieldTests::setUpRadialField(problem.fields.temperature, mesh, box.getCentroid(), 293);
+	fieldTests::setUpCurlyField(problem.fields.velocity, mesh, box.getCentroid());
 
 	// ------------ Discretization terms -------------
 
@@ -61,9 +65,9 @@ int main() {
 		mesh,
 		HeatTransferSimulationMethods(
 			cudaUtils::create<GradientGauss>(),
-			cudaUtils::create<DiffusionSimple>(),
-			cudaUtils::create<ConvectionUpwind>(),
-			cudaUtils::create<UnsteadyEulerBackward>(),
+			cudaUtils::createInDevice<DiffusionSimple>(),
+			cudaUtils::createInDevice<ConvectionUpwind>(),
+			cudaUtils::createInDevice<UnsteadyEulerBackward>(),
 			new LinearSolverJacobiFactory()
 		));
 

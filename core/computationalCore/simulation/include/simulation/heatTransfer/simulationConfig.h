@@ -10,9 +10,15 @@ namespace simConfig {
 	constexpr double THERM_CONDUCTIVITY = 0.02587; // [W / (m * K)]
 	constexpr double SPECIFIC_HEAT = 1007; // [J / (kg * C)]
 	constexpr double THERM_DIFFUSITY = THERM_CONDUCTIVITY / (SPECIFIC_HEAT * DENSITY); // [m^2 / s]
+	constexpr double THERM_EXPANSION = 3.41e-3; // [1 / K]
 
 	// MOMENTUM QUANTITIES -------------------------------------------------------------------------
 
-	constexpr double VISCOSITY = 1.82e-5; // [Pa * s]
+	constexpr double VISCOSITY = 1.82; // [Pa * s] add e-5
 	constexpr double KINEMATIC_VISCOSITY = VISCOSITY / DENSITY; // [m^2 / s]
+
+	// SIMULATION ----------------------------------------------------------------------------------
+
+	constexpr double RELAXATION_FACTOR = 0.1;
+	constexpr double DT = 0.1;
 }

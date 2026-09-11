@@ -1,19 +1,21 @@
 set(problemHppFiles
 	"include/problem/problem.h"
 	"include/problem/problemGeometry.h"
-	"include/problem/field.h"
+	"include/problem/field/field.h"
+	
+	"include/problem/field/boundaryPatch.h"
 	"include/problem/tests.h"
 	"include/problem/boundaryCondition.h"
-	"include/problem/boundaryPatch.h"
 )
 
 set(problemCppFiles
-	"field.cpp"
+	"field/fieldKernel.cu"
+	"field/boundaryPatch.cu"
+	"field/field.cu"
 	"tests.cpp"
 	"problem.cpp"
 	"problemGeometry.cpp"
 	"boundaryCondition.cpp"
-	"boundaryPatch.cu"
 )
 
 add_library(problem ${problemHppFiles} ${problemCppFiles})

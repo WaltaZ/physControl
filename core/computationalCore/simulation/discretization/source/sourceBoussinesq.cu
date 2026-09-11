@@ -6,7 +6,6 @@ void SourceBoussinesq::assembleInner(
 	LinearSolverMatrix<V>* matrix,
 	V g,
 	Field<double, C>* temperatureField,
-	const double T_0,
 	const double beta
 ) 
 {
@@ -16,6 +15,8 @@ void SourceBoussinesq::assembleInner(
 
 	const auto& C = mesh->cells[C_id];
 	const double T_C = temperatureField->values[C_id];
+
+	const double T_0 = 0.5 * (temperatureField->maxValue + temperatureField->minValue);
 
 	matrix->B[C_id] += 
 		(

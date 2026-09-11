@@ -13,6 +13,7 @@ void UnsteadyEulerBackward::assembleImpl(
 
 	int C_id = blockIdx.x * blockDim.x + threadIdx.x;
 
+
 	if (C_id >= mesh->cells.length) { return; }
 
 	const auto& C = mesh->cells[C_id];

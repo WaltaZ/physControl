@@ -15,7 +15,7 @@
 #include <vtkScalarBarActor.h>
 #include <string>
 
-#include <problem/field.h>
+#include <problem/field/field.h>
 #include <mesh/meshElements/meshElements.h>
 #include <visuals/displayer/scenes/scene.h>
 #include <visuals/visualsUtility.h>

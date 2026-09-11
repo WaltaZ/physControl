@@ -1,7 +1,7 @@
 #pragma once
 
 #include "problemGeometry.h"
-#include "field.h"
+#include "field/field.h"
 #include "boundaryCondition.h"
 
 #include <geometry/geometry.h>

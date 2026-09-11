@@ -1,6 +1,6 @@
 #pragma once
 
-#include <problem/field.h>
+#include <problem/field/field.h>
 #include <mesh/meshElements/meshElements.h>
 #include <geometry/geometry.h>
 

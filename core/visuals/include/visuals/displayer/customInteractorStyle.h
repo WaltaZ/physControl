@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vtkInteractorStyleTrackballCamera.h>
-#include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkCamera.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>

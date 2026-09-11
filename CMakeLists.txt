@@ -3,13 +3,7 @@
 #
 cmake_minimum_required (VERSION 4.3)
 
-set(CMAKE_FASTBUILD_CACHE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cache")
-
-# Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-endif()
+#set(CMAKE_FASTBUILD_CACHE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cache")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,6 +16,9 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr")
 set(CMAKE_CUDA_SEPARABLE_COMPILATION ON)
 
+set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_OBJECTS 1)
+set(CMAKE_CUDA_USE_RESPONSE_FILE_FOR_LINK_LIBRARIES 1)
+
 # Path to vcpkg
 set(VCPKG_ROOT C:/dev/vcpkg)
 
@@ -32,9 +29,9 @@ set(PROJECT_NAME "physControl")
 project (${PROJECT_NAME} LANGUAGES CXX CUDA)
 
 # Executable
-add_executable(${PROJECT_NAME} "main.cpp")
+add_executable(${PROJECT_NAME} "main.cu")
 
-find_Package(CUDAToolkit REQUIRED)
+find_Package(CUDAToolkit)
 
 set_target_properties(
 	${PROJECT_NAME}
@@ -50,9 +47,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 	geometry
 	mesh
 	problem
-	visuals
 	simulation
+	visuals
+	utility
 )
-
-find_package(VTK REQUIRED)
-vtk_module_autoinit( TARGETS ${PROJECT_NAME} MODULES ${VTK_LIBRARIES} )

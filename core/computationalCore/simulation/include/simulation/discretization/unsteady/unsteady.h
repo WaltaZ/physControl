@@ -2,7 +2,7 @@
 
 #include <utility/cudaUtils.h>
 #include <mesh/meshElements/meshElements.h>
-#include <problem/field.h>
+#include <problem/field/field.h>
 #include <geometry/vector.h>
 #include <simulation/linearSolver/linearSolverMatrix.h>
 

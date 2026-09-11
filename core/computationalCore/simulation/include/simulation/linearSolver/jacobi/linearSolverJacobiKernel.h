@@ -3,7 +3,7 @@
 #include "../linearSolverMatrix.h"
 
 #include <mesh/meshElements/meshElements.h>
-#include <problem/field.h>
+#include <problem/field/field.h>
 
 namespace jacobiKernels {
 
