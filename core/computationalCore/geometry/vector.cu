@@ -2,7 +2,7 @@
 
 template<GeometryDim dim>
 __host__ __device__
-Vector<dim>::Vector() : ThisTensor() {}
+Vector<dim>::Vector(double initValue) : ThisTensor(initValue) {}
 
 template<GeometryDim dim>
 __host__ __device__

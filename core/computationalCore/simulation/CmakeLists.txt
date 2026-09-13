@@ -11,7 +11,6 @@ set(simulationHppFiles
 	"include/simulation/linearSolver/jacobi/linearSolverJacobi.h"
 	"include/simulation/linearSolver/jacobi/linearSolverJacobiConfig.h"
 	"include/simulation/linearSolver/jacobi/linearSolverJacobiKernel.h"
-	"include/simulation/discretization/interpolation.h"
 	"include/simulation/discretization/diffusion/diffusion.h"
 	"include/simulation/discretization/diffusion/diffusionSimple.h"
 	"include/simulation/discretization/convection/convection.h"
@@ -22,6 +21,7 @@ set(simulationHppFiles
 	"include/simulation/discretization/unsteady/unsteady.h"
 	"include/simulation/discretization/unsteady/unsteadyEulerBackward.h"
 	"include/simulation/discretization/relaxation/relaxationPatankar.h"
+	"include/simulation/discretization/interpolation/interpolationTaylor.h"
 )
 
 set(simulationCppFiles
@@ -34,7 +34,6 @@ set(simulationCppFiles
 	"linearSolver/linearSolverMatrix.cu"
 	"linearSolver/jacobi/linearSolverJacobi.cu"
 	"linearSolver/jacobi/linearSolverJacobiKernel.cu"
-	"discretization/interpolation.cu"
 	"discretization/diffusion/diffusionSimple.cu"
 	"discretization/convection/convectionQUICK.cu"
 	"discretization/convection/convectionUpwind.cu"
@@ -42,6 +41,7 @@ set(simulationCppFiles
 	"discretization/source/sourceBoussinesq.cu"
 	"discretization/unsteady/unsteadyEulerBackward.cu"
 	"discretization/relaxation/relaxationPatankar.cu"
+	"discretization/interpolation/interpolationTaylor.cu"
 )
 
 add_library(simulation ${simulationHppFiles} ${simulationCppFiles})

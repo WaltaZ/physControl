@@ -22,4 +22,30 @@ namespace simKernel {
 		LinearSolverMatrix<V>* matrix,
 		HeatTransferSimulationMethods* methods
 	);
+
+	__global__
+	void assembleBoundariesVelocity(
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* velocity,
+		Field<double, C>* pressure,
+		Field<V, C>* gradPressure,
+		LinearSolverMatrix<V>* matrix
+	);
+
+	__global__
+	void updateMassFlow(
+		const Mesh<MeshDim::D3>* mesh,
+		Field<V, C>* velocity,
+		Field<double, C>* pressure,
+		Field<V, C>* gradPressure,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<V>* matrix
+	);
+
+	__global__
+	void assemblePressure(
+		const Mesh<MeshDim::D3>* mesh,
+		Field<double, F>* massFlowRate,
+		LinearSolverMatrix<double>* matrix
+	);
 }

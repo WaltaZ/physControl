@@ -1,6 +1,6 @@
 #include <simulation/linearSolver/jacobi/linearSolverJacobiKernel.h>
-
 #include <simulation/linearSolver/jacobi/linearSolverJacobiConfig.h>
+
 
 namespace jacobiKernels {
 
@@ -25,14 +25,14 @@ namespace jacobiKernels {
 		const auto& B = matrix->B[C_id];
 
 		Obj sum_AF_times_phi{};
-
+		
 		for (size_t i = 0; i < A_F.length; i++)
 		{
 			const Obj& phi_F = field->values[C.cellNeighbourCells[i]];
-			sum_AF_times_phi += A_F[i] * phi_F;
+			sum_AF_times_phi += geomOp::hadProduct(A_F[i], phi_F);
 		}
 
-		newPhi[C_id] = (B - sum_AF_times_phi) / A_C;
+		newPhi[C_id] = geomOp::hadDivision((B - sum_AF_times_phi), A_C);
 	}
 
 	template
@@ -112,11 +112,11 @@ namespace jacobiKernels {
 		for (size_t i = 0; i < A_F.length; i++)
 		{
 			const Obj& phi_F = newPhi[C.cellNeighbourCells[i]];
-			sum_A_times_phi += A_F[i] * phi_F;
+			sum_A_times_phi += geomOp::hadProduct(A_F[i], phi_F);
 		}
 
 
-		sum_A_times_phi += A_C * phi;
+		sum_A_times_phi += geomOp::hadProduct(A_C, phi);
 
 		r[C_id] = (B - sum_A_times_phi);
 	}

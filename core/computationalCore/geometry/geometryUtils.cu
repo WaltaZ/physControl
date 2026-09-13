@@ -67,6 +67,58 @@ namespace geomOp {
         });
     }
 
+    // -------------------------------- Hadamard product -----------------------------------
+
+    template<class Obj>
+    __host__ __device__
+    Obj hadProduct(const Obj& obj1, const Obj& obj2) 
+    {
+        Obj objResult{};
+        for (size_t i = 0; i < objResult.numOfComp; i++)
+        {
+            objResult[i] = obj1[i] * obj2[i];
+        }
+        return objResult;
+    };
+
+    template<>
+    __host__ __device__
+    double hadProduct(const double& obj1, const double& obj2)
+    {
+        return obj1 * obj2;
+    };
+
+    template __host__ __device__ V2 hadProduct(const V2& obj1, const V2& obj2);
+    template __host__ __device__ V3 hadProduct(const V3& obj1, const V3& obj2);
+    template __host__ __device__ T2 hadProduct(const T2& obj1, const T2& obj2);
+    template __host__ __device__ T3 hadProduct(const T3& obj1, const T3& obj2);
+
+    // -------------------------------- Hadamard division -----------------------------------
+
+    template<class Obj>
+    __host__ __device__
+    Obj hadDivision(const Obj& obj1, const Obj& obj2) 
+    {
+        Obj objResult{};
+        for (size_t i = 0; i < objResult.numOfComp; i++)
+        {
+            objResult[i] = obj1[i] / obj2[i];
+        }
+        return objResult;
+    };
+
+    template<>
+    __host__ __device__
+    double hadDivision(const double& obj1, const double& obj2)
+    {
+        return obj1 / obj2;
+    };
+
+    template __host__ __device__ V2 hadDivision(const V2& obj1, const V2& obj2);
+    template __host__ __device__ V3 hadDivision(const V3& obj1, const V3& obj2);
+    template __host__ __device__ T2 hadDivision(const T2& obj1, const T2& obj2);
+    template __host__ __device__ T3 hadDivision(const T3& obj1, const T3& obj2);
+
     // --------------------------------- Triangle area -------------------------------------
 
     template<GeometryDim dim>

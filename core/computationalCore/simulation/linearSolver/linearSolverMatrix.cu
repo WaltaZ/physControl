@@ -13,29 +13,31 @@ LinearSolverMatrix<Obj>::LinearSolverMatrix(
 	const uint32_t numOfCells = 
 		mesh->cells.length;
 
-	const uint32_t numOfNeighbourCells = 
-		mesh->
-		elementsIDs.cellNeighbourCells.length;
+	const uint32_t numOfFaces =
+		mesh->faces.length;
 
 	// A_C
 	cudaMallocManaged(
 		A_C.getDataPointer(), 
-		numOfCells * sizeof(double));
-	cudaMemset(A_C.getData(), 0, numOfCells * sizeof(double));
+		numOfCells * sizeof(Obj));
 	A_C.length = numOfCells;
 
 	// A_Fs
 	cudaMallocManaged(
 		A_Fs.getDataPointer(),
-		numOfNeighbourCells * sizeof(double)
+		numOfFaces * sizeof(Obj)
 	);
-	cudaMemset(A_Fs.getData(), 0, numOfNeighbourCells * sizeof(double));
-	A_Fs.length = numOfNeighbourCells;
+	A_Fs.length = numOfFaces;
+
+	for (size_t i = 0; i < numOfFaces; i++)
+	{
+		A_Fs[i] = Obj();
+	}
 
 	// A_F
 	cudaMallocManaged(
 		A_F.getDataPointer(),
-		numOfCells * sizeof(CudaArray<double>)
+		numOfCells * sizeof(CudaArray<Obj>)
 	);
 	A_F.length = numOfCells;
 
@@ -43,9 +45,9 @@ LinearSolverMatrix<Obj>::LinearSolverMatrix(
 	for (int i = 0; i < numOfCells; i++) {
 		uint32_t length = 
 			mesh->
-			cells[i].cellNeighbourCells.length;
+			cells[i].cellFaceIDs.length;
 
-		A_F[i] = CudaArray<double>(
+		A_F[i] = CudaArray<Obj>(
 			A_Fs.getData(),
 			offset,
 			length
@@ -61,6 +63,7 @@ LinearSolverMatrix<Obj>::LinearSolverMatrix(
 	);
 	for (size_t i = 0; i < numOfCells; i++)
 	{
+		A_C[i] = Obj();
 		B[i] = Obj();
 	}
 	B.length = numOfCells;

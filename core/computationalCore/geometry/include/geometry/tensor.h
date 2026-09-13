@@ -18,10 +18,14 @@ public:
 
 	std::array<double, numOfComp> comp;
 
-	__host__ __device__ Tensor()
+	__host__ __device__ 
+	Tensor(double initValue = 0)
 	{
 		comp = std::array<double, numOfComp>{};
-		std::fill(std::begin(comp), std::end(comp), 0);
+		for (size_t i = 0; i < numOfComp; i++)
+		{
+			comp[i] = initValue;
+		}
 	};
 
 	__host__ __device__
@@ -66,11 +70,51 @@ public:
 	}
 
 	__host__ __device__
+	Derived& operator-=(const Derived& tensor) 
+	{
+		for (size_t i = 0; i < numOfComp; i++)
+		{
+			comp[i] -= tensor.comp[i];
+		}
+		return *static_cast<Derived*>(this);
+	}
+
+	__host__ __device__
+	Derived& operator*=(const double& scalar) 
+	{
+		for (size_t i = 0; i < numOfComp; i++)
+		{
+			comp[i] *= scalar;
+		}
+		return *static_cast<Derived*>(this);
+	}
+
+	__host__ __device__
+	Derived& operator/=(const double& scalar) 
+	{
+		for (size_t i = 0; i < numOfComp; i++)
+		{
+			comp[i] /= scalar;
+		}
+		return *static_cast<Derived*>(this);
+	}
+
+	__host__ __device__
 	Derived operator-(const Derived& tensor) const
 	{
 		std::array<double, numOfComp> finalComp{};
 		for (int i = 0; i < numOfComp; i++) {
 			finalComp[i] = comp[i] - tensor.comp[i];
+		}
+		return Derived(finalComp);
+	};
+
+	__host__ __device__
+	Derived operator-() const
+	{
+		std::array<double, numOfComp> finalComp{};
+		for (int i = 0; i < numOfComp; i++) {
+			finalComp[i] = -comp[i];
 		}
 		return Derived(finalComp);
 	};

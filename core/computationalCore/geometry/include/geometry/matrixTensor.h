@@ -14,7 +14,7 @@ public:
 	using ThisTensor::numOfComp;
 
 	__host__ __device__
-	MatrixTensor();
+	MatrixTensor(double initValue = 0);
 
 	__host__ __device__
 	MatrixTensor(std::array<double, numOfComp> comp);

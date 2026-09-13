@@ -18,7 +18,7 @@ __device__ void ConvectionUpwind::assembleInnerImpl(
 
 	const auto& C = mesh->cells[C_id];
 
-	double A_C_contribution = 0;
+	Obj A_C_contribution{};
 
 	for (size_t i = 0; i < C.cellFaceIDs.length; i++)
 	{
@@ -30,8 +30,8 @@ __device__ void ConvectionUpwind::assembleInnerImpl(
 		double m_f = massFlowRateField->values[f_id];
 
 		// Page 410 from the book
-		matrix->A_F[C_id][i] += -std::max(-m_f, 0.0);
-		A_C_contribution += std::max(m_f, 0.0);
+		matrix->A_F[C_id][i] += Obj{ -std::max(-m_f, 0.0) };
+		A_C_contribution += Obj{ std::max(m_f, 0.0) };
 	}
 
 	matrix->A_C[C_id] += A_C_contribution;

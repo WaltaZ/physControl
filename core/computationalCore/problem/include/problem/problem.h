@@ -53,7 +53,7 @@ public:
 		0
 	);
 	Field<double, C>* pressure = cudaUtils::create<Field<double, C>>(
-		10e5
+		0.8305e5
 	);
 	Field<V, C>* gradPressure = cudaUtils::create<Field<V, C>>(
 		V({ 0, 0, 0 })

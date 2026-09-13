@@ -17,7 +17,7 @@ public:
 	using ThisTensor::operator*;
 
 	__host__ __device__ 
-	Vector();
+	Vector(double initValue = 0);
 
 	__host__ __device__ 
 	Vector(std::array<double, numOfComp> comp);

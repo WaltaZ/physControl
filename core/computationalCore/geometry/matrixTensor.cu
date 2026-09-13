@@ -2,7 +2,7 @@
 
 template<GeometryDim dim>
 __host__ __device__
-MatrixTensor<dim>::MatrixTensor() : ThisTensor() {};
+MatrixTensor<dim>::MatrixTensor(double initValue) : ThisTensor(initValue) {};
 
 template<GeometryDim dim>
 __host__ __device__

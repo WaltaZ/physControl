@@ -31,6 +31,14 @@ namespace geomOp {
 	Vector<GeometryDim::D3> crossProduct(const V2& vec1, const V2& vec2);
 	Vector<GeometryDim::D3> crossProduct(const V3& vec1, const V3& vec2);
 
+	template<class Obj>
+	__host__ __device__
+	Obj hadProduct(const Obj& obj1, const Obj& obj2);
+
+	template<class Obj>
+	__host__ __device__
+	Obj hadDivision(const Obj& obj1, const Obj& obj2);
+
 	template<GeometryDim dim>
 	V3 calculateTriangleArea(const Point<dim>& p1, const Point<dim>& p2, const Point<dim>& p3);
 

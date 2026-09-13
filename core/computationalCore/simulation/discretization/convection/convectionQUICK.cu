@@ -63,7 +63,7 @@ __device__ void ConvectionQUICK::assembleInnerImpl(
 		B_contribution = B_contribution - upwindExplicit - highResolutionExplicit;
 	}
 
-	cudaUtils::contributeTo(matrix->B[C_id], B_contribution);
+	matrix->B[C_id] += B_contribution;
 };
 
 template
