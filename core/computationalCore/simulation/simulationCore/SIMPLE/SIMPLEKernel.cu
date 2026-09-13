@@ -1,12 +1,6 @@
-#include <simulation/heatTransfer/simulationKernel.h>
+#include <simulation/simulationCore/SIMPLE/SIMPLEKernel.h>
 
-#include <simulation/heatTransfer/simulationConfig.h>
-#include <simulation/discretization/relaxation/relaxationPatankar.h>
-#include <simulation/discretization/interpolation/interpolationTaylor.h>
-
-#include <utility/debugUtils.h>
-
-namespace simKernel {
+namespace SIMPLEKernel {
 
 	using V = Vector<GeometryDim::D3>;
 	using C = Cell<MeshDim::D3>;
@@ -16,36 +10,32 @@ namespace simKernel {
 	__global__
 		void assembleInnerVelocity(
 			const Mesh<MeshDim::D3>* mesh,
-			Field<V, C>* velocity,
-			Field<M, C>* gradVelocity,
-			Field<double, C>* temperature,
-			Field<double, F>* massFlowRate,
-			Field<V, C>* gradPressure,
+			HeatTransferFieldsD3* fields,
 			LinearSolverMatrix<V>* matrix,
 			HeatTransferSimulationMethods* methods
-		) 
+		)
 	{
 
 		int C_id = blockDim.x * blockIdx.x + threadIdx.x;
 
 		methods->diffusion->assembleInner(
 			mesh,
-			velocity,
+			fields->velocity,
 			matrix,
 			simConfig::KINEMATIC_VISCOSITY
 		);
 
 		methods->convection->assembleInner(
 			mesh,
-			velocity,
-			gradVelocity,
-			massFlowRate,
+			fields->velocity,
+			fields->gradVelocity,
+			fields->massFlowRate,
 			matrix
 		);
 
 		methods->unsteady->assemble(
 			mesh,
-			velocity,
+			fields->velocity,
 			matrix,
 			simConfig::DT
 		);
@@ -53,38 +43,35 @@ namespace simKernel {
 		methods->sourceGravity->assembleInner(
 			mesh,
 			matrix,
-			V({0, 0, -simConfig::G_CONSTANT })
+			V({ 0, 0, -simConfig::G_CONSTANT })
 		);
 
 		methods->sourceBoussinesq->assembleInner(
 			mesh,
 			matrix,
 			V({ 0, 0, -simConfig::G_CONSTANT }),
-			temperature,
+			fields->temperature,
 			simConfig::THERM_EXPANSION
 		);
 
-		relaxation::patankar(matrix, velocity, simConfig::RELAXATION_FACTOR);
-
-		matrix->B[C_id] += (-mesh->cells[C_id].volume) * gradPressure->values[C_id];
+		relaxation::patankar(matrix, fields->velocity, simConfig::V_RELAXATION_FACTOR);
+		matrix->B[C_id] += (-mesh->cells[C_id].volume) * fields->gradPressure->values[C_id];
 
 	};
 
 	__global__
 		void assembleBoundariesVelocity(
 			const Mesh<MeshDim::D3>* mesh,
-			Field<V, C>* velocity,
-			Field<double, C>* pressure,
-			Field<V, C>* gradPressure,
+			HeatTransferFieldsD3* fields,
 			LinearSolverMatrix<V>* matrix
-		) 
+		)
 	{
 
 		// Only Wall boundary condition and orthogonal grid for now.
 
 		int bp_faceId = blockDim.x * blockIdx.x + threadIdx.x;
 
-		auto& bp = velocity->boundaryPatches[0];
+		auto& bp = fields->velocity->boundaryPatches[0];
 
 		if (bp_faceId > bp.faceIDs.length) { return; }
 
@@ -96,16 +83,16 @@ namespace simKernel {
 		const auto& C_id = f.ownerCellID;
 		const auto& C = mesh->cells[C_id];
 
-		const auto V_C = velocity->values[C_id];
-		const auto& p_C = pressure->values[C_id];
-		const auto& gradP_C = gradPressure->values[C_id];
+		const auto V_C = fields->velocity->values[C_id];
+		const auto& p_C = fields->pressure->values[C_id];
+		const auto& gradP_C = fields->gradPressure->values[C_id];
 
 		const VectorData<GeometryDim::D3> d_CF = f.ownerData.centroidToFace;
 
-		const double p_b = 
+		const double p_b =
 			interpolation::taylor(
-				p_C, 
-				gradP_C, 
+				p_C,
+				gradP_C,
 				d_CF.vector);
 
 		auto& A_C = matrix->A_C[C_id];
@@ -134,12 +121,9 @@ namespace simKernel {
 	__global__
 		void updateMassFlow(
 			const Mesh<MeshDim::D3>* mesh,
-			Field<V, C>* velocity,
-			Field<double, C>* pressure,
-			Field<V, C>* gradPressure,
-			Field<double, F>* massFlowRate,
+			HeatTransferFieldsD3* fields,
 			LinearSolverMatrix<V>* matrix
-		) 
+		)
 	{
 		int f_id = blockDim.x * blockIdx.x + threadIdx.x;
 
@@ -158,22 +142,22 @@ namespace simKernel {
 		double g_C = f.ownerFaceWeightFactor;
 		double g_F = 1 - g_C;
 
-		const Vector<GeometryDim::D3> gradP_f_bar = 
-			(gradPressure->values[C_id] * g_C) 
-			+ (gradPressure->values[F_id] * g_F);
+		const Vector<GeometryDim::D3> gradP_f_bar =
+			(fields->gradPressure->values[C_id] * g_C)
+			+ (fields->gradPressure->values[F_id] * g_F);
 
 		const Vector<GeometryDim::D3> V_f_bar =
-			(velocity->values[C_id] * g_C)
-			+ (velocity->values[F_id] * g_F);
+			(fields->velocity->values[C_id] * g_C)
+			+ (fields->velocity->values[F_id] * g_F);
 
 		const Vector<GeometryDim::D3> gradP_f =
 			(
 				(
-					(pressure->values[F_id] - pressure->values[C_id])
+					(fields->pressure->values[F_id] - fields->pressure->values[C_id])
 					/ fOwn2Neighb.magnitude
 					)
 				- geomOp::dotProduct(gradP_f_bar, fOwn2Neighb.normal)
-			) * fOwn2Neighb.normal;
+				) * fOwn2Neighb.normal;
 
 		// Rhie-Chow interpolation
 		const Vector<GeometryDim::D3> Vol_C{ mesh->cells[C_id].volume };
@@ -185,18 +169,18 @@ namespace simKernel {
 
 		const Vector<GeometryDim::D3> V_f = V_f_bar - geomOp::hadProduct(D_f_bar, gradP_f);
 
-		massFlowRate->values[f_id] = geomOp::dotProduct(V_f, fArea.vector);
+		fields->massFlowRate->values[f_id] = geomOp::dotProduct(V_f, fArea.vector);
 
 		// Seems right
 	};
 
 	__global__
-	void assemblePressure(
-		const Mesh<MeshDim::D3>* mesh,
-		Field<double, F>* massFlowRate,
-		LinearSolverMatrix<double>* p_matrix,
-		LinearSolverMatrix<Vector<GeometryDim::D3>>* V_matrix
-	) 
+		void assemblePressure(
+			const Mesh<MeshDim::D3>* mesh,
+			HeatTransferFieldsD3* fields,
+			LinearSolverMatrix<double>* p_matrix,
+			LinearSolverMatrix<Vector<GeometryDim::D3>>* V_matrix
+		)
 	{
 		int C_id = blockDim.x * blockIdx.x + threadIdx.x;
 
@@ -222,7 +206,7 @@ namespace simKernel {
 			if (f.isBoundary) { continue; }
 
 			const VectorData<GeometryDim::D3> fOwn2Neighb = f.getCellToNeighbourVector(C_id);
-				
+
 			const double g_C = f.getWeightFactor(C_id);
 			const double g_F = 1 - g_C;
 
@@ -241,13 +225,85 @@ namespace simKernel {
 
 			A_F[i] = A_F_contribution;
 
-			double massFlowRateValue = massFlowRate->values[f_id];
+			double massFlowRateValue = fields->massFlowRate->values[f_id];
 
 			if (C_id == f.neighbourCellID) { massFlowRateValue = -massFlowRateValue; }
 			B -= massFlowRateValue;
 		}
 
 		A_C = A_C_contribution;
+	};
+
+	__global__
+		void correctPressureAndVelocity(
+			const Mesh<MeshDim::D3>* mesh,
+			HeatTransferFieldsD3* fields,
+			Field<double, C>* pressureCorr,
+			Field<V, C>* gradPressureCorr,
+			LinearSolverMatrix<V>* V_matrix
+		)
+	{
+		int C_id = blockDim.x * blockIdx.x + threadIdx.x;
+
+		if (C_id >= mesh->cells.length) { return; }
+
+		fields->pressure->values[C_id] += 
+			simConfig::P_RELAXATION_FACTOR * pressureCorr->values[C_id];
+
+		const V Vol{ mesh->cells[C_id].volume };
+
+		const V D_C = geomOp::hadDivision(Vol, V_matrix->A_C[C_id]);
+
+		fields->velocity->values[C_id] -= geomOp::hadProduct(D_C, gradPressureCorr->values[C_id]);
+	};
+
+	__global__
+		void correctMassFlow(
+			const Mesh<MeshDim::D3>* mesh,
+			HeatTransferFieldsD3* fields,
+			Field<double, C>* PCorr,
+			Field<V, C>* gradPCorr,
+			LinearSolverMatrix<V>* V_matrix
+		)
+	{
+		int f_id = blockDim.x * blockIdx.x + threadIdx.x;
+
+		if (f_id >= mesh->faces.length) { return; }
+
+		const auto& f = mesh->faces[f_id];
+
+		if (f.isBoundary) { return; }
+
+		const VectorData<GeometryDim::D3> fOwn2Neighb = f.ownerToNeighbourCell;
+
+		const uint32_t C_id = f.ownerCellID;
+		const uint32_t F_id = f.neighbourCellID;
+
+		const double g_C = f.ownerFaceWeightFactor;
+		const double g_F = 1 - g_C;
+
+		// Rhie-Chow interpolation
+		const Vector<GeometryDim::D3> Vol_C{ mesh->cells[C_id].volume };
+		const Vector<GeometryDim::D3> Vol_F{ mesh->cells[F_id].volume };
+
+		const Vector<GeometryDim::D3> D_C = geomOp::hadDivision(Vol_C, V_matrix->A_C[C_id]);
+		const Vector<GeometryDim::D3> D_F = geomOp::hadDivision(Vol_F, V_matrix->A_C[F_id]);
+		const Vector<GeometryDim::D3> D_f_bar = D_C * g_C + D_F * g_F;
+
+		const Vector<GeometryDim::D3> gradPCorr_f_bar =
+			(gradPCorr->values[C_id] * g_C)
+			+ (gradPCorr->values[F_id] * g_F);
+
+		const Vector<GeometryDim::D3> gradPCorr_f =
+			(
+				(
+					(PCorr->values[F_id] - PCorr->values[C_id])
+					/ fOwn2Neighb.magnitude
+				)
+				- geomOp::dotProduct(gradPCorr_f_bar, fOwn2Neighb.normal)
+			) * fOwn2Neighb.normal + gradPCorr_f_bar;
+
+		fields->massFlowRate->values[f_id] -= geomOp::dotProduct(geomOp::hadProduct(D_f_bar, gradPCorr_f), f.area.vector);
 	};
 
 }

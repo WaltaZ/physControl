@@ -115,10 +115,10 @@ namespace debug {
 		printObj(&obj, withNewLine); 
 	};
 
-	template<class StoragePlace>
+	template<class Obj, class StoragePlace>
 	void printField(
 		const Mesh<MeshDim::D3>* mesh,
-		Field<double, StoragePlace>* field,
+		Field<Obj, StoragePlace>* field,
 		uint32_t t = 0
 	)
 	{

@@ -26,7 +26,7 @@ public:
     
     bool isInitilized();
 
-    void initFiled(const CudaPackedArray<StoragePlace>& meshElements);
+    void initField(const CudaPackedArray<StoragePlace>& meshElements);
 
     void initPastTrace(uint32_t traceLength);
 

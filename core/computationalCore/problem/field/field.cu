@@ -17,7 +17,7 @@ bool Field<Data, StoragePlace>::isInitilized()
 };
 
 template<class Data, class StoragePlace>
-void Field<Data, StoragePlace>::initFiled(const CudaPackedArray<StoragePlace>& meshElements) 
+void Field<Data, StoragePlace>::initField(const CudaPackedArray<StoragePlace>& meshElements) 
 {
     cudaMallocManaged(this->values.getDataPointer(), meshElements.length * sizeof(Data));
     this->values.length = meshElements.length;

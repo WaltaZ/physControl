@@ -62,7 +62,7 @@ public:
 
 class HeatTransferProblemD3 : public ProblemD3 {
 public:
-	HeatTransferFieldsD3 fields{};
+	HeatTransferFieldsD3* fields;
 
 	HeatTransferProblemD3(
 		const ProblemGeometryD3& geometry

@@ -14,11 +14,12 @@ namespace simConfig {
 
 	// MOMENTUM QUANTITIES -------------------------------------------------------------------------
 
-	constexpr double VISCOSITY = 1.82; // [Pa * s] add e-5
+	constexpr double VISCOSITY = 1.82e-5; // [Pa * s] add e-5
 	constexpr double KINEMATIC_VISCOSITY = VISCOSITY / DENSITY; // [m^2 / s]
 
 	// SIMULATION ----------------------------------------------------------------------------------
 
-	constexpr double RELAXATION_FACTOR = 0.5;
-	constexpr double DT = 0.1;
+	constexpr double V_RELAXATION_FACTOR = 0.3;
+	constexpr double P_RELAXATION_FACTOR = 0.2;
+	constexpr double DT = 0.01;
 }

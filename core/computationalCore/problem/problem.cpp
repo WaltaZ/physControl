@@ -5,8 +5,10 @@ ProblemD3::ProblemD3(
 }
 
 HeatTransferProblemD3::HeatTransferProblemD3(
-	const ProblemGeometryD3& geometry) : ProblemD3(geometry)
+	const ProblemGeometryD3& geometry) : 
+	ProblemD3(geometry)
 {
+	fields = cudaUtils::create<HeatTransferFieldsD3>();
 	boundaryConditions = std::vector<std::vector<BoundaryConditionD3>>{ 2 };
 	defaultBoundaryConditions = std::vector<BoundaryConditionD3Raw>{
 		BoundaryConditionD3Raw(BoundaryConditionType::NoSlip, {}),
@@ -41,19 +43,19 @@ void HeatTransferProblemD3::initBoundaryPatches(
 		);
 	}
 
-	fields.velocity->initBoundaryPatches(boundaryPatches[0]);
-	fields.temperature->initBoundaryPatches(boundaryPatches[1]);
+	fields->velocity->initBoundaryPatches(boundaryPatches[0]);
+	fields->temperature->initBoundaryPatches(boundaryPatches[1]);
 };
 
 void HeatTransferProblemD3::initFields(const Mesh<MeshDim::D3>* mesh)
 {
-	fields.velocity->initFiled(mesh->cells);
-	fields.temperature->initFiled(mesh->cells);
-	fields.gradTemperature->initFiled(mesh->cells);
-	fields.massFlowRate->initFiled(mesh->faces);
-	fields.gradVelocity->initFiled(mesh->cells);
-	fields.pressure->initFiled(mesh->cells);
-	fields.gradPressure->initFiled(mesh->cells);
+	fields->velocity->initField(mesh->cells);
+	fields->temperature->initField(mesh->cells);
+	fields->gradTemperature->initField(mesh->cells);
+	fields->massFlowRate->initField(mesh->faces);
+	fields->gradVelocity->initField(mesh->cells);
+	fields->pressure->initField(mesh->cells);
+	fields->gradPressure->initField(mesh->cells);
 }
 
 void HeatTransferProblemD3::addVelocityBoundaryCondition(
@@ -71,11 +73,11 @@ void HeatTransferProblemD3::addTemperatureBoundaryCondition(
 void HeatTransferProblemD3::addVelocityInitialCondition(
 	const Vector<GeometryDim::D3>& ic)
 {
-	fields.velocity->initialObj = ic;
+	fields->velocity->initialObj = ic;
 };
 
 void HeatTransferProblemD3::addTemperatureInitialCondition(
 	const double& ic)
 {
-	fields.temperature->initialObj = ic;
+	fields->temperature->initialObj = ic;
 };

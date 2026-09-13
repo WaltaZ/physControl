@@ -5,13 +5,13 @@
 #include <geometry/geometryUtils.h>
 #include <utility/cudaUtils.h>
 
-#include "simulationMethods.h"
+#include "simulationData.h"
+
+#include "SIMPLE/SIMPLE.h"
 
 class HeatTransferSimulationD3 {
 public:
-	HeatTransferProblemD3& problem;
-	const Mesh<MeshDim::D3>* mesh;
-	HeatTransferSimulationMethods* methods;
+	SimulationData data;
 
 	HeatTransferSimulationD3(
 		HeatTransferProblemD3& problem,
@@ -20,4 +20,7 @@ public:
 	);
 
 	void nextStep();
+
+private:
+	SIMPLE _simple;
 };

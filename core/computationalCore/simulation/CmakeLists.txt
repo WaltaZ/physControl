@@ -1,8 +1,10 @@
 set(simulationHppFiles
-	"include/simulation/heatTransfer/simulation.h"
-	"include/simulation/heatTransfer/simulationConfig.h"
-	"include/simulation/heatTransfer/simulationKernel.h"
-	"include/simulation/heatTransfer/simulationMethods.h"
+	"include/simulation/simulationCore/simulation.h"
+	"include/simulation/simulationCore/simulationData.h"
+	"include/simulation/simulationCore/simulationConfig.h"
+	"include/simulation/simulationCore/simulationMethods.h"
+	"include/simulation/simulationCore/SIMPLE/SIMPLE.h"
+	"include/simulation/simulationCore/SIMPLE/SIMPLEKernel.h"
 	"include/simulation/discretization/gradient/gradient.h"
 	"include/simulation/discretization/gradient/gradientGauss.h"
 	"include/simulation/discretization/gradient/gradientGaussKernel.h"
@@ -22,12 +24,14 @@ set(simulationHppFiles
 	"include/simulation/discretization/unsteady/unsteadyEulerBackward.h"
 	"include/simulation/discretization/relaxation/relaxationPatankar.h"
 	"include/simulation/discretization/interpolation/interpolationTaylor.h"
+	"include/simulation/discretization/interpolation/interpolationFaceGrad.h"
 )
 
 set(simulationCppFiles
-	"heatTransfer/simulation.cu"
-	"heatTransfer/simulationKernel.cu"
-	"heatTransfer/simulationMethods.cu"
+	"simulationCore/simulation.cu"
+	"simulationCore/simulationMethods.cu"
+	"simulationCore/SIMPLE/SIMPLE.cu"
+	"simulationCore/SIMPLE/SIMPLEKernel.cu"
 	"discretization/gradient/gradient.cu"
 	"discretization/gradient/gradientGauss.cu"
 	"discretization/gradient/gradientGaussKernel.cu"
@@ -42,6 +46,7 @@ set(simulationCppFiles
 	"discretization/unsteady/unsteadyEulerBackward.cu"
 	"discretization/relaxation/relaxationPatankar.cu"
 	"discretization/interpolation/interpolationTaylor.cu"
+	"discretization/interpolation/interpolationFaceGrad.cu"
 )
 
 add_library(simulation ${simulationHppFiles} ${simulationCppFiles})

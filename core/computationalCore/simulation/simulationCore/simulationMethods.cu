@@ -1,4 +1,4 @@
-#include <simulation/heatTransfer/simulationMethods.h>
+#include <simulation/simulationCore/simulationMethods.h>
 
 #include <simulation/discretization/unsteady/unsteadyEulerBackward.h>
 
@@ -32,14 +32,14 @@ HeatTransferSimulationMethods::~HeatTransferSimulationMethods()
 };
 
 HeatTransferSimulationMethods::HeatTransferSimulationMethods(
-	HeatTransferSimulationMethods&& other) 
-	:	gradient(other.gradient),
-		diffusion(other.diffusion),
-		convection(other.convection),
-		unsteady(other.unsteady),
-		solverFactory(other.solverFactory),
-		sourceBoussinesq(other.sourceBoussinesq),
-		sourceGravity(other.sourceGravity)
+	HeatTransferSimulationMethods&& other)
+	: gradient(other.gradient),
+	diffusion(other.diffusion),
+	convection(other.convection),
+	unsteady(other.unsteady),
+	solverFactory(other.solverFactory),
+	sourceBoussinesq(other.sourceBoussinesq),
+	sourceGravity(other.sourceGravity)
 {
 	other.gradient = nullptr;
 	other.diffusion = nullptr;

@@ -5,7 +5,7 @@
 #include <problem/tests.h>
 #include <visuals/displayer/displayer.h>
 
-#include <simulation/heatTransfer/simulation.h>
+#include <simulation/simulationCore/simulation.h>
 #include <simulation/linearSolver/jacobi/linearSolverJacobi.h>
 #include <simulation/discretization/discretization.h>
 
@@ -13,7 +13,7 @@
 #include <utility/cudaUtilsWithKernels.h>
 
 int main() {
-	constexpr int amount = 30;
+	constexpr int amount = 10;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);
@@ -55,8 +55,8 @@ int main() {
 	Mesh<MeshDim::D3>* mesh = mesher.generateMesh();
 	problem.initFields(mesh);
 
-	fieldTests::setUpRadialField(problem.fields.temperature, mesh, box.getCentroid(), 293);
-	fieldTests::setUpCurlyField(problem.fields.velocity, mesh, box.getCentroid());
+	fieldTests::setUpRadialField(problem.fields->temperature, mesh, box.getCentroid(), 293);
+	fieldTests::setUpCurlyField(problem.fields->velocity, mesh, box.getCentroid());
 
 	// ------------ Discretization terms -------------
 
