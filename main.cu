@@ -13,7 +13,7 @@
 #include <utility/cudaUtilsWithKernels.h>
 
 int main() {
-	constexpr int amount = 10;
+	constexpr int amount = 30;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);

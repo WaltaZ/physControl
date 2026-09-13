@@ -31,6 +31,21 @@ const CellData<mesh2geom(dim)>& Face<dim>::getCellData(uint32_t id) const {
 
 template<MeshDim dim>
 __host__ __device__
+VectorData<mesh2geom(dim)> Face<dim>::getCellToNeighbourVector(uint32_t id) const 
+{
+    if (isBoundary) { printf("Face is a boundary face. Cannot access Cell to neighbour vector."); }
+    if(id == ownerCellID) {
+        return ownerToNeighbourCell;
+    }
+    return VectorData<mesh2geom(dim)>{
+        -ownerToNeighbourCell.vector,
+        -ownerToNeighbourCell.normal,
+        ownerToNeighbourCell.magnitude
+    };
+};
+
+template<MeshDim dim>
+__host__ __device__
 double Face<dim>::getWeightFactor(uint32_t id) const {
     if (isBoundary) { printf("Face is a boundary face. Cannot access weight factor."); }
     if (id == ownerCellID) {
@@ -56,8 +71,8 @@ VectorData<mesh2geom(dim)> Face<dim>::getArea(uint32_t id) const {
         return area;
     }
     return VectorData<mesh2geom(dim)>{
-        area.vector * (-1),
-        area.normal * (-1),
+        -area.vector,
+        -area.normal,
         area.magnitude
     };
 };

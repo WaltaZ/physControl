@@ -4,56 +4,109 @@
 #include <mesh/meshElements/meshElements.h>
 #include <simulation/linearSolver/linearSolverMatrix.h>
 
+#include <string>
+
+class Printer {
+	
+	char buf[1024];
+
+public:
+
+};
+
 namespace debug {
 
 	template<class Obj>
 	__host__ __device__
 	void printObj(const Obj* obj, bool withNewLine = true)
 	{
-		printf("%lf", *obj);
-		if (withNewLine) { printf("\n"); };
+		if (withNewLine) {
+			printf("%lf\n", *obj);
+		}
+		else {
+			printf("%lf", *obj);
+		}
 	};
 
 	template<GeometryDim dim>
 	__host__ __device__
 	void printObj(const Vector<dim>* obj, bool withNewLine) {
-		printf("[ ");
-		for (size_t comp = 0; comp < obj->numOfComp - 1; comp++)
-		{
-			printf("%lf, ", obj->comp[comp]);
-		}
-		printf("%lf ]", obj->comp[obj->numOfComp - 1]);
-		if (withNewLine) { printf("\n"); }
-	};
-
-	template<GeometryDim dim>
-	__host__ __device__
-	void printObj(const MatrixTensor<dim>* obj, bool withNewLine) {
 
 		int gDim = geometryDimSize(dim);
 
-		for (size_t i = 0; i < gDim; i++)
-		{
-			printf("[ ");
-			for (size_t j = 0; j < gDim - 1; j++)
-			{
-				printf("%lf, ", obj->comp[gDim * i + j]);
+		const auto& c = obj->comp;
+
+		if (withNewLine) {
+			if (gDim == 2) {
+				printf("[ %lf, %lf ]\n", c[0], c[1]);
 			}
-			printf("%lf ]\n", obj->comp[gDim * i]);
+			else if (gDim == 3) {
+				printf("[ %lf, %lf, %lf ]\n", c[0], c[1], c[2]);
+			}
 		}
-		
+		else {
+			if (gDim == 2) {
+				printf("[ %lf, %lf ]", c[0], c[1]);
+			}
+			else if (gDim == 3) {
+				printf("[ %lf, %lf, %lf ]", c[0], c[1], c[2]);
+			}
+		}
 	};
 
 	template<GeometryDim dim>
 	__host__ __device__
-	void printObj(const Point<dim>* obj, bool withNewLine) {
-		printf("( ");
-		for (size_t pos = 0; pos < geometryDimSize(dim) - 1; pos++)
-		{
-			printf("%lf, ", obj->pos[pos]);
+		void printObj(const MatrixTensor<dim>* obj, bool withNewLine) {
+
+		int gDim = geometryDimSize(dim);
+
+		const auto& c = obj->comp;
+
+		if (withNewLine) {
+			if (gDim == 2) {
+				printf("[ %lf, %lf ]\n[ %lf, %lf ]\n", c[0], c[1], c[2], c[3]);
+			}
+			else if (gDim == 3) {
+				printf("[ %lf, %lf, %lf ]\n[ %lf, %lf, %lf ]\n[ %lf, %lf, %lf ]\n",
+					c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]);
+			}
 		}
-		printf("%lf )", obj->pos[geometryDimSize(dim) - 1]);
-		if (withNewLine) { printf("\n"); }
+		else {
+			if (gDim == 2) {
+				printf("[ %lf, %lf ]\n[ %lf, %lf ]", c[0], c[1], c[2], c[3]);
+			}
+			else if (gDim == 3) {
+				printf("[ %lf, %lf, %lf ]\n[ %lf, %lf, %lf ]\n[ %lf, %lf, %lf ]",
+					c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]);
+			}
+		};
+	}
+
+	template<GeometryDim dim>
+	__host__ __device__
+		void printObj(const Point<dim>* obj, bool withNewLine) {
+
+		int gDim = geometryDimSize(dim);
+
+		const auto& p = obj->pos;
+
+		if (withNewLine) {
+			if (gDim == 2) {
+				printf("( %lf, %lf )\n", p[0], p[1]);
+			}
+			else if (gDim == 3) {
+				printf("( %lf, %lf, %lf )\n", p[0], p[1], p[2]);
+			}
+		}
+		else {
+			if (gDim == 2) {
+				printf("( %lf, %lf )", p[0], p[1]);
+			}
+			else if (gDim == 3) {
+				printf("( %lf, %lf, %lf )", p[0], p[1], p[2]);
+			}
+		}
+
 	};
 
 	template<class Obj>

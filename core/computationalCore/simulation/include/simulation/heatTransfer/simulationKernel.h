@@ -46,6 +46,7 @@ namespace simKernel {
 	void assemblePressure(
 		const Mesh<MeshDim::D3>* mesh,
 		Field<double, F>* massFlowRate,
-		LinearSolverMatrix<double>* matrix
+		LinearSolverMatrix<double>* p_matrix,
+		LinearSolverMatrix<Vector<GeometryDim::D3>>* V_matrix
 	);
 }

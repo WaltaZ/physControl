@@ -42,6 +42,9 @@ public:
 	const CellData<mesh2geom(dim)>& getCellData(uint32_t id) const;
 
 	__host__ __device__
+	VectorData<mesh2geom(dim)> getCellToNeighbourVector(uint32_t id) const;
+
+	__host__ __device__
 	double getWeightFactor(uint32_t id) const;
 
 	__host__ __device__

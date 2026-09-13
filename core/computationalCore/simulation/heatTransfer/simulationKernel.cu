@@ -35,13 +35,13 @@ namespace simKernel {
 			simConfig::KINEMATIC_VISCOSITY
 		);
 
-		/*methods->convection->assembleInner(
+		methods->convection->assembleInner(
 			mesh,
 			velocity,
 			gradVelocity,
 			massFlowRate,
 			matrix
-		);*/
+		);
 
 		methods->unsteady->assemble(
 			mesh,
@@ -50,19 +50,19 @@ namespace simKernel {
 			simConfig::DT
 		);
 
-		/*methods->sourceGravity->assembleInner(
+		methods->sourceGravity->assembleInner(
 			mesh,
 			matrix,
 			V({0, 0, -simConfig::G_CONSTANT })
-		);*/
+		);
 
-		/*methods->sourceBoussinesq->assembleInner(
+		methods->sourceBoussinesq->assembleInner(
 			mesh,
 			matrix,
 			V({ 0, 0, -simConfig::G_CONSTANT }),
 			temperature,
 			simConfig::THERM_EXPANSION
-		);*/
+		);
 
 		relaxation::patankar(matrix, velocity, simConfig::RELAXATION_FACTOR);
 
@@ -150,6 +150,7 @@ namespace simKernel {
 		if (f.isBoundary) { return; }
 
 		const VectorData<GeometryDim::D3> fArea = f.area;
+		const VectorData<GeometryDim::D3> fOwn2Neighb = f.ownerToNeighbourCell;
 
 		const uint32_t C_id = f.ownerCellID;
 		const uint32_t F_id = f.neighbourCellID;
@@ -161,7 +162,7 @@ namespace simKernel {
 			(gradPressure->values[C_id] * g_C) 
 			+ (gradPressure->values[F_id] * g_F);
 
-		const Vector<GeometryDim::D3> V_f =
+		const Vector<GeometryDim::D3> V_f_bar =
 			(velocity->values[C_id] * g_C)
 			+ (velocity->values[F_id] * g_F);
 
@@ -169,26 +170,32 @@ namespace simKernel {
 			(
 				(
 					(pressure->values[F_id] - pressure->values[C_id])
-					/ f.ownerToNeighbourCell.magnitude
+					/ fOwn2Neighb.magnitude
 					)
-				- geomOp::dotProduct(gradP_f_bar, fArea.normal)
-			) * fArea.normal;
+				- geomOp::dotProduct(gradP_f_bar, fOwn2Neighb.normal)
+			) * fOwn2Neighb.normal;
 
 		// Rhie-Chow interpolation
-		const Vector<GeometryDim::D3> V{ mesh->cells[C_id].volume };
-		const Vector<GeometryDim::D3> D = geomOp::hadDivision(V, matrix->A_C[C_id]);
+		const Vector<GeometryDim::D3> Vol_C{ mesh->cells[C_id].volume };
+		const Vector<GeometryDim::D3> Vol_F{ mesh->cells[F_id].volume };
 
-		massFlowRate->values[F_id] = geomOp::dotProduct(
-			geomOp::hadProduct(D, V_f - gradP_f), 
-			fArea.vector
-		);
+		const Vector<GeometryDim::D3> D_C = geomOp::hadDivision(Vol_C, matrix->A_C[C_id]);
+		const Vector<GeometryDim::D3> D_F = geomOp::hadDivision(Vol_F, matrix->A_C[F_id]);
+		const Vector<GeometryDim::D3> D_f_bar = D_C * g_C + D_F * g_F;
+
+		const Vector<GeometryDim::D3> V_f = V_f_bar - geomOp::hadProduct(D_f_bar, gradP_f);
+
+		massFlowRate->values[f_id] = geomOp::dotProduct(V_f, fArea.vector);
+
+		// Seems right
 	};
 
 	__global__
 	void assemblePressure(
 		const Mesh<MeshDim::D3>* mesh,
 		Field<double, F>* massFlowRate,
-		LinearSolverMatrix<double>* matrix
+		LinearSolverMatrix<double>* p_matrix,
+		LinearSolverMatrix<Vector<GeometryDim::D3>>* V_matrix
 	) 
 	{
 		int C_id = blockDim.x * blockIdx.x + threadIdx.x;
@@ -200,20 +207,44 @@ namespace simKernel {
 		double A_C_contribution = 0;
 		double B_contribution = 0;
 
-		auto& A_C = matrix->A_C[C_id];
-		auto& A_F = matrix->A_F[C_id];
-		auto& B = matrix->B[C_id];
+		auto& A_C = p_matrix->A_C[C_id];
+		auto& A_F = p_matrix->A_F[C_id];
+		auto& B = p_matrix->B[C_id];
+
+		const Vector<GeometryDim::D3> Vol_C{ mesh->cells[C_id].volume };
+		const Vector<GeometryDim::D3> D_C = geomOp::hadDivision(Vol_C, V_matrix->A_C[C_id]);
 
 		for (size_t i = 0; i < C.cellFaceIDs.length; i++)
 		{
 			const uint32_t f_id = C.cellFaceIDs[i];
 			const auto& f = mesh->faces[f_id];
 
-			double A_F_contribution = -(f.area.magnitude / f.getCellData(C_id).centroidToFace.magnitude);
+			if (f.isBoundary) { continue; }
+
+			const VectorData<GeometryDim::D3> fOwn2Neighb = f.getCellToNeighbourVector(C_id);
+				
+			const double g_C = f.getWeightFactor(C_id);
+			const double g_F = 1 - g_C;
+
+			const uint32_t F_id = f.getNeighbourCellID(C_id);
+
+			const Vector<GeometryDim::D3> Vol_F{ mesh->cells[F_id].volume };
+			const Vector<GeometryDim::D3> D_F = geomOp::hadDivision(Vol_F, V_matrix->A_C[F_id]);
+			const Vector<GeometryDim::D3> D_f_bar = D_C * g_C + D_F * g_F;
+
+			const Vector<GeometryDim::D3> S_f_prime = geomOp::hadProduct(D_f_bar, f.area.vector);
+			const Vector<GeometryDim::D3> E_f = S_f_prime.getMagnitude() * fOwn2Neighb.vector;
+
+			double A_F_contribution = -E_f.getMagnitude() / fOwn2Neighb.magnitude;
+
 			A_C_contribution -= A_F_contribution;
 
 			A_F[i] = A_F_contribution;
-			B -= massFlowRate->values[f_id];
+
+			double massFlowRateValue = massFlowRate->values[f_id];
+
+			if (C_id == f.neighbourCellID) { massFlowRateValue = -massFlowRateValue; }
+			B -= massFlowRateValue;
 		}
 
 		A_C = A_C_contribution;

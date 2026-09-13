@@ -30,7 +30,6 @@ void HeatTransferSimulationD3::nextStep()
 	fields.velocity->moveTraceToNextStep();
 	fields.temperature->updateMaxMin();
 
-
 	methods->gradient->compute(
 		fields.pressure,
 		fields.gradPressure,
@@ -67,7 +66,7 @@ void HeatTransferSimulationD3::nextStep()
 	cudaUtils::fetchError(cudaDeviceSynchronize);
 
 	velocitySolver->solve();
-
+	
 	KernelArgs args_EF = cudaUtils::getKernelArgs(numOfFaces);
 	simKernel::updateMassFlow<<<args_EF.blocks, args_EF.threads>>>(
 		mesh, 
@@ -79,15 +78,18 @@ void HeatTransferSimulationD3::nextStep()
 	);
 	cudaUtils::fetchError(cudaDeviceSynchronize);
 
+	//debug::printField(mesh, fields.massFlowRate);
+
 	simKernel::assemblePressure<<<args_EC.blocks, args_EC.threads>>>(
 		mesh,
 		fields.massFlowRate,
-		pressureSolver->matrix
+		pressureSolver->matrix,
+		velocitySolver->matrix
 	);
 	cudaUtils::fetchError(cudaDeviceSynchronize);
 
 	pressureSolver->solve();
 
-	debug::printSolverMatrix(pressureSolver->matrix);
+	//debug::printSolverMatrix(pressureSolver->matrix);
 
  }
