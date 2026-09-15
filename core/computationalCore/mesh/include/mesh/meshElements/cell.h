@@ -3,6 +3,7 @@
 #include "../meshEnums.h"
 #include "supportStructs.h"
 #include "../meshers/mesherElements.h"
+#include "face.h"
 
 #include <vector>
 #include <utility/cudaUtils.h>

@@ -20,6 +20,6 @@ namespace simConfig {
 	// SIMULATION ----------------------------------------------------------------------------------
 
 	constexpr double V_RELAXATION_FACTOR = 0.3;
-	constexpr double P_RELAXATION_FACTOR = 0.2;
+	constexpr double P_RELAXATION_FACTOR = 0.3;
 	constexpr double DT = 0.01;
 }

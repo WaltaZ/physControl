@@ -358,6 +358,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 				setBoundariesAndNeighbours(0, x, 1, 0);
 
 				C cell{};
+				//cell.neighbourCellsIDs = std::vector<int>(6);
 				std::vector<F> faces{};
 
 				// TODO: Clean up this shit and make it readable \/
@@ -374,6 +375,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 
 						// Cell
 						cell.faceIDs.push_back(neighbourFaceId);
+
 						cell.neighbourCellsIDs.push_back(neighbourCellId);
 						mesh.cells[neighbourCellId].neighbourCellsIDs.emplace_back(mesh.cells.size());
 

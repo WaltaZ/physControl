@@ -18,12 +18,14 @@ void DiffusionSimple::assembleInnerImpl(
 
 	if (C_id >= mesh->cells.length) { return; }
 
-	const auto& cell = mesh->cells[C_id];
+	const auto& C = mesh->cells[C_id];
 
 	Obj A_C_contribution{};
 
 	for (int i = 0; i < matrix->A_F[C_id].length; i++) {
-		const auto& face = mesh->faces[cell.cellFaceIDs[i]];
+		const auto& F = mesh->cells[C.cellNeighbourCells[i]];
+
+		const auto& face = mesh->faces[C.cellFaceIDs[i]];
 
 		if (face.isBoundary) { continue; }
 

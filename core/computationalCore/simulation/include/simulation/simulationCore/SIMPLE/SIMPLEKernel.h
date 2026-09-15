@@ -65,4 +65,10 @@ namespace SIMPLEKernel {
 			Field<V, C>* gradPressureCorr,
 			LinearSolverMatrix<V>* V_matrix
 		);
+
+	template<class Obj>
+	__global__
+	void resetMatrix(
+		LinearSolverMatrix<Obj>* matrix
+	);
 }

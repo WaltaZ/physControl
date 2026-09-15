@@ -22,9 +22,11 @@ namespace fieldTests {
 	);
 
 	void setUpCurlyField(
-		Field<V, Cell<MeshDim::D3>>* field, 
+		Field<V, Cell<MeshDim::D3>>* field,
 		const Mesh<MeshDim::D3>* mesh,
 		Point<GeometryDim::D3> center,
+		double a,
+		double b,
 		V initValue = V()
 	);
 }

@@ -1,5 +1,7 @@
 #include <simulation/discretization/gradient/gradientGaussKernel.h>
 
+#include <simulation/discretization/interpolation/interpolationTaylor.h>
+
 // ----------------------------------- CUDA compute Each Cell Internal Faces ------------------------------------
 
 namespace CUDA_GradientGauss {
@@ -61,6 +63,9 @@ namespace CUDA_GradientGauss {
 		Field<GradObj, C>* gradField,
 		const Mesh<MeshDim::D3>* mesh)
 	{
+
+		assert(gradField->pastValues.length > 0);
+
 		int f_id = blockIdx.x * blockDim.x + threadIdx.x;
 
 		if (f_id >= mesh->faces.length) { return; }
@@ -73,8 +78,13 @@ namespace CUDA_GradientGauss {
 
 		const Obj& phi_C = field->values[C_id];
 
+		const GradObj& gradPhi_C_old = gradField->pastValues[0][C_id];
+		const Vector<GeometryDim::D3>& d_Cf = face.getCellData(C_id).centroidToFace.vector;
+
+		const Obj phi_f = interpolation::taylor(phi_C, gradPhi_C_old, d_Cf);
+
 		GradObj contribution =
-			(phi_C * face.getArea(C_id).vector) / C.volume;
+			(phi_f * face.getArea(C_id).vector) / C.volume;
 		
 		cudaUtils::contributeTo(gradField->values[C_id], contribution);
 	}

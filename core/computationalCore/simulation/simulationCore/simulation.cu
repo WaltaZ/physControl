@@ -18,6 +18,9 @@ HeatTransferSimulationD3::HeatTransferSimulationD3(
 	_simple(data)
 {
 	problem.fields->velocity->initPastTrace(1);
+
+	problem.fields->gradPressure->initPastTrace(1);
+
 	problem.fields->temperature->initPastTrace(1);
 }
 

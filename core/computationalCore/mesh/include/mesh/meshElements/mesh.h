@@ -27,5 +27,8 @@ public:
 	
 	Mesh(const MesherMesh<dim>& mesherMesh);
 
+	__device__
+	Face<dim>* getCommonFace(const uint32_t C_id, const uint32_t F_id);
+
 	//size_t getMeshSize();
 };

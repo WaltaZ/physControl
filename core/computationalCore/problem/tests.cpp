@@ -1,5 +1,7 @@
 #include <problem/tests.h>
 
+#include <cmath>
+
 namespace fieldTests {
 
 	void setUpRadialField(
@@ -29,15 +31,28 @@ namespace fieldTests {
 	void fieldTests::setUpCurlyField(
 		Field<V, Cell<MeshDim::D3>>* field, 
 		const Mesh<MeshDim::D3>* mesh, 
-		Point<GeometryDim::D3> center, 
+		Point<GeometryDim::D3> center,
+		double a,
+		double b,
 		V initValue)
 	{
+
+		constexpr double PI = 3.14159265358979323846;
+
 		for (size_t i = 0; i < field->values.length; i++)
 		{
-			const auto& C_centroid = mesh->cells[i].centroid;
+			const auto& c = mesh->cells[i].centroid;
 
-			V curl = V({ C_centroid.pos[1] - center.pos[1], center.pos[0] - C_centroid.pos[0], 0 });
-			field->values[i] = curl * 0.25;
+			const double kx = PI / a;
+			const double ky = PI / b;
+
+			const double sx = sin(kx * c.pos[0]);
+			const double sy = sin(ky * c.pos[1]);
+
+			const double u = ky * sx * sx * sin(2.0 * ky * c.pos[1]);
+			const double v = -kx * sin(2.0 * kx * c.pos[0]) * sy * sy;
+
+			field->values[i] = V({ u, v, 0 }) * 2;
 		}
 	}
 }

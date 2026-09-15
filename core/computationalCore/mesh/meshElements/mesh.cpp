@@ -135,5 +135,12 @@ Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 		elementsIDs.cellNeighbourCells.getData());
 }
 
+template<MeshDim dim>
+__device__
+Face<dim>* Mesh<dim>::getCommonFace(const uint32_t C_id, const uint32_t F_id) 
+{
+	return nullptr;
+};
+
 template class Mesh<MeshDim::D2>;
 template class Mesh<MeshDim::D3>;

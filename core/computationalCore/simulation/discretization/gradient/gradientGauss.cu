@@ -11,7 +11,6 @@ void GradientGauss::computeImpl(
 	using namespace CUDA_GradientGauss;
 
 	KernelArgs args = cudaUtils::getKernelArgs(mesh->cells.length);
-
 	CUDA_compute_EC_internalFaces
 		<< <args.blocks, args.threads >> > (
 			field,

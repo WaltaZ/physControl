@@ -13,7 +13,7 @@
 #include <utility/cudaUtilsWithKernels.h>
 
 int main() {
-	constexpr int amount = 10;
+	constexpr int amount = 4;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);
@@ -41,8 +41,8 @@ int main() {
 		)
 	);
 	
-	problem.addTemperatureBoundaryCondition(test1);
-	problem.addTemperatureBoundaryCondition(test2);
+	//problem.addTemperatureBoundaryCondition(test1);
+	//problem.addTemperatureBoundaryCondition(test2);
 
 	std::vector<double> division(amount + 1);
 
@@ -50,13 +50,13 @@ int main() {
 		division[i] = pow(((double)i/(double)amount), 3);
 	}
 
-	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, (int)(amount*0.8), (int)(amount*0.4)});
+	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, (amount), (amount)});
 
 	Mesh<MeshDim::D3>* mesh = mesher.generateMesh();
 	problem.initFields(mesh);
 
 	fieldTests::setUpRadialField(problem.fields->temperature, mesh, box.getCentroid(), 293);
-	fieldTests::setUpCurlyField(problem.fields->velocity, mesh, box.getCentroid());
+	fieldTests::setUpCurlyField(problem.fields->velocity, mesh, box.getCentroid(), 5.0, 4.0);
 
 	// ------------ Discretization terms -------------
 
