@@ -16,7 +16,7 @@ set(meshHppFiles
 set(meshCppFiles
 	"meshers/cartesianMesher/cartesianMesher.cpp"
 	"meshElements/face.cu"
-	"meshElements/mesh.cpp"
+	"meshElements/mesh.cu"
 	"meshElements/node.cpp"
 	"meshElements/tests.cpp"
 	"meshElements/supportStructs.cu"

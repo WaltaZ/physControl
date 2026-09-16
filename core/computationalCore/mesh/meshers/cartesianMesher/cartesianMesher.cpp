@@ -358,7 +358,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 				setBoundariesAndNeighbours(0, x, 1, 0);
 
 				C cell{};
-				//cell.neighbourCellsIDs = std::vector<int>(6);
+				cell.neighbourCellsIDs = {-1, -1, -1, -1, -1, -1};
 				std::vector<F> faces{};
 
 				// TODO: Clean up this shit and make it readable \/
@@ -376,8 +376,8 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 						// Cell
 						cell.faceIDs.push_back(neighbourFaceId);
 
-						cell.neighbourCellsIDs.push_back(neighbourCellId);
-						mesh.cells[neighbourCellId].neighbourCellsIDs.emplace_back(mesh.cells.size());
+						cell.neighbourCellsIDs[i] = neighbourCellId;
+						mesh.cells[neighbourCellId].neighbourCellsIDs[switchOrderOfTheFaces(i)] = mesh.cells.size();
 
 					}
 					else {
@@ -492,6 +492,19 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 		}
 	}
 
+	for (auto& C : mesh.cells)
+	{
+		int i = 0;
+		while (i < C.neighbourCellsIDs.size()) {
+			if (C.neighbourCellsIDs[i] == -1) {
+				C.neighbourCellsIDs.erase(C.neighbourCellsIDs.begin() + i);
+			}
+			else {
+				i++;
+			}
+		}
+	}
+
 	// Setting up rest of the data inside faces
 
 	for (auto& face : mesh.faces) {
@@ -542,5 +555,17 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 
 	problem.initBoundaryPatches(mesherBC, mesherBCDefault);
 
-	return cudaUtils::create<Mesh<MeshDim::D3>>(mesh);
+	// debug
+	/*for (size_t i = 0; i < mesh.cells.size(); i++)
+	{
+		auto& cell = mesh.cells[i];
+		printf("Cell %d | Neighbours: ", i);
+		for (size_t j = 0; j < cell.neighbourCellsIDs.size(); j++)
+		{
+			printf("%d, ", cell.neighbourCellsIDs[j]);
+		}
+		printf("\n");
+	}*/
+
+ 	return cudaUtils::create<Mesh<MeshDim::D3>>(mesh);
 };

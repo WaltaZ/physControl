@@ -194,19 +194,17 @@ namespace SIMPLEKernel {
 		const Vector<GeometryDim::D3> Vol_C{ C.volume };
 		const Vector<GeometryDim::D3> D_C = geomOp::hadDivision(Vol_C, V_matrix->A_C[C_id]);
 
-		for (size_t i = 0; i < p_matrix->A_F.length; i++)
+		for (size_t i = 0; i < A_F.length; i++)
 		{
-			const uint32_t f_id = C.cellFaceIDs[i];
-			const auto& f = mesh->faces[f_id];
+			uint32_t F_id = C.cellNeighbourCells[i];
 
-			if (f.isBoundary) { continue; }
+			uint32_t f_id = mesh->getCommonFaceId(C, i);
+			const auto& f = mesh->faces[f_id];
 
 			const VectorData<GeometryDim::D3> d_CF = f.getCellToNeighbourVector(C_id);
 
 			const double g_C = f.getWeightFactor(C_id);
 			const double g_F = 1 - g_C;
-
-			const uint32_t F_id = f.getNeighbourCellID(C_id);
 
 			const Vector<GeometryDim::D3> Vol_F{ mesh->cells[F_id].volume };
 			const Vector<GeometryDim::D3> D_F = geomOp::hadDivision(Vol_F, V_matrix->A_C[F_id]);
@@ -214,9 +212,7 @@ namespace SIMPLEKernel {
 
 			const Vector<GeometryDim::D3> S_f_prime = geomOp::hadProduct(D_f_bar, f.area.vector);
 
-			debug::printObj(S_f_prime);
-
-			double A_F_contribution = S_f_prime.getMagnitude() / d_CF.magnitude;
+			double A_F_contribution = -S_f_prime.getMagnitude() / d_CF.magnitude;
 
 			A_C_contribution -= A_F_contribution;
 
@@ -285,7 +281,7 @@ namespace SIMPLEKernel {
 
 		const Vector<GeometryDim::D3> D_C = geomOp::hadDivision(Vol_C, V_matrix->A_C[C_id]);
 		const Vector<GeometryDim::D3> D_F = geomOp::hadDivision(Vol_F, V_matrix->A_C[F_id]);
-		const Vector<GeometryDim::D3> D_f_bar = D_C * g_C + D_F * g_F;
+		const Vector<GeometryDim::D3> D_f_bar = (D_C * g_C) + (D_F * g_F);
 
 		const Vector<GeometryDim::D3> gradPCorr_f_bar =
 			(gradPCorr->values[C_id] * g_C)

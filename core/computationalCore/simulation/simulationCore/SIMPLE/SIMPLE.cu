@@ -98,10 +98,10 @@ void SIMPLE::nextStep()
 			);
 		cudaUtils::fetchError(cudaDeviceSynchronize);
 
-		//debug::printSolverMatrix(_pressureCorrSolver->matrix);
-
 		printf("Solving for pressure correction field\n");
 		_pressureCorrSolver->solve();
+
+		debug::printField(_pressureCorr);
 
 		printf("Calculating pressure correction gradient\n");
 		data.methods->gradient->compute(
@@ -133,6 +133,20 @@ void SIMPLE::nextStep()
 		cudaUtils::fetchError(cudaDeviceSynchronize);
 
 		_gradPressureCorr->moveTraceToNextStep();
+
+		// debug
+		/*for (size_t i = 0; i < data.mesh->cells.length; i++)
+		{
+			const auto& C = data.mesh->cells[i];
+
+			double sum = 0;
+
+			for (size_t j = 0; j < C.cellFaceIDs.length; j++)
+			{
+				sum += fields->massFlowRate->values[C.cellFaceIDs[j]];
+			}
+			printf("Cell: %d | Sum of all mass fluxes: %lf\n", i, sum);
+		}*/
 		printf("Iteration done!\n");
 	 }
 };

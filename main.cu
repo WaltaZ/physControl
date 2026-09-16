@@ -12,8 +12,10 @@
 #include <utility/debugUtils.h>
 #include <utility/cudaUtilsWithKernels.h>
 
+#define DEBUG
+
 int main() {
-	constexpr int amount = 4;
+	constexpr int amount = 10;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);

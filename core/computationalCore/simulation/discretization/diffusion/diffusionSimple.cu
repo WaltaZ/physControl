@@ -18,16 +18,16 @@ void DiffusionSimple::assembleInnerImpl(
 
 	if (C_id >= mesh->cells.length) { return; }
 
-	const auto& C = mesh->cells[C_id];
+	const Cell<MeshDim::D3>& C = mesh->cells[C_id];
 
 	Obj A_C_contribution{};
 
-	for (int i = 0; i < matrix->A_F[C_id].length; i++) {
-		const auto& F = mesh->cells[C.cellNeighbourCells[i]];
+	for (uint32_t i = 0; i < matrix->A_F[C_id].length; i++) {
+		uint32_t F_id = C.cellNeighbourCells[i];
+		const auto& F = mesh->cells[F_id];
 
-		const auto& face = mesh->faces[C.cellFaceIDs[i]];
-
-		if (face.isBoundary) { continue; }
+		uint32_t f_id = mesh->getCommonFaceId(C, i);
+		auto& face = mesh->faces[f_id];
 
 		Obj A_F_contribution{
 			- diffCoeff *

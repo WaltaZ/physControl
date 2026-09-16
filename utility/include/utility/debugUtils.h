@@ -117,7 +117,6 @@ namespace debug {
 
 	template<class Obj, class StoragePlace>
 	void printField(
-		const Mesh<MeshDim::D3>* mesh,
 		Field<Obj, StoragePlace>* field,
 		uint32_t t = 0
 	)
@@ -132,7 +131,6 @@ namespace debug {
 
 	template<class StoragePlace>
 	void printField(
-		const Mesh<MeshDim::D3>* mesh,
 		Field<MatrixTensor<GeometryDim::D3>, StoragePlace>* field,
 		uint32_t t = 0
 	)
@@ -147,11 +145,8 @@ namespace debug {
 
 		for (int C_id = 0; C_id < field->values.length; C_id++)
 		{
-			const auto& cell = mesh->cells[C_id];
-			const auto& p = cell.centroid;
 			const M& phi = values[C_id];
 
-			printf("Cell %d (%lf, %lf, %lf)\n", C_id, p.pos[0], p.pos[1], p.pos[2]);
 			printObj(phi);
 			printf("\n");
 		}

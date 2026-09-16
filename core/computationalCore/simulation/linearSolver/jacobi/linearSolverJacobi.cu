@@ -63,6 +63,7 @@ void LinearSolverJacobi<Obj>::solve() {
 		cudaUtils::fetchError(cudaDeviceSynchronize);
 
 		*normResidual = sqrt(*normResidual);
+		printf("[SOLVER RESIDUAL] %lf\n", *normResidual);
 
 		if (*normResidual < jacobiConfig::R_THRESHOLD) { break; }
 	}

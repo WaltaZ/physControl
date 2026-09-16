@@ -136,10 +136,29 @@ Mesh<dim>::Mesh(const MesherMesh<dim>& mesherMesh) {
 }
 
 template<MeshDim dim>
-__device__
-Face<dim>* Mesh<dim>::getCommonFace(const uint32_t C_id, const uint32_t F_id) 
+__device__ __host__
+uint32_t Mesh<dim>::getCommonFaceId(
+	const Cell<dim>& C,
+	const uint32_t C_neighbourCellIndex) const
 {
-	return nullptr;
+	uint32_t faceIDsLength = C.cellFaceIDs.length;
+
+	if(faceIDsLength == C.cellNeighbourCells.length) 
+	{
+		return C.cellFaceIDs[C_neighbourCellIndex];
+	}
+
+	uint32_t C_neighbourCellIndex_local = 0;
+	for (size_t i = 0; i < faceIDsLength; i++)
+	{
+		const Face<dim>& f = this->faces[C.cellFaceIDs[i]];
+		if (f.isBoundary == true) { continue; }
+		if (C_neighbourCellIndex == C_neighbourCellIndex_local)
+		{
+			return C.cellFaceIDs[i];
+		}
+		C_neighbourCellIndex_local++;
+	}
 };
 
 template class Mesh<MeshDim::D2>;
