@@ -16,7 +16,7 @@
 
 int main() {
 
-	constexpr int amount = 50;
+	constexpr int amount = 20;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);
