@@ -42,11 +42,11 @@ namespace SIMPLEKernel {
 			simConfig::DT
 		);
 
-		methods->sourceGravity->assembleInner(
+		/*methods->sourceGravity->assembleInner(
 			mesh,
 			matrix,
 			V({ 0, 0, -simConfig::G_CONSTANT })
-		);
+		);*/
 
 		/*methods->sourceBoussinesq->assembleInner(
 			mesh,
@@ -218,10 +218,10 @@ namespace SIMPLEKernel {
 
 			A_F[i] = A_F_contribution;
 
-			double massFlowRateValue = fields->massFlowRate->values[f_id];
+			double m_f = fields->massFlowRate->values[f_id];
 
-			//if (C_id == f.neighbourCellID) { massFlowRateValue = -massFlowRateValue; }
-			B_contribution -= massFlowRateValue;
+			if (C_id == f.neighbourCellID) { m_f = -m_f; }
+			B_contribution -= m_f;
 		}
 		B = B_contribution;
 		A_C = A_C_contribution;

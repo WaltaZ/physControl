@@ -47,7 +47,7 @@ void SIMPLE::nextStep()
 		printf("\n");
 	}*/
 
-	for (size_t iter = 0; iter < 1; iter++)
+	for (size_t iter = 0; iter < 15; iter++)
 	{
 		printf("\n===================== ITERATION %d =======================\n\n", iter);
 
@@ -97,6 +97,7 @@ void SIMPLE::nextStep()
 			_velocitySolver->matrix
 			);
 		cudaUtils::fetchError(cudaDeviceSynchronize);
+
 
 		printf("Solving for pressure correction field\n");
 		_pressureCorrSolver->solve();

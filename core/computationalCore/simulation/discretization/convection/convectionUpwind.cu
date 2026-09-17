@@ -18,23 +18,27 @@ __device__ void ConvectionUpwind::assembleInnerImpl(
 
 	const auto& C = mesh->cells[C_id];
 
+	auto& A_C = matrix->A_C[C_id];
+	auto& A_F = matrix->A_F[C_id];
+
 	Obj A_C_contribution{};
 
-	for (size_t i = 0; i < C.cellFaceIDs.length; i++)
+	for (size_t i = 0; i < A_F.length; i++)
 	{
-		uint32_t f_id = C.cellFaceIDs[i];
+		uint32_t f_id = mesh->getCommonFaceId(C, i);
 		const auto& f = mesh->faces[f_id];
 
 		if (f.isBoundary) { continue; }
 
 		double m_f = massFlowRateField->values[f_id];
+		if (C_id == f.ownerCellID) { m_f = -m_f; }
 
 		// Page 410 from the book
-		matrix->A_F[C_id][i] += Obj{ -std::max(-m_f, 0.0) };
+		A_F[i] -= Obj{ std::max(-m_f, 0.0) };
 		A_C_contribution += Obj{ std::max(m_f, 0.0) };
 	}
 
-	matrix->A_C[C_id] += A_C_contribution;
+	A_C += A_C_contribution;
 
 	// No B contribution
 };

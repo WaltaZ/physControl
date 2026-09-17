@@ -15,7 +15,7 @@
 #define DEBUG
 
 int main() {
-	constexpr int amount = 10;
+	constexpr int amount = 50;
 
 	Cuboid box = Cuboid(5, 4, 2);
 	ProblemGeometryCuboid problemGeometry(box);

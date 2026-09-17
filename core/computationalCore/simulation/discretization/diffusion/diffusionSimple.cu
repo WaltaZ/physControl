@@ -27,15 +27,17 @@ void DiffusionSimple::assembleInnerImpl(
 		const auto& F = mesh->cells[F_id];
 
 		uint32_t f_id = mesh->getCommonFaceId(C, i);
-		auto& face = mesh->faces[f_id];
+		auto& f = mesh->faces[f_id];
 
 		Obj A_F_contribution{
 			- diffCoeff *
-			face.getArea(C_id).magnitude /
-			face.getCellData(C_id).centroidToFace.magnitude
+			(
+				f.getArea(C_id).magnitude 
+				/ f.getCellToNeighbourVector(C_id).magnitude
+			)
 		};
 
-		A_C_contribution += -A_F_contribution;
+		A_C_contribution -= A_F_contribution;
 
 		matrix->A_F[C_id][i] += A_F_contribution;
 	}
@@ -136,7 +138,7 @@ void DiffusionSimple::assembleBoundariesImpl(
 			f.area.magnitude;
 
 			A_C_contribution = Obj{ Req };
-			B_contribution = -Req * phi_b;
+			B_contribution = Req * phi_b;
 			break;
 
 		default:

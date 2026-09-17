@@ -15,9 +15,9 @@ namespace relaxation {
 
 		auto& A_C = matrix->A_C[C_id];
 		auto& B = matrix->B[C_id];
-		const auto& phi = field->values[C_id];
+		const auto& phi_old = field->pastValues[0][C_id];
 
-		B += ((1 - relaxCoeff) / relaxCoeff) * geomOp::hadProduct(A_C, phi);
+		B += ((1 - relaxCoeff) / relaxCoeff) * geomOp::hadProduct(A_C, phi_old);
 		A_C /= relaxCoeff;
 	};
 
