@@ -29,6 +29,12 @@ struct VectorData {
 };
 
 template<GeometryDim dim>
+void to_json(nlohmann::json& j, const VectorData<dim>& vectorData);
+
+template<GeometryDim dim>
+void from_json(const nlohmann::json& j, VectorData<dim>& vectorData);
+
+template<GeometryDim dim>
 struct CellData {
 
 	using V = VectorData<dim>;
@@ -37,3 +43,9 @@ struct CellData {
 	std::optional<V> Ef = std::nullopt;
 	std::optional<V> Tf = std::nullopt;
 };
+
+template<GeometryDim dim>
+void to_json(nlohmann::json& j, const CellData<dim>& cellData);
+
+template<GeometryDim dim>
+void from_json(const nlohmann::json& j, CellData<dim>& cellData);

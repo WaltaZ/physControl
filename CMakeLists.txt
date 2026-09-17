@@ -32,6 +32,7 @@ project (${PROJECT_NAME} LANGUAGES CXX CUDA)
 add_executable(${PROJECT_NAME} "main.cu")
 
 find_Package(CUDAToolkit)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 set_target_properties(
 	${PROJECT_NAME}

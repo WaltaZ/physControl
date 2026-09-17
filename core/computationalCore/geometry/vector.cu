@@ -70,3 +70,23 @@ void Vector<dim>::flip()
 
 template class Vector<GeometryDim::D2>;
 template class Vector<GeometryDim::D3>;
+
+template<GeometryDim dim>
+void to_json(nlohmann::json& json, const Vector<dim>& vec)
+{
+	json = {
+		{"comp", vec.comp}
+	};
+}
+
+template void to_json(nlohmann::json& json, const Vector<GeometryDim::D2>& vec);
+template void to_json(nlohmann::json& json, const Vector<GeometryDim::D3>& vec);
+
+template<GeometryDim dim>
+void from_json(const nlohmann::json& json, Vector<dim>& vec)
+{
+	json.at("comp").get_to(vec.comp);
+}
+
+template void from_json(const nlohmann::json& json, Vector<GeometryDim::D2>& vec);
+template void from_json(const nlohmann::json& json, Vector<GeometryDim::D3>& vec);

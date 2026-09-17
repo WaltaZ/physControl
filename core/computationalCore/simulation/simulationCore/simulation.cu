@@ -17,14 +17,17 @@ HeatTransferSimulationD3::HeatTransferSimulationD3(
 
 	_simple(data)
 {
-	problem.fields->velocity->initPastTrace(1);
-
-	problem.fields->gradPressure->initPastTrace(1);
-
-	problem.fields->temperature->initPastTrace(1);
+	data.problem.fields->velocity->initPastTrace(1);
+	data.problem.fields->gradPressure->initPastTrace(1);
+	data.problem.fields->temperature->initPastTrace(1);
+	data.problem.fields->gradPressure->initPastTrace(1);
 }
 
 void HeatTransferSimulationD3::nextStep()
 {
 	_simple.nextStep();
+	data.problem.fields->velocity->moveTraceToNextStep();
+	data.problem.fields->temperature->moveTraceToNextStep();
+	data.problem.fields->gradTemperature->moveTraceToNextStep();
+	data.problem.fields->gradPressure->moveTraceToNextStep();
 }

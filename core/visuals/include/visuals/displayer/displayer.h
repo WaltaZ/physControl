@@ -3,7 +3,7 @@
 #include <visuals/adapters.h>
 #include <visuals/displayer/scenes/scene.h>
 #include <visuals/displayer/customInteractorStyle.h>
-#include <mesh/mesh.h>
+#include <mesh/meshElements/mesh.h>
 
 #include <vtkActor.h>
 #include <vtkActorCollection.h>

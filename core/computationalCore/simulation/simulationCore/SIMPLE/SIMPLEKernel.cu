@@ -42,11 +42,11 @@ namespace SIMPLEKernel {
 			simConfig::DT
 		);
 
-		/*methods->sourceGravity->assembleInner(
+		methods->sourceGravity->assembleInner(
 			mesh,
 			matrix,
 			V({ 0, 0, -simConfig::G_CONSTANT })
-		);*/
+		);
 
 		/*methods->sourceBoussinesq->assembleInner(
 			mesh,

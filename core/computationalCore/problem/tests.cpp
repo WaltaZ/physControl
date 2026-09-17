@@ -52,7 +52,7 @@ namespace fieldTests {
 			const double u = ky * sx * sx * sin(2.0 * ky * c.pos[1]);
 			const double v = -kx * sin(2.0 * kx * c.pos[0]) * sy * sy;
 
-			field->values[i] = V({ u, v, 0 }) * 0.3;
+			field->values[i] = V({ u, v, 0 }) * 0.65;
 		}
 	}
 }

@@ -157,12 +157,11 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 
 	// Set up boundary conditions for the mesher
 
-	std::vector<MesherBoundaryCondition> mesherBC{};
-	std::vector<MesherBoundaryConditionRaw> mesherBCDefault(problem.boundaryConditions.size());
+	mesh.boundaryConditionsDefault = std::vector<MesherBoundaryConditionRaw>(problem.boundaryConditions.size());
 
 	for(auto& bcVariable : problem.boundaryConditions)
 	for (auto& bc : bcVariable) {
-		mesherBC.emplace_back(_getMesherBCFromSurface(bc.geometry));
+		mesh.boundaryConditions.emplace_back(_getMesherBCFromSurface(bc.geometry));
 	}
 
 	// Patch the divisions for the boundaries to stick to the nodes:
@@ -173,7 +172,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 		v.erase(it, v.end());
 	};
 
-	if (!mesherBC.empty()) {
+	if (!mesh.boundaryConditions.empty()) {
 		std::array<std::vector<double>, 3> divisionPatches;
 
 		for (int dim = 0; dim < 3; dim++) {
@@ -181,7 +180,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 			std::vector<int> indices = { 0, 1, 2 };
 			indices.erase(indices.begin() + dim);
 
-				for (const auto& bc : mesherBC) {
+				for (const auto& bc : mesh.boundaryConditions) {
 					if (bc.face == Cuboid::faceOrder[2 * dim] || bc.face == Cuboid::faceOrder[2 * dim + 1]) {
 						for (int i = 0; i < 2; i++) {
 							for (int j = 0; j < 2; j++) {
@@ -418,7 +417,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 
 								for (int k = 0; k < problem.boundaryConditions[j].size(); k++) {
 
-									if (Cuboid::faceOrder[i] == mesherBC[mesherBCIndex].face) {
+									if (Cuboid::faceOrder[i] == mesh.boundaryConditions[mesherBCIndex].face) {
 
 										const std::array<double, 3>& p1 = mesh.nodes[pointIDs[0]].pos;
 										const std::array<double, 3>& p2 = mesh.nodes[pointIDs[2]].pos;
@@ -437,8 +436,8 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 
 										for (int l = 0; l < 2; l++) {
 											for (int m = 0; m < 2; m++) {
-												if (!(p[l][indices[m]] >= mesherBC[mesherBCIndex].range[m][0] && 
-													p[l][indices[m]] <= mesherBC[mesherBCIndex].range[m][1])) {
+												if (!(p[l][indices[m]] >= mesh.boundaryConditions[mesherBCIndex].range[m][0] &&
+													p[l][indices[m]] <= mesh.boundaryConditions[mesherBCIndex].range[m][1])) {
 													isInsideBoundaryGeometry = false;
 													break;
 												};
@@ -447,7 +446,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 										}
 
 										if (isInsideBoundaryGeometry) {
-											mesherBC[mesherBCIndex].faceIDs.emplace_back(newFaceID);
+											mesh.boundaryConditions[mesherBCIndex].faceIDs.emplace_back(newFaceID);
 											isDefaultBC = false;
 										}
 									}
@@ -457,7 +456,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 								}
 
 								if (isDefaultBC) {
-									mesherBCDefault[j].faceIDs.emplace_back(newFaceID);
+									mesh.boundaryConditionsDefault[j].faceIDs.emplace_back(newFaceID);
 								}
 
 							}
@@ -553,7 +552,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 		}
 	}
 
-	problem.initBoundaryPatches(mesherBC, mesherBCDefault);
+	problem.initBoundaryPatches(mesh.boundaryConditions, mesh.boundaryConditionsDefault);
 
 	// debug
 	/*for (size_t i = 0; i < mesh.cells.size(); i++)
@@ -567,5 +566,26 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 		printf("\n");
 	}*/
 
+	/*nlohmann::json j = mesh;
+	std::ofstream file("mesh.json");
+
+	file << j.dump();
+	file.close();*/
+
  	return cudaUtils::create<Mesh<MeshDim::D3>>(mesh);
 };
+
+Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::readMesh(const std::string& fileName)
+{
+	std::ifstream file(fileName);
+
+	nlohmann::json j;
+
+	file >> j;
+
+	MesherMesh<MeshDim::D3> mesh = j.get<MesherMesh<MeshDim::D3>>();
+
+	problem.initBoundaryPatches(mesh.boundaryConditions, mesh.boundaryConditionsDefault);
+
+	return cudaUtils::create<Mesh<MeshDim::D3>>(mesh);
+}

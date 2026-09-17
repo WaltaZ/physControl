@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mesh/mesh.h>
+#include <mesh/meshElements/mesh.h>
 
 #include <vtkPoints.h>
 #include <vtkNew.h>

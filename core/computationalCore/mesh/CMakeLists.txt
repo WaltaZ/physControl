@@ -1,5 +1,4 @@
 set(meshHppFiles
-	"include/mesh/mesh.h"
 	"include/mesh/meshEnums.h"
 	"include/mesh/meshElements/mesh.h"
 	"include/mesh/meshElements/tests.h"
@@ -30,4 +29,10 @@ add_library(mesh
 )
 
 target_include_directories(mesh PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(mesh geometry problem utility CUDA::cudart)
+target_link_libraries(mesh 
+	geometry 
+	problem 
+	utility 
+	CUDA::cudart
+	nlohmann_json::nlohmann_json
+)

@@ -5,14 +5,27 @@
 
 #include <vector>
 #include <geometry/geometry.h>
+#include <nlohmann/json.hpp>
+
+// ------------------------------------ NODE ---------------------------------------
 
 template <MeshDim dim>
 struct MesherNode {
 	std::array<double, meshDimSize(dim)> pos;
 
+	MesherNode() = default;
+
 	MesherNode(const std::array<double, meshDimSize(dim)>& pos);
 	MesherNode(const Point<mesh2geom(dim)>& point);
 };
+
+template<MeshDim dim>
+void to_json(nlohmann::json& j, const MesherNode<dim>& node);
+
+template<MeshDim dim>
+void from_json(const nlohmann::json& j, MesherNode<dim>& node);
+
+// ------------------------------------ FACE ---------------------------------------
 
 template<MeshDim dim>
 struct MesherFace {
@@ -35,6 +48,14 @@ struct MesherFace {
 };
 
 template<MeshDim dim>
+void to_json(nlohmann::json& json, const MesherFace<dim>& face);
+
+template<MeshDim dim>
+void from_json(const nlohmann::json& json, MesherFace<dim>& face);
+
+// ------------------------------------ CELL --------------------------------------
+
+template<MeshDim dim>
 class MesherCell {
 private:
 	using P = Point<mesh2geom(dim)>;
@@ -48,22 +69,49 @@ public:
 };
 
 template<MeshDim dim>
-struct MesherMesh {
-	std::vector<MesherNode<dim>> nodes{};
-	std::vector<MesherFace<dim>> faces{};
-	std::vector<MesherCell<dim>> cells{};
-};
+void to_json(nlohmann::json& json, const MesherCell<dim>& cell);
+
+template<MeshDim dim>
+void from_json(const nlohmann::json& json, MesherCell<dim>& cell);
+
+// ----------------------------- Boundary Conditions ----------------------------
 
 struct MesherBoundaryConditionRaw {
 	std::vector<uint32_t> faceIDs{};
 };
 
+void to_json(nlohmann::json& j, const MesherBoundaryConditionRaw& bc);
+void from_json(const nlohmann::json& j, MesherBoundaryConditionRaw& bc);
+
 struct MesherBoundaryCondition : public MesherBoundaryConditionRaw {
 	Cuboid::FaceType face;
 	std::array<std::array<double, 2>, 2> range;
+
+	MesherBoundaryCondition() = default;
 
 	MesherBoundaryCondition(
 		const Cuboid::FaceType face,
 		const std::array<std::array<double, 2>, 2> range
 	);
 };
+
+void to_json(nlohmann::json& j, const MesherBoundaryCondition& bc);
+void from_json(const nlohmann::json& j, MesherBoundaryCondition& bc);
+
+// ------------------------------------ MESH -------------------------------------
+
+template<MeshDim dim>
+struct MesherMesh {
+	std::vector<MesherNode<dim>> nodes{};
+	std::vector<MesherFace<dim>> faces{};
+	std::vector<MesherCell<dim>> cells{};
+
+	std::vector<MesherBoundaryCondition> boundaryConditions{};
+	std::vector<MesherBoundaryConditionRaw> boundaryConditionsDefault{};
+};
+
+template<MeshDim dim>
+void to_json(nlohmann::json& json, const MesherMesh<dim>& mesh);
+
+template<MeshDim dim>
+void from_json(const nlohmann::json& json, MesherMesh<dim>& mesh);

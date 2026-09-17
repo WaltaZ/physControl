@@ -3,6 +3,7 @@
 #include "geometryEnums.h"
 
 #include <array>
+#include <nlohmann/json.hpp>
 
 template <GeometryDim dim>
 class Point {
@@ -23,3 +24,9 @@ public:
 
 	bool operator==(const Point<dim>& point) const;
 };
+
+template<GeometryDim dim>
+void to_json(nlohmann::json& json, const Point<dim>& point);
+
+template<GeometryDim dim>
+void from_json(const nlohmann::json& json, Point<dim>& point);

@@ -11,6 +11,9 @@
 #include <geometry/shapes/rectangle.h>
 #include <algorithm>
 
+#include <nlohmann/json.hpp>
+#include <fstream>
+
 template<MeshDim>
 class _CartesianMesher {};
 
@@ -55,4 +58,6 @@ public:
 	void setDivisionPattern(const std::vector<double>& divisionPattern, int index);
 
 	Mesh<MeshDim::D3>* generateMesh();
+
+	Mesh<MeshDim::D3>* readMesh(const std::string& fileName);
 };

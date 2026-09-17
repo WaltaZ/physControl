@@ -43,3 +43,9 @@ public:
 	__host__ __device__ 
 	void flip();
 };
+
+template<GeometryDim dim>
+void to_json(nlohmann::json& json, const Vector<dim>& vec);
+
+template<GeometryDim dim>
+void from_json(const nlohmann::json& json, Vector<dim>& vec);

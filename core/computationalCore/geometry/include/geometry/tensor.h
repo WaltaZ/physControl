@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cuda_runtime.h>
+#include <nlohmann/json.hpp>
 
 template<typename Derived, GeometryDim dim, int rank>
 class Tensor {

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <geometry/geometry.h>
-#include <mesh/mesh.h>
+#include <mesh/meshElements/mesh.h>
+#include <mesh/meshers/cartesianMesher/cartesianMesher.h>
 #include <problem/problem.h>
 #include <problem/tests.h>
 #include <visuals/displayer/displayer.h>
@@ -11,10 +12,10 @@
 
 #include <utility/debugUtils.h>
 #include <utility/cudaUtilsWithKernels.h>
-
-#define DEBUG
+#include <nlohmann/json.hpp>
 
 int main() {
+
 	constexpr int amount = 50;
 
 	Cuboid box = Cuboid(5, 4, 2);
@@ -43,8 +44,8 @@ int main() {
 		)
 	);
 	
-	//problem.addTemperatureBoundaryCondition(test1);
-	//problem.addTemperatureBoundaryCondition(test2);
+	problem.addTemperatureBoundaryCondition(test1);
+	problem.addTemperatureBoundaryCondition(test2);
 
 	std::vector<double> division(amount + 1);
 

@@ -12,6 +12,10 @@ enum class BoundaryConditionType {
 	NoSlip
 };
 
+std::string getBoundaryConditionType(BoundaryConditionType type);
+
+BoundaryConditionType getBoundaryConditionType(const std::string& type);
+
 struct BoundaryConditionD3Raw {
 
 	BoundaryConditionType type;
