@@ -5,9 +5,13 @@
 #include <type_traits>
 #include <cuda_runtime.h>
 
+#include <mesh/meshElements/meshElements.h>
+
 template<class Data, class StoragePlace>
 struct Field {
 public:
+    const std::string name;
+
     CudaPackedArray<Data> values;
 
     double maxValue;
@@ -22,7 +26,10 @@ public:
     CudaPackedArray<uint32_t> bpFaceIDs;
     CudaPackedArray<double> bpValues;
 
-    Field(const Data& obj = Data());
+    Field(
+        const std::string& name, 
+        const Data& obj = Data()
+    );
     
     bool isInitilized();
 
@@ -46,6 +53,9 @@ public:
 
     __host__ __device__
     uint32_t getLength() const;
+
+    void saveBoundaryPatches(const std::string& path);
+    void loadBoundaryPatches(const std::string& path);
 
 private:
     CudaPackedArray<Data> _pastValuesAll;

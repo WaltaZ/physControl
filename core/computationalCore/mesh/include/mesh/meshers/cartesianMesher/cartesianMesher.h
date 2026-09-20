@@ -58,6 +58,4 @@ public:
 	void setDivisionPattern(const std::vector<double>& divisionPattern, int index);
 
 	Mesh<MeshDim::D3>* generateMesh();
-
-	Mesh<MeshDim::D3>* readMesh(const std::string& fileName);
 };

@@ -4,6 +4,8 @@ set(utilityHppFiles
 	"include/utility/cudaUtils.h"
 	"include/utility/cudaUtilsWithKernels.h"
 	"include/utility/debugUtils.h"
+	"include/utility/staticString.h"
+	"include/utility/logger.h"
 )
 
 set(utilityCppFiles
@@ -11,6 +13,7 @@ set(utilityCppFiles
 	"cudaUtils.cu"
 	"utility.cpp"
 	"debugUtils.cpp"
+	"logger.cpp"
 )
 
 add_library(utility STATIC

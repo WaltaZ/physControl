@@ -1,11 +1,12 @@
 #include <problem/field/field.h>
-#include "fieldKernel.cu"
 
-#include <mesh/meshElements/meshElements.h>
+#include "fieldKernel.cu"
 #include <limits.h>
 
 template<class Data, class StoragePlace>
-Field<Data, StoragePlace>::Field(const Data& obj) : initialObj(obj) {};
+Field<Data, StoragePlace>::Field(
+    const std::string& name,
+    const Data& obj) : name(name), initialObj(obj) {};
 
 template<class Data, class StoragePlace>
 bool Field<Data, StoragePlace>::isInitilized() 

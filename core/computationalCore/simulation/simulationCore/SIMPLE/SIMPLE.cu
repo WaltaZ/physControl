@@ -5,10 +5,14 @@
 SIMPLE::SIMPLE(const SimulationData& data) : 
 	data(data),
 	_pressureCorr(
-		cudaUtils::create<Field<double, Cell<MeshDim::D3>>>()
+		cudaUtils::create<Field<double, Cell<MeshDim::D3>>>(
+			"pressureCorr"
+		)
 	),
 	_gradPressureCorr(
-		cudaUtils::create<Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>>()
+		cudaUtils::create<Field<Vector<GeometryDim::D3>, Cell<MeshDim::D3>>>(
+			"gradPressureCorr"
+		)
 	)
 {
 	auto& fields = data.problem.fields;

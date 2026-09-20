@@ -14,5 +14,7 @@ struct Node {
 	Node(const std::array<double, meshDimSize(dim)>& pos);
 	Node(const Point<mesh2geom(dim)>& point);
 	Node(const MesherNode<dim>& mesherNode);
+
+	__host__ __device__
 	Node();
 };

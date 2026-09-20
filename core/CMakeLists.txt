@@ -1,2 +1,3 @@
 add_subdirectory(computationalCore)
 add_subdirectory(visuals)
+add_subdirectory(fileStream)

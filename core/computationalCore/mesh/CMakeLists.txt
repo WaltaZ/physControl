@@ -16,6 +16,7 @@ set(meshCppFiles
 	"meshers/cartesianMesher/cartesianMesher.cpp"
 	"meshElements/face.cu"
 	"meshElements/mesh.cu"
+	"meshElements/meshFile.cu"
 	"meshElements/node.cpp"
 	"meshElements/tests.cpp"
 	"meshElements/supportStructs.cu"
@@ -33,6 +34,7 @@ target_link_libraries(mesh
 	geometry 
 	problem 
 	utility 
+	fileStream
 	CUDA::cudart
 	nlohmann_json::nlohmann_json
 )

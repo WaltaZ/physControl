@@ -15,6 +15,8 @@ private:
 	using V = VectorData<mesh2geom(dim)>;
 public:
 
+    Cell() = default;
+
     Cell(
         const MesherCell<dim>& mesherCell,
         const CudaArray<uint32_t>& cellNodeIDs,

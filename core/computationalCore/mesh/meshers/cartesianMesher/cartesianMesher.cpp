@@ -554,38 +554,5 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 
 	problem.initBoundaryPatches(mesh.boundaryConditions, mesh.boundaryConditionsDefault);
 
-	// debug
-	/*for (size_t i = 0; i < mesh.cells.size(); i++)
-	{
-		auto& cell = mesh.cells[i];
-		printf("Cell %d | Neighbours: ", i);
-		for (size_t j = 0; j < cell.neighbourCellsIDs.size(); j++)
-		{
-			printf("%d, ", cell.neighbourCellsIDs[j]);
-		}
-		printf("\n");
-	}*/
-
-	/*nlohmann::json j = mesh;
-	std::ofstream file("mesh.json");
-
-	file << j.dump();
-	file.close();*/
-
  	return cudaUtils::create<Mesh<MeshDim::D3>>(mesh);
 };
-
-Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::readMesh(const std::string& fileName)
-{
-	std::ifstream file(fileName);
-
-	nlohmann::json j;
-
-	file >> j;
-
-	MesherMesh<MeshDim::D3> mesh = j.get<MesherMesh<MeshDim::D3>>();
-
-	problem.initBoundaryPatches(mesh.boundaryConditions, mesh.boundaryConditionsDefault);
-
-	return cudaUtils::create<Mesh<MeshDim::D3>>(mesh);
-}

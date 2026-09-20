@@ -61,8 +61,11 @@ namespace cudaUtils {
 template<typename T>
 class CudaArray {
 public:
-	uint32_t offset;
-	uint32_t length;
+	uint32_t offset = 0;
+	uint32_t length = 0;
+
+	__host__ __device__
+	CudaArray() = default;
 
 	__host__ __device__
 	CudaArray(T* data, uint32_t offset, uint32_t length) : 
@@ -90,6 +93,10 @@ public:
 
 	__host__ __device__ const T* getData() const {
 		return (data + offset);
+	}
+
+	__host__ __device__ void setDataSource(T* data) {
+		this->data = data;
 	}
 
 private:
@@ -127,6 +134,10 @@ public:
 	__host__ __device__ const T* getData() const {
 		return data;
 	}
+
+	__host__ __device__ void setDataPointer(T* data) {
+		this->data = data;
+	};
 
 	~CudaPackedArray() {
 		if (data != nullptr) {

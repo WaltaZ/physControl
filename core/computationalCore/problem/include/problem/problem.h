@@ -10,6 +10,8 @@
 #include <utility/cudaUtils.h>
 #include <vector>
 
+#include <fileStream/path.h>
+
 class ProblemD3 {
 public:
 	ProblemGeometryD3 geometry;
@@ -35,27 +37,34 @@ private:
 	using F = Face<geom2mesh(GeometryDim::D3)>;
 public:
 	Field<V, C>* velocity = cudaUtils::create<Field<V, C>>(
+		std::string("velocity"),
 		V({0, 0, 0})
 	);
 	Field<M, C>* gradVelocity = cudaUtils::create<Field<M, C>>(
+		std::string("gradVelocity"),
 		M({
 			0, 0, 0,
 			0, 0, 0, 
 			0, 0, 0
 		}));
 	Field<double, C>* temperature = cudaUtils::create<Field<double, C>>(
+		std::string("temperature"),
 		298
 	);
 	Field<V, C>* gradTemperature = cudaUtils::create<Field<V, C>>(
+		std::string("gradTemperature"),
 		V({ 0, 0, 0 })
 	);
 	Field<double, F>* massFlowRate = cudaUtils::create<Field<double, F>>(
-		0
+		std::string("massFlowRate"),
+		0.0
 	);
 	Field<double, C>* pressure = cudaUtils::create<Field<double, C>>(
+		std::string("pressure"),
 		0.8305e5
 	);
 	Field<V, C>* gradPressure = cudaUtils::create<Field<V, C>>(
+		std::string("gradPressure"),
 		V({ 0, 0, 0 })
 	);
 };
@@ -83,4 +92,7 @@ public:
 	void addVelocityInitialCondition(const Vector<GeometryDim::D3>& ic);
 
 	void addTemperatureInitialCondition(const double& ic);
+
+	void saveBoundaryPatches(const std::string& path = path::parse({ path::CACHE_DIR, "boundaryPatches" }));
+	void loadBoundaryPatches(const std::string& path = path::parse({ path::CACHE_DIR, "boundaryPatches" }));
 };

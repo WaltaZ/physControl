@@ -12,7 +12,7 @@
 
 #include <utility/debugUtils.h>
 #include <utility/cudaUtilsWithKernels.h>
-#include <nlohmann/json.hpp>
+#include <fstream>
 
 int main() {
 
@@ -22,7 +22,7 @@ int main() {
 	ProblemGeometryCuboid problemGeometry(box);
 
 	HeatTransferProblemD3 problem = HeatTransferProblemD3(problemGeometry);
-	BoundaryConditionD3 test1(
+	/*BoundaryConditionD3 test1(
 		BoundaryConditionType::Drichlet,
 		{300},
 		RectangleD3(
@@ -55,13 +55,20 @@ int main() {
 
 	CartesianMesher<MeshDim::D3> mesher(problem, problemGeometry, { amount, (amount), (amount)});
 
-	Mesh<MeshDim::D3>* mesh = mesher.generateMesh();
+	Mesh<MeshDim::D3>* mesh = mesher.generateMesh();*/
+	
+	Mesh<MeshDim::D3>* mesh = Mesh<MeshDim::D3>::load();
+	problem.loadBoundaryPatches();
+
 	problem.initFields(mesh);
 
 	fieldTests::setUpRadialField(problem.fields->temperature, mesh, box.getCentroid(), 293);
 	fieldTests::setUpCurlyField(problem.fields->velocity, mesh, box.getCentroid(), 5.0, 4.0);
 
 	// ------------ Discretization terms -------------
+
+	using V = Vector<GeometryDim::D3>;
+	using C = Cell<MeshDim::D3>;
 
 	HeatTransferSimulationD3 simulation(
 		problem, 

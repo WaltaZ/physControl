@@ -14,10 +14,13 @@ protected:
 	using P = Point<mesh2geom(dim)>;
 public:
 
+	Face() = default;
+
 	Face(
 		const MesherFace<dim>& mesherFace,
 		const CudaArray<uint32_t>& faceNodeIDs
 	);
+
 
 	V area;
 	P centroid;
