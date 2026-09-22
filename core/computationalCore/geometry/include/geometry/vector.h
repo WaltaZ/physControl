@@ -1,7 +1,7 @@
 #pragma once
 
 #include "geometryEnums.h"
-#include "point.h"
+#include "shapes/basic/point.h"
 #include "tensor.h"
 #include "matrixTensor.h"
 

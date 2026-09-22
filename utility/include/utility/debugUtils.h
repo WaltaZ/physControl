@@ -6,14 +6,6 @@
 
 #include <string>
 
-class Printer {
-	
-	char buf[1024];
-
-public:
-
-};
-
 namespace debug {
 
 	template<class Obj>

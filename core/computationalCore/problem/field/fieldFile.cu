@@ -24,7 +24,7 @@ void Field<Data, StoragePlace>::saveBoundaryPatches(const std::string& path)
 {
 	if (boundaryPatches.length == 0) { return; }
 
-	std::string fileName = name + "_BPs.bin";
+	const std::string fileName = name + "_BPs.bin";
 
 	BinWriter bpFile({ path, fileName });
 
@@ -44,35 +44,36 @@ void Field<Data, StoragePlace>::loadBoundaryPatches(const std::string& path)
 {
 	if (boundaryPatches.length != 0) { return; }
 
-	std::string fileName = name + "_BPs.bin";
+	const std::string fileName = name + "_BPs.bin";
+
+	BinReader bpFile{ path, fileName, false };
 
 	try {
-		
-		BinReader bpFile({ path, fileName });
+		bpFile.open();
+	}
+	catch (...) { return; }
 
-		bpFile.read(&bpFaceIDs);
-		cudaMallocManaged(bpFaceIDs.getDataPointer(), bpFaceIDs.length * sizeof(uint32_t));
-		bpFile.readArray(bpFaceIDs.getData(), bpFaceIDs.length);
+	bpFile.read(&bpFaceIDs);
+	cudaMallocManaged(bpFaceIDs.getDataPointer(), bpFaceIDs.length * sizeof(uint32_t));
+	bpFile.readArray(bpFaceIDs.getData(), bpFaceIDs.length);
 
-		bpFile.read(&bpValues);
-		cudaMallocManaged(bpValues.getDataPointer(), bpValues.length * sizeof(double));
-		bpFile.readArray(bpValues.getData(), bpValues.length);
+	bpFile.read(&bpValues);
+	cudaMallocManaged(bpValues.getDataPointer(), bpValues.length * sizeof(double));
+	bpFile.readArray(bpValues.getData(), bpValues.length);
 
-		bpFile.read(&boundaryPatches);
-		cudaMallocManaged(
-			boundaryPatches.getDataPointer(), 
-			boundaryPatches.length * sizeof(BoundaryPatch));
-		bpFile.readArray(boundaryPatches.getData(), boundaryPatches.length);
+	bpFile.read(&boundaryPatches);
+	cudaMallocManaged(
+		boundaryPatches.getDataPointer(), 
+		boundaryPatches.length * sizeof(BoundaryPatch));
+	bpFile.readArray(boundaryPatches.getData(), boundaryPatches.length);
 
-		KernelArgs args = cudaUtils::getKernelArgs(boundaryPatches.length);
-		fieldFileKernel::setBoundaryPatchesPointers <<< args.blocks, args.threads >>> (
-			boundaryPatches,
-			bpFaceIDs.getData(),
-			bpValues.getData()
-		);
-		cudaUtils::fetchError(cudaDeviceSynchronize);
-
-	} catch(...) {}
+	KernelArgs args = cudaUtils::getKernelArgs(boundaryPatches.length);
+	fieldFileKernel::setBoundaryPatchesPointers <<< args.blocks, args.threads >>> (
+		boundaryPatches,
+		bpFaceIDs.getData(),
+		bpValues.getData()
+	);
+	cudaUtils::fetchError(cudaDeviceSynchronize);
 };
 
 

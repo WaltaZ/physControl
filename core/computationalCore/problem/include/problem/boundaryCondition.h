@@ -21,8 +21,6 @@ struct BoundaryConditionD3Raw {
 	BoundaryConditionType type;
 	const std::vector<double> values;
 
-	std::vector<uint32_t> faceIDs = {};
-
 	BoundaryConditionD3Raw(
 		const BoundaryConditionType& type,
 		const std::vector<double>& values

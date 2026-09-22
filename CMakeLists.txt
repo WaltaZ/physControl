@@ -41,14 +41,10 @@ set_target_properties(
 )
 
 #physControl
+add_subdirectory(app)
 add_subdirectory(core)
 add_subdirectory(utility)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-	geometry
-	mesh
-	problem
-	simulation
-	visuals
-	utility
+	app
 )

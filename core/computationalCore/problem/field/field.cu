@@ -126,7 +126,8 @@ void Field<Data, StoragePlace>::initBoundaryPatches(
                 this->bpValues.getData(),
                 valuesOffset[i],
                 static_cast<uint32_t>(boundaryPatches[i].values.size())
-            )
+            ),
+            boundaryPatches[i].isDefault
         };
     }
 

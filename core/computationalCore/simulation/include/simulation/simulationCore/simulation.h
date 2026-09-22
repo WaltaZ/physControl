@@ -14,7 +14,7 @@ public:
 	SimulationData data;
 
 	HeatTransferSimulationD3(
-		HeatTransferProblemD3& problem,
+		HeatTransferProblemD3* problem,
 		const Mesh<MeshDim::D3>* mesh,
 		HeatTransferSimulationMethods&& methods
 	);

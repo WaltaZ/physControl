@@ -1,12 +1,10 @@
 #include "include/problem/problem.h"
 
 ProblemD3::ProblemD3(
-	const ProblemGeometryD3& geometry) : geometry(geometry) {
+	const Volume& geometry) : geometry(geometry) {
 }
 
-HeatTransferProblemD3::HeatTransferProblemD3(
-	const ProblemGeometryD3& geometry) : 
-	ProblemD3(geometry)
+void HeatTransferProblemD3::_initDefault()
 {
 	fields = cudaUtils::create<HeatTransferFieldsD3>();
 	boundaryConditions = std::vector<std::vector<BoundaryConditionD3>>{ 2 };
@@ -15,6 +13,19 @@ HeatTransferProblemD3::HeatTransferProblemD3(
 		BoundaryConditionD3Raw(BoundaryConditionType::Mixed, {283, 0.01, 0.0264}) // [K], [W/(m^2 * K)] (convection coeff), thermal conductivity (gamma)
 	};
 }
+
+HeatTransferProblemD3::HeatTransferProblemD3(
+	const Volume& geometry) : 
+	ProblemD3(geometry)
+{
+	_initDefault();
+}
+
+HeatTransferProblemD3::HeatTransferProblemD3() : ProblemD3() 
+{
+	_initDefault();
+};
+
 void HeatTransferProblemD3::initBoundaryPatches(
 	const std::vector<MesherBoundaryCondition>& mesherBC,
 	const std::vector<MesherBoundaryConditionRaw>& mesherBCDefault)
@@ -39,7 +50,8 @@ void HeatTransferProblemD3::initBoundaryPatches(
 		boundaryPatches[i].emplace_back(
 			defaultBoundaryConditions[i].type,
 			mesherBCDefault[i].faceIDs,
-			defaultBoundaryConditions[i].values
+			defaultBoundaryConditions[i].values,
+			true
 		);
 	}
 

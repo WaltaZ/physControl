@@ -3,6 +3,8 @@
 ProblemBoundaryPatch::ProblemBoundaryPatch(
 	const BoundaryConditionType& type,
 	const std::vector<uint32_t>& faceIDs,
-	const std::vector<double>& values) :
-	type(type), faceIDs(faceIDs), values(values)
+	const std::vector<double>& values,
+	bool isDefault
+	) :
+	type(type), faceIDs(faceIDs), values(values), isDefault(isDefault)
 {};

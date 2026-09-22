@@ -6,7 +6,7 @@
 
 struct ProblemGeometryD3 {
 
-	const Volume& operationalGeometry;
+	const Volume operationalGeometry;
 
 	ProblemGeometryD3(
 		const Volume& operationalGeometry

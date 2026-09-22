@@ -125,12 +125,12 @@ double CartesianMesher<MeshDim::D3>::_getCuboidDimension(int axis) {
 	};
 
 CartesianMesher<MeshDim::D3>::CartesianMesher(
-	ProblemD3& problem,
-	const ProblemGeometryCuboid& problemGeometry,
+	ProblemD3* problem,
+	const Cuboid& problemCuboid,
 	const std::array<int, geometryDimSize(Gdim)>& refinments)
 	:
 	problem(problem),
-	cuboid(problemGeometry.getCuboid()),
+	cuboid(problemCuboid),
 	refinments(refinments)
 {
 	// TODO: Fix that \/
@@ -157,9 +157,9 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 
 	// Set up boundary conditions for the mesher
 
-	mesh.boundaryConditionsDefault = std::vector<MesherBoundaryConditionRaw>(problem.boundaryConditions.size());
+	mesh.boundaryConditionsDefault = std::vector<MesherBoundaryConditionRaw>(problem->boundaryConditions.size());
 
-	for(auto& bcVariable : problem.boundaryConditions)
+	for(auto& bcVariable : problem->boundaryConditions)
 	for (auto& bc : bcVariable) {
 		mesh.boundaryConditions.emplace_back(_getMesherBCFromSurface(bc.geometry));
 	}
@@ -411,11 +411,11 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 
 							int mesherBCIndex = 0;
 
-							for (int j = 0; j < problem.boundaryConditions.size(); j++) {
+							for (int j = 0; j < problem->boundaryConditions.size(); j++) {
 
 								bool isDefaultBC = true;
 
-								for (int k = 0; k < problem.boundaryConditions[j].size(); k++) {
+								for (int k = 0; k < problem->boundaryConditions[j].size(); k++) {
 
 									if (Cuboid::faceOrder[i] == mesh.boundaryConditions[mesherBCIndex].face) {
 
@@ -552,7 +552,7 @@ Mesh<MeshDim::D3>* CartesianMesher<MeshDim::D3>::generateMesh()
 		}
 	}
 
-	problem.initBoundaryPatches(mesh.boundaryConditions, mesh.boundaryConditionsDefault);
+	problem->initBoundaryPatches(mesh.boundaryConditions, mesh.boundaryConditionsDefault);
 
  	return cudaUtils::create<Mesh<MeshDim::D3>>(mesh);
 };

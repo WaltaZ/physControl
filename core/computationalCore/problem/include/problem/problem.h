@@ -14,12 +14,14 @@
 
 class ProblemD3 {
 public:
-	ProblemGeometryD3 geometry;
+	Volume geometry;
 	std::vector<std::vector<BoundaryConditionD3>> boundaryConditions;
 	// TODO: Define this \/
 	std::vector<BoundaryConditionD3Raw> defaultBoundaryConditions;
 
-	ProblemD3(const ProblemGeometryD3& geometry);
+	ProblemD3(const Volume& geometry);
+
+	ProblemD3() = default;
 
 	virtual void initBoundaryPatches(
 		const std::vector<MesherBoundaryCondition>& mesherBC,
@@ -27,6 +29,14 @@ public:
 	) = 0;
 
 	virtual void initFields(const Mesh<MeshDim::D3>* mesh) = 0;
+
+	virtual void save(
+		const std::string& path = 
+		path::parse({ path::CACHE_DIR, "boundaryConditions" })) = 0;
+
+	virtual void load(
+		const std::string& path = 
+		path::parse({ path::CACHE_DIR, "boundaryConditions" })) = 0;
 };
 
 class HeatTransferFieldsD3 {
@@ -74,8 +84,10 @@ public:
 	HeatTransferFieldsD3* fields;
 
 	HeatTransferProblemD3(
-		const ProblemGeometryD3& geometry
+		const Volume& geometry
 	);
+
+	HeatTransferProblemD3();
 
 	void initBoundaryPatches(
 		const std::vector<MesherBoundaryCondition>& mesherBC,
@@ -93,6 +105,14 @@ public:
 
 	void addTemperatureInitialCondition(const double& ic);
 
-	void saveBoundaryPatches(const std::string& path = path::parse({ path::CACHE_DIR, "boundaryPatches" }));
-	void loadBoundaryPatches(const std::string& path = path::parse({ path::CACHE_DIR, "boundaryPatches" }));
+	void save(
+		const std::string& path = 
+		path::parse({ path::CACHE_DIR, "problem" })) override;
+
+	void load(
+		const std::string& path = 
+		path::parse({ path::CACHE_DIR, "problem" })) override;
+
+private:
+	void _initDefault();
 };

@@ -36,5 +36,4 @@ target_link_libraries(mesh
 	utility 
 	fileStream
 	CUDA::cudart
-	nlohmann_json::nlohmann_json
 )

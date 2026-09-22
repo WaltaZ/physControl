@@ -4,7 +4,7 @@
 #include "simulationMethods.h"
 
 struct SimulationData {
-	HeatTransferProblemD3& problem;
+	HeatTransferProblemD3* problem;
 	const Mesh<MeshDim::D3>* mesh;
 	HeatTransferSimulationMethods* methods;
 };

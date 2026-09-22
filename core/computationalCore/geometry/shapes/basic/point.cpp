@@ -1,4 +1,4 @@
-#include "../../include/geometry/point.h"
+#include <geometry/shapes/basic/point.h>
 
 template<GeometryDim dim>
 Point<dim>::Point() {
@@ -55,26 +55,3 @@ bool Point<dim>::operator==(const Point<dim>& point) const
 	}
 	return isTheSame;
 }
-
-template class Point<GeometryDim::D2>;
-template class Point<GeometryDim::D3>;
-
-template<GeometryDim dim>
-void to_json(nlohmann::json& json, const Point<dim>& point)
-{
-	json = {
-		{"pos", point.pos}
-	};
-}
-
-template void to_json(nlohmann::json& json, const Point<GeometryDim::D2>& vec);
-template void to_json(nlohmann::json& json, const Point<GeometryDim::D3>& vec);
-
-template<GeometryDim dim>
-void from_json(const nlohmann::json& json, Point<dim>& point)
-{
-	json.at("pos").get_to(point.pos);
-}
-
-template void from_json(const nlohmann::json& json, Point<GeometryDim::D2>& vec);
-template void from_json(const nlohmann::json& json, Point<GeometryDim::D3>& vec);

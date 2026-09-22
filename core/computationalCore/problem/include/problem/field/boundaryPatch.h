@@ -9,10 +9,14 @@ struct ProblemBoundaryPatch {
 	const std::vector<uint32_t>& faceIDs;
 	const std::vector<double>& values;
 
+	bool isDefault;
+
 	ProblemBoundaryPatch(
-		const BoundaryConditionType& type, 
-		const std::vector<uint32_t>& faceIDs, 
-		const std::vector<double>& values);
+		const BoundaryConditionType& type,
+		const std::vector<uint32_t>& faceIDs,
+		const std::vector<double>& values,
+		bool isDefault = false
+	);
 };
 
 struct BoundaryPatch {
@@ -20,4 +24,6 @@ struct BoundaryPatch {
 
 	CudaArray<uint32_t> faceIDs;
 	CudaArray<double> values;
+
+	bool isDefault = false;
 };

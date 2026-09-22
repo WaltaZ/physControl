@@ -88,38 +88,38 @@ bool SceneDisplayer::_switchScenesHandler(const std::string& key)
 FieldDisplayer::FieldDisplayer(
 	HeatTransferSimulationD3& simulation) : SceneDisplayer(simulation.data.mesh), _simulation(simulation)
 {
-	HeatTransferProblemD3& problem = simulation.data.problem;
+	HeatTransferProblemD3* problem = simulation.data.problem;
 
 	_scenes.push_back(std::make_unique<ScalarFieldScene>(
 		"Temperature",
 		_vtkGrid,
-		problem.fields->temperature
+		problem->fields->temperature
 	));
 	_scenes.push_back(std::make_unique<VectorFieldScene>(
 		"GradTemp",
 		_vtkGrid,
-		problem.fields->gradTemperature
+		problem->fields->gradTemperature
 	));
 
 	_scenes.push_back(std::make_unique<VectorFieldScene>(
 		"Velocity",
 		_vtkGrid,
-		problem.fields->velocity
+		problem->fields->velocity
 	));
 
 	_scenes.push_back(std::make_unique<ScalarFieldScene>(
 		"Pressure",
 		_vtkGrid,
-		problem.fields->pressure
+		problem->fields->pressure
 	));
 
 	_scenes.push_back(std::make_unique<VectorFieldScene>(
 		"GradPressure",
 		_vtkGrid,
-		problem.fields->gradPressure
+		problem->fields->gradPressure
 	));
 
-	for (const auto& bcOfSingleField : problem.boundaryConditions) {
+	for (const auto& bcOfSingleField : problem->boundaryConditions) {
 		for (const auto& bc : bcOfSingleField) {
 			_baseActors.push_back(visualsUtility::getBoundaryConditionContourActor(bc));
 		}

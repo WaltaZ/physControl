@@ -2,7 +2,7 @@
 
 #include "../../geometryEnums.h"
 #include "../../geometryUtils.h"
-#include "../../point.h"
+#include "point.h"
 #include "../../vector.h"
 
 #include<optional>

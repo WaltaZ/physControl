@@ -35,7 +35,7 @@ private:
 	// Problem
 
 	const Cuboid& cuboid;
-	ProblemD3& problem;
+	ProblemD3* problem;
 
 	// Mesh
 
@@ -51,8 +51,8 @@ private:
 public:
 
 	CartesianMesher(
-		ProblemD3& problem,
-		const ProblemGeometryCuboid& problemGeometry,
+		ProblemD3* problem,
+		const Cuboid& problemCuboid,
 		const std::array<int, geometryDimSize(Gdim)>& refinments = { 10, 10, 10 });
 
 	void setDivisionPattern(const std::vector<double>& divisionPattern, int index);

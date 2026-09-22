@@ -51,6 +51,9 @@ void Mesh<dim>::save(const std::string& path)
 	BinWriter f_mesh({ path, f_MESH });
 	f_mesh.write(this);
 
+	auto* node = nodes.getData();
+	auto test = sizeof(*node);
+
 	BinWriter f_nodes({ path, f_NODES });
 	f_nodes.writeArray(nodes.getData(), nodes.length);
 

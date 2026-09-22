@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../geometryEnums.h"
-#include "../../point.h"
+#include "point.h"
 #include "../../vector.h"
 #include "../../geometryUtils.h"
 
@@ -29,4 +29,7 @@ public:
 	V getAreaVector() const;
 
 	bool operator==(const Surface<dim>& surface) const;
+
+	void save(BinWriter& writer);
+	static Surface<dim> load(BinReader& reader);
 };

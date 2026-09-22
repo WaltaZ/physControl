@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../geometryEnums.h"
-#include "../../point.h"
+#include "point.h"
 #include "../../vector.h"
 #include "../../geometryUtils.h"
 #include "surface.h"
@@ -33,4 +33,7 @@ public:
 	double getVolume() const;
 
 	P getCentroid() const;
+
+	void save(BinWriter& writer);
+	static Volume load(BinReader& reader);
 };

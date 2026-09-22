@@ -15,7 +15,7 @@ SIMPLE::SIMPLE(const SimulationData& data) :
 		)
 	)
 {
-	auto& fields = data.problem.fields;
+	auto& fields = data.problem->fields;
 
 	_pressureCorr->initField(data.mesh->cells);
 	_gradPressureCorr->initField(data.mesh->cells);
@@ -34,7 +34,7 @@ void SIMPLE::nextStep()
 	uint32_t numOfCells = data.mesh->cells.length;
 	uint32_t numOfFaces = data.mesh->faces.length;
 
-	auto& fields = data.problem.fields;
+	auto& fields = data.problem->fields;
 
 	fields->velocity->moveTraceToNextStep();
 	fields->temperature->moveTraceToNextStep();

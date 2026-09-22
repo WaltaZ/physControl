@@ -8,7 +8,7 @@ set(geometryHppFiles
 	"include/geometry/tests.h"
 	"include/geometry/shapes/shapes.h"
 	"include/geometry/shapes/cuboid.h"
-	"include/geometry/point.h"
+	"include/geometry/shapes/basic/point.h"
 	"include/geometry/shapes/basic/line.h"
 	"include/geometry/shapes/basic/surface.h"
 	"include/geometry/shapes/basic/volume.h"
@@ -22,9 +22,12 @@ set(geometryCppFiles
 	"vector.cu"
 	"shapes/cuboid.cpp"
 	"shapes/basic/point.cpp"
+	"shapes/basic/file/pointFile.cpp"
 	"shapes/basic/line.cpp"
 	"shapes/basic/surface.cpp"
+	"shapes/basic/file/surfaceFile.cpp"
 	"shapes/basic/volume.cpp"
+	"shapes/basic/file/volumeFile.cpp"
 	"shapes/rectangle.cpp"
 )
 
@@ -39,6 +42,7 @@ target_include_directories(geometry PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
 target_link_libraries(geometry 
 PRIVATE
 	utility 
+	fileStream
 	CUDA::cudart
 PUBLIC
 	nlohmann_json::nlohmann_json

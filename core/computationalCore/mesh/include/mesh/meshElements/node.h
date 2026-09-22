@@ -4,7 +4,7 @@
 #include "../meshers/mesherElements.h"
 
 #include <array>
-#include <geometry/point.h>
+#include <geometry/shapes/basic/point.h>
 
 template <MeshDim dim>
 struct Node {

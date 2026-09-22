@@ -1,7 +1,7 @@
 #pragma once
 
 #include "vector.h"
-#include "point.h"
+#include "shapes/basic/point.h"
 #include "matrixTensor.h"
 
 #include <iostream>
